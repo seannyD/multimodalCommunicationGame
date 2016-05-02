@@ -1,0 +1,14 @@
+#image0	{position: absolute; left:0%; top: 20%; height: 35%;  z-index: -1;}
+#image1	{position: absolute; left:30%; top: 20%; height: 35%;  z-index: -1;}
+#image2	{position: absolute; left:60%; top: 20%; height: 35%;  z-index: -1;}
+
+#choose0	{position: absolute; left:15%; top: 65%; height: 10%;  z-index: 1;}
+#choose1	{position: absolute; left:45%; top: 65%; height: 10%;  z-index: 1;}
+#choose2	{position: absolute; left:75%; top: 65%; height: 10%;  z-index: 1;}
+
+
+#NextRound {position: absolute; left:40%; top: 60%; width: 20%; height: 20%; z-index: 2;}
+
+#audioX {display: none;}
+
+#resultsText {position:absolute; top:85%; height:10%; left:3%; width:50%;}

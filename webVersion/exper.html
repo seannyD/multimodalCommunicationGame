@@ -1,0 +1,58 @@
+<html>
+<head>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<div id='Instructions'></div>
+
+<img id="image0" src="" onclick="imageClicked(0)">
+<img id="image1" src="" onclick="imageClicked(1)">
+<img id="image2" src="" onclick="imageClicked(2)">
+
+<button id='choose0' onclick="chooseMe(0)">Choose</button>
+<button id='choose1' onclick="chooseMe(1)">Choose</button>
+<button id='choose2' onclick="chooseMe(2)">Choose</button>
+
+ <audio id="audioX">
+  <source id="sourceX" src="" type="audio/mpeg">
+</audio> 
+
+
+
+ <button id="NextRound" onclick="nextRound()">Next Round</button>
+
+ <button id="NextGame" onclick="nextGame()">Next Game</button>
+
+ <textarea id="resultsText" rows="10"></textarea>
+
+ <button id="StartDirectorImages1" onclick="setup('director','images', 0)">Start as director, Images, order 0</button>
+ <button id="StartDirectorImages2" onclick="setup('matcher','images', 0)">Start as matcher, Images, order 0</button>
+ <button id="StartDirectorImages3" onclick="setup('director','audio', 0)">Start as director, Audio, order 0</button>
+ <button id="StartDirectorImages4" onclick="setup('matcher','audio', 0)">Start as matcher, Audio, order 0</button>
+
+ <br /><br />
+ <button id="StartDirectorImages1b" onclick="setup('director','images', 1)">Start as director, Images, order 1</button>
+ <button id="StartDirectorImages2b" onclick="setup('matcher','images', 1)">Start as matcher, Images, order 1</button>
+ <button id="StartDirectorImages3b" onclick="setup('director','audio', 1)">Start as director, Audio, order 1</button>
+ <button id="StartDirectorImages4b" onclick="setup('matcher','audio', 1)">Start as matcher, Audio, order 1</button>
+
+ <br /><br />
+ <button id="StartDirectorImages1c" onclick="setup('director','images', 2)">Start as director, Images, order 2</button>
+ <button id="StartDirectorImages2c" onclick="setup('matcher','images', 2)">Start as matcher, Images, order 2</button>
+ <button id="StartDirectorImages3c" onclick="setup('director','audio', 2)">Start as director, Audio, order 2</button>
+ <button id="StartDirectorImages4c" onclick="setup('matcher','audio', 2)">Start as matcher, Audio, order 2</button>
+
+ <br /><br />
+ <button id="StartDirectorImages1d" onclick="setup('director','images', 3)">Start as director, Images, order 3</button>
+ <button id="StartDirectorImages2d" onclick="setup('matcher','images', 3)">Start as matcher, Images, order 3</button>
+ <button id="StartDirectorImages3d" onclick="setup('director','audio', 3)">Start as director, Audio, order 3</button>
+ <button id="StartDirectorImages4d" onclick="setup('matcher','audio', 3)">Start as matcher, Audio, order 3</button>
+
+
+
+<script type="text/javascript" src="orders.js"></script>
+<script type="text/javascript" src="prog.js"></script>
+
+
+
+</html>
