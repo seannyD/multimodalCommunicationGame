@@ -256,10 +256,10 @@ document.onkeypress = function (e) {
 
     e = e || window.event;
 
-	if(x==99){
+	if(x==113){
 			showCookie();
 		}
-	console.log(x);
+
     // use e.keyCode
     if(currentRole=='matcher' & !flashOn){
 	    if(e.keyCode=='37'){
