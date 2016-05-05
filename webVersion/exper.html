@@ -9,9 +9,9 @@
 <img id="image1" src="" onclick="imageClicked(1)">
 <img id="image2" src="" onclick="imageClicked(2)">
 
-<button id='choose0' onclick="chooseMe(0)">Choose</button>
-<button id='choose1' onclick="chooseMe(1)">Choose</button>
-<button id='choose2' onclick="chooseMe(2)">Choose</button>
+<button id='choose0' onclick="chooseMe(0)">Kiezen</button>
+<button id='choose1' onclick="chooseMe(1)">Kiezen</button>
+<button id='choose2' onclick="chooseMe(2)">Kiezen</button>
 
  <audio id="audioX">
   <source id="sourceX" src="" type="audio/mpeg">
@@ -19,11 +19,13 @@
 
 
 
- <button id="NextRound" onclick="nextRound()">Next Round</button>
+ <button id="NextRound" onclick="pressNextRound()">Volgende Ronde</button>
 
- <button id="NextGame" onclick="nextGame()">Next Game</button>
+ <button id="NextGame" onclick="nextGame()">Volgende Spel</button>
 
  <textarea id="resultsText" rows="10"></textarea>
+
+ <textarea id="resultsTextCookie" rows="10" style="display:none"></textarea>
 
  <button id="StartDirectorImages1" onclick="setup('director','images', 0)">Start as director, Images, order 0</button>
  <button id="StartDirectorImages2" onclick="setup('matcher','images', 0)">Start as matcher, Images, order 0</button>

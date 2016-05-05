@@ -25,11 +25,13 @@ var images = ['images/image1.png','images/image2.png','images/image3.png','image
 var coverImages = ["A.png",'B.png','C.png'];
 var flashImageLength = 1000;
 var flashOn = false;
+var flashTimeoutVariable = 0;
+
 
 
 var audioFiles = ['audio/CREAK.mp3', "audio/ice_cracking.mp3",'audio/AirLeak.mp3', "audio/Palloncino.mp3",'audio/arbre.mp3', "audio/bats.mp3",'audio/belf-0723-2.mp3', "audio/BoingBoing.mp3"];
 
-var results = "game,stage,currentTarget,currentDistractors,timeSinceStart,choiceButton,choiceItem\n";
+var results = "game,stage,currentTarget,currentDistractors,timeSinceStart,choiceButton,choiceItem,date\n";
 
 
 function clearImages (){
@@ -115,7 +117,7 @@ function cycleImages(x){
 
 function flashImage(imNum, file){
 	document.getElementById("image"+imNum).src = file;
-	setTimeout("resetCoverImages()",flashImageLength);
+	flashTimeoutVariable = setTimeout("resetCoverImages()",flashImageLength);
 	flashOn = true;
 }
 
@@ -136,7 +138,29 @@ function resetCoverImage(i){
 		
 }
 
+function pressNextRound(){
 
+	// save timing
+	var d = new Date();
+	var n = d.getTime(); 
+	var timeSinceStart = n - startTime;
+
+	// in case we're in the middle of playing something
+	clearTimeout(flashTimeoutVariable);
+	flashOn = false;
+
+	console.log("Next Round");
+	console.log([game,stage,"","_",timeSinceStart,"","NextRound"])
+
+	var d = new Date();
+	var datestring = d.toLocaleString(); 
+
+	trialString = [game,stage,"","_",timeSinceStart,"","NextRound",datestring].join();
+	results += trialString +"\n";
+
+
+	nextRound();
+}
 
 function nextRound(){
 	stage += 1;
@@ -145,6 +169,9 @@ function nextRound(){
 	hideMe("choose1");
 	hideMe("choose2");
 
+
+
+	// decide what to do
 	if(stage >=  currentOrder.length){
 		// move on
 		game += 1;
@@ -175,14 +202,14 @@ function nextRound(){
 			currentRole = 'matcher';
 			if(recordChoices){
 				hideMe("NextRound");
-				showMe("choose0");
-				showMe("choose1");
-				showMe("choose2");
+				setTimeout('showMe("choose0");',500);
+				setTimeout('showMe("choose1");',500);
+				setTimeout('showMe("choose2");',500);
 			}
 		} else{
 			currentRole = 'director';
 			if(recordChoices){
-				showMe("NextRound");
+				setTimeout('showMe("NextRound");',500);
 				hideMe("choose0");
 				hideMe("choose1");
 				hideMe("choose2");
@@ -225,10 +252,14 @@ document.onkeypress = function (e) {
 	var x = e.which || e.keyCode;
 	if(x==98){
 		goToPreviousRound();
-	}
+	} 
 
     e = e || window.event;
 
+	if(x==99){
+			showCookie();
+		}
+	console.log(x);
     // use e.keyCode
     if(currentRole=='matcher' & !flashOn){
 	    if(e.keyCode=='37'){
@@ -238,7 +269,10 @@ document.onkeypress = function (e) {
 	    if(e.keyCode=='39'){
 	    	// right arrow
 	    	cycleImages(1);
-	    } 
+	    }
+
+		
+	
 	}
 
 };
@@ -260,7 +294,51 @@ endExperiment = function(){
 
 	showMe("resultsText");
 	document.getElementById("resultsText").value = results;
+	saveCookie();
+}
 
+saveCookie = function(){
+	// cookies can only be 4k characters in length, so just keep the latest version
+
+	var currentCookie = getCookie("data");
+	console.log(["currentCookie",currentCookie]);
+	//var cstring = "data="+ currentCookie + "\n" +results+"; expires=Thu, 18 Dec 2088 12:00:00 UTC; "; 
+	//cstring="data=asdhasdbas; expires=Thu, 18 Dec 2088 12:00:00 UTC; "; 
+
+	
+	var results2 = results.replace(/\n/g, '#');
+
+	if(results2.length > 4050){
+		results2 = results2.slice(0,4050);
+	}
+
+	var cstring = "data="+ results2+"; expires=Thu, 18 Dec 2088 12:00:00 UTC; "; 
+	console.log(cstring);
+	document.cookie = cstring; 
+}
+
+showCookie = function(){
+	console.log(document.cookie);
+	var cx = getCookie("data");
+	cx = cx.replace(/#/g,"\n");
+	console.log(cx);
+	document.getElementById("resultsTextCookie").value = cx;
+	showMe("resultsTextCookie");
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }
 
 setup = function(role, stimtype, order){
@@ -361,6 +439,9 @@ chooseMe = function(choice){
 	var n = d.getTime(); 
 	var timeSinceStart = n - startTime;
 
+	// in case we're in the middle of playing something
+	clearTimeout(flashTimeoutVariable);
+	flashOn = false;
 
 	var x= currentOrder[stage];
 
@@ -371,9 +452,10 @@ chooseMe = function(choice){
 		var currentDistractors = x[0];
 	}
 
+	var d = new Date();
+	var datestring = d.toLocaleString(); 
 
-
-	trialString = [game,stage,currentTarget,currentDistractors.join("_"),timeSinceStart,choice,currentDistractors[choice]].join();
+	trialString = [game,stage,currentTarget,currentDistractors.join("_"),timeSinceStart,choice,currentDistractors[choice],datestring].join();
 	results += trialString +"\n";
 
 	nextRound();

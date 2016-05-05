@@ -12,8 +12,8 @@ turnmargin = 100
 
 
 
-eaffolder = '../data/eaf/'
-resultsfolder = '../data/csv'
+eaffolder = '../data/codedEaf/'
+resultsfolder = '../results/csv'
 
 for eafpath in glob.glob(eaffolder+'*.eaf'):
 
