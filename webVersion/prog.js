@@ -409,13 +409,21 @@ setUpAudio = function(){
 imageClicked = function(n){
 	var curOr= currentOrder[stage];
 	var currentDistractors = curOr[1];
+	var currentTarget = curOr[0][0];
 
 	if(curOr[0].length > curOr[1].length){
 			var currentDistractors = curOr[0];
+			var currentTarget = curOr[1][0];
 		}
 
 	if(currentStims=='audio'){
-		playAudio(audioFiles[currentDistractors[n]]);
+		if(currentRole=="director"){
+			// If I'm the director, play the target
+			playAudio(audioFiles[currentTarget]);
+		}	else{
+			// If I'm the matcher, play the distractor
+			playAudio(audioFiles[currentDistractors[n]]);
+		}
 	} else{
 		flashImage(n, images[currentDistractors[n]])
 	}
