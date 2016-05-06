@@ -292,7 +292,7 @@ endExperiment = function(){
 
 	showMe("resultsText");
 	document.getElementById("resultsText").value = results;
-	saveCookie();
+	//saveCookie();
 }
 
 saveCookie = function(){
