@@ -1,0 +1,45 @@
+<html>
+<head>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+TRAINING
+
+<div id='Instructions'></div>
+
+<img id="image0" src="" onclick="imageClicked(0)">
+<img id="image1" src="" onclick="imageClicked(1)">
+<img id="image2" src="" onclick="imageClicked(2)">
+
+<button id='choose0' onclick="chooseMe(0)">Kiezen</button>
+<button id='choose1' onclick="chooseMe(1)">Kiezen</button>
+<button id='choose2' onclick="chooseMe(2)">Kiezen</button>
+
+ <audio id="audioX">
+  <source id="sourceX" src="" type="audio/mpeg">
+</audio> 
+
+
+
+ <button id="NextRound" onclick="pressNextRound()">Volgende Ronde</button>
+
+ <button id="NextGame" onclick="nextGame()">Volgende Spel</button>
+
+ <textarea id="resultsText" rows="10"></textarea>
+
+ <textarea id="resultsTextCookie" rows="10" style="display:none"></textarea>
+
+ <button id="StartDirectorImages1" onclick="setup('director','images', 0)">Training: Start as director, Images</button>
+ <button id="StartDirectorImages2" onclick="setup('matcher','images', 0)">Training: Start as matcher, Images</button>
+ <button id="StartDirectorImages3" onclick="setup('director','audio', 0)">Training: Start as director, Audio</button>
+ <button id="StartDirectorImages4" onclick="setup('matcher','audio', 0)">Training: Start as matcher, Audio</button>
+
+ 
+
+
+<script type="text/javascript" src="orders.js"></script>
+<script type="text/javascript" src="prog.js"></script>
+
+
+
+</html>
