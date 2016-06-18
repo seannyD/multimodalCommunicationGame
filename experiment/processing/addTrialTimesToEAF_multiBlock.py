@@ -79,8 +79,14 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 		block = blockOrder[blockNum]
 		
 		for player in ["1","2"]:
+			print([eafpath,blockNum,block,player])
+			# need to match these two formats:
 			#27_05_D15_P1_IMG0
-			datafile = glob.glob("../data/csvFromWebProgram/*"+filename + "_P"+player+"_"+block+"*.txt")[0]
+			#09_05_D5_P2_VIS_IMG1.txt
+			searchfname = "../data/csvFromWebProgram/*"+filename + "_P"+player+"_*"+block+"[0-9].txt"
+			print(searchfname)
+			
+			datafile = glob.glob(searchfname)[0]
 			
 			trials, header = loadCSV(datafile)
 			
