@@ -108,14 +108,16 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 			trialCorrect = {True:"Correct", False:"Incorrect"}[trialTarget==trialChoice]
 			
 			condition = stimOrder[0][2]
-			if trialS> stimOrder[0][0]-2000:
+			conditionS = stimOrder[0][0]
+			if trialS> stimOrder[1][0]-2000:
 				condition = stimOrder[1][2]
+				conditionS = stimOrder[1][0]
 			
 			for role in ["Director","Matcher"]:
 				
-				signallingPlayer = "1"
+				signallingPlayer = "2"
 				if (role=="Matcher" and player=='1') or (role=="Director" and player=='2'):
-					signallingPlayer = "2"
+					signallingPlayer = "1"
 				
 				turns = eaffile.get_annotation_data_between_times(
 					"Part "+signallingPlayer, 
@@ -146,7 +148,9 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 							] 
 					signals = getTurnData(eaffile,signallingPlayer,turnS,turnE)
 					for x in signals:
-						res.append(baseString + x )
+
+						if x[1] >= (conditionS -200):
+							res.append(baseString + x )
 							
 
 					turnCount += 1
