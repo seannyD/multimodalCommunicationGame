@@ -46,6 +46,7 @@ def list2csv(l):
 resTitles = """
 filename, 
 dyadNumber,
+condition,
 game,
 trial,
 target,
@@ -82,6 +83,11 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 	allTrials = eaffile.get_annotation_data_for_tier("Trials 1") + eaffile.get_annotation_data_for_tier("Trials 2")
 	allTrials.sort()
 	allTrialsStart = [x[0] for x in allTrials]
+	
+	stimOrder = eaffile.get_annotation_data_for_tier("Stimuli")
+	stimOrder.sort()
+	
+
 
 	# director
 	for player in ["1","2"]:
@@ -101,6 +107,10 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 			trialChoice = trialBits[-1][2:]
 			trialCorrect = {True:"Correct", False:"Incorrect"}[trialTarget==trialChoice]
 			
+			condition = stimOrder[0][2]
+			if trialS> stimOrder[0][0]-2000:
+				condition = stimOrder[1][2]
+			
 			for role in ["Director","Matcher"]:
 				
 				signallingPlayer = "1"
@@ -112,12 +122,15 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 					trialS-turnmargin,
 					nextTrialStart)
 				turns.sort()
+				
+				
 				turnCount = 1
 				for turnS, turnE, turnV in turns:		
 			
 					baseString = [
 							filename, 
 							dyadNumber,
+							condition,
 							trialGame,
 							trialNumber,
 							trialTarget,
