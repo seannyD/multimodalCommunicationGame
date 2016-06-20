@@ -17,29 +17,32 @@ resultsfolder = '../results/csv'
 
 for eafpath in glob.glob(eaffolder+'*.eaf'):
 
-	res = "file,player,turnID,turnType,turnStart,turnEnd,turnLength,modality,signalStart,signalEnd,signalLength, signalType\n"
+	res = "file,dyad,player,turnID,turnType,turnStart,turnEnd,turnLength,modality,signalStart,signalEnd,signalLength,signalType\n"
 
 	eaffile = pympi.Eaf(eafpath)
-	filename = eafpath[eafpath.rindex("/"):]
+	filename = eafpath[(eafpath.rindex("/")+1):]
+	
+	dyadNumber = filename[:filename.index("_")]
 	
 	turnID = 1
 	
 	for player in ["1","2"]:
-		for turns, turne, turnv in eaffile.get_annotation_data_for_tier("Player "+player):
+		for turns, turne, turnv in eaffile.get_annotation_data_for_tier("Part "+player):
 			turnID += 1
-			for sigtype in ["Vocal Signs ","Visual Signs "]:
+			for sigtype in ["Acoustic ","Visual "]:
 			# get vocal signs
 				signals = eaffile.get_annotation_data_between_times(sigtype+player, turns-turnmargin, turne+turnmargin)
 				for sig_start, sig_end, sig_val in signals:
 					res += ",".join([str(x) for x in [
 							filename, 
+							dyadNumber,
 							player, 
 							turnID,
 							'"'+turnv+'"', 
 							turns, 
 							turne, 
 							turne-turns,
-							sigtype,
+							sigtype.strip(),
 							sig_start,
 							sig_end,
 							sig_end - sig_start,
