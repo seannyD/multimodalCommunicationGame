@@ -60,6 +60,9 @@ EDetails = getExperDetails()
 for eafpath in glob.glob(eaffolder+'*.eaf'):
 
 	filename = eafpath[(eafpath.rindex("/")+1):eafpath.rindex(".")]
+	oldFilename = filename
+	if filename.count("_")>0:
+		filename = filename[:filename.index("_")]
 	
 	dyadNum = filename[1:]
 
@@ -70,74 +73,80 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 		blockOrder = ["SOU","IMG"]
 	
 	eaffile = pympi.Eaf(eafpath)
-	eaffile.add_tier("Trials 1")
-	eaffile.add_tier("Trials 2")
 	
-	soundStart = eaffile.get_annotation_data_for_tier("synch")
+	if not "Trials 1" in eaffile.get_tier_names():
 	
-	for blockNum in range(len(blockOrder)):
-		block = blockOrder[blockNum]
+		eaffile.add_tier("Trials 1")
+		eaffile.add_tier("Trials 2")
+	
+		soundStart = eaffile.get_annotation_data_for_tier("synch")
+	
+		for blockNum in range(len(blockOrder)):
+			block = blockOrder[blockNum]
 		
-		for player in ["1","2"]:
-			print([eafpath,blockNum,block,player])
-			# need to match these two formats:
-			#27_05_D15_P1_IMG0
-			#09_05_D5_P2_VIS_IMG1.txt
-			searchfname = "../data/csvFromWebProgram/*"+filename + "_P"+player+"_*"+block+"[0-9].txt"
-			print(searchfname)
+			for player in ["1","2"]:
+				print([eafpath,blockNum,block,player])
+				# need to match these two formats:
+				#27_05_D15_P1_IMG0
+				#09_05_D5_P2_VIS_IMG1.txt
+				searchfname = "../data/csvFromWebProgram/*"+filename + "_P"+player+"_*"+block+"[0-9].txt"
+				print(searchfname)
 			
-			datafile = glob.glob(searchfname)[0]
+				datafile = glob.glob(searchfname)[0]
 			
-			trials, header = loadCSV(datafile)
+				trials, header = loadCSV(datafile)
 			
 		
-			tierName = "Trials "+player
+				tierName = "Trials "+player
 			
 			
 
-			soundStartTime = [x for x in soundStart if x[2]=="player "+player+" start"]
-			soundStartTime = sorted(soundStartTime, key = lambda x: x[0])
-			# Choose either the first or second tag
-			soundStartTime = int(soundStartTime[blockNum][0])
+				soundStartTime = [x for x in soundStart if x[2]=="player "+player+" start"]
+				soundStartTime = sorted(soundStartTime, key = lambda x: x[0])
+				# Choose either the first or second tag
+				soundStartTime = int(soundStartTime[blockNum][0])
 			
-			print([player,block,soundStartTime])
+				print([player,block,soundStartTime])
 			
-			curTime = 0
+				curTime = 0
 		
-			for t in trials:
+				for t in trials:
 
-				start = curTime
-				end = int(t[header.index("timeSinceStart")]) + soundStartTime
-				curTime = end
-				value = t[header.index("choiceItem")]
+					start = curTime
+					end = int(t[header.index("timeSinceStart")]) + soundStartTime
+					curTime = end
+					value = t[header.index("choiceItem")]
 			
-				if value !="NextRound":
-# 					tag = "#".join([t[header.index(x)] for x in ["game","stage"]])
-# 					tag += "#" + str(int(t[header.index("currentTarget")])+1)
-# 					tag += "#" + "_".join([str(int(x)+1) for x in t[header.index("currentDistractors")].split("_")])
-# 					tag += "#" + str(int(t[header.index("choiceItem")])+1)
+					if value !="NextRound":
+	# 					tag = "#".join([t[header.index(x)] for x in ["game","stage"]])
+	# 					tag += "#" + str(int(t[header.index("currentTarget")])+1)
+	# 					tag += "#" + "_".join([str(int(x)+1) for x in t[header.index("currentDistractors")].split("_")])
+	# 					tag += "#" + str(int(t[header.index("choiceItem")])+1)
 					
 					
-					Ga = t[header.index("game")]
-					Tu = t[header.index("stage")]
-					Ta = str(int(t[header.index("currentTarget")])+1)
-					Ch = str(int(t[header.index("choiceItem")])+1)
-					optx = [str(int(x)+1) for x in t[header.index("currentDistractors")].split("_")]
-					Op = "{"
-					for o in optx:
-						if o==Ch:
-							Op += "*"+o+"* "
-						else:
-							Op += o + " "
-					Op = Op[:-1]+"}"
-				# Ga1 Tu3 Ta1 Op{*1* 6 2} Ch 4 		
-					tag = "Ga"+Ga + " Tu"+Tu + " Ta" + Ta +" "+ Op + " Ch"+Ch
+						Ga = t[header.index("game")]
+						Tu = t[header.index("stage")]
+						Ta = str(int(t[header.index("currentTarget")])+1)
+						Ch = str(int(t[header.index("choiceItem")])+1)
+						optx = [str(int(x)+1) for x in t[header.index("currentDistractors")].split("_")]
+						Op = "{"
+						for o in optx:
+							if o==Ch:
+								Op += "*"+o+"* "
+							else:
+								Op += o + " "
+						Op = Op[:-1]+"}"
+					# Ga1 Tu3 Ta1 Op{*1* 6 2} Ch 4 		
+						tag = "Ga"+Ga + " Tu"+Tu + " Ta" + Ta +" "+ Op + " Ch"+Ch
 					
-					eaffile.add_annotation(tierName, start, end, tag)
+						eaffile.add_annotation(tierName, start, end, tag)
 					
 			
-		
-	eaffile.to_file("../data/eafWithTrialsTier/"+filename+"_TT"+".eaf")
+	# copy the file, even if we haven't modified it
+	newFilename = 	"../data/eafWithTrialsTier/"+filename+"_TT.eaf"
+	if "Coded" in oldFilename:
+		newFilename = "../data/eafWithTrialsTier/"+filename+"_TT_Coded.eaf"
+	eaffile.to_file(newFilename)
 
 
 	
