@@ -65,9 +65,11 @@ signalEnd,
 signalLength,
 signalType"""
 
+resTitles = resTitles.replace("\n","").replace(" ","").split(",")
+
 for eafpath in glob.glob(eaffolder+'*.eaf'):
 
-	resTitles = resTitles.replace("\n","").replace(" ","").split(",")
+	
 
 	res = []
 	eaffile = pympi.Eaf(eafpath)
