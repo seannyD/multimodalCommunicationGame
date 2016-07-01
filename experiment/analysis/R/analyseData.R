@@ -90,6 +90,7 @@ plotmeans(trialLength/1000~game,
           data = d[d$modalityCondition=='multi' & !duplicated(d$trialString)
                    & d$condition==stimType,],
           add=T,col=2,barcol = 2,
+          xaxt='n',
           n.label = F)
 plotmeans(trialLength/1000~game,
           data = d[d$modalityCondition=='visual' & !duplicated(d$trialString)
