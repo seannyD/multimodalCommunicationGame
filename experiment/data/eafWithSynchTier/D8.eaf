@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ANNOTATION_DOCUMENT AUTHOR="" DATE="2016-06-18T17:20:16+01:00" FORMAT="2.7" VERSION="2.7" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv2.7.xsd">
+<ANNOTATION_DOCUMENT AUTHOR="" DATE="2016-07-01T11:51:52+01:00" FORMAT="2.8" VERSION="2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv2.8.xsd">
     <HEADER MEDIA_FILE="" TIME_UNITS="milliseconds">
-        <MEDIA_DESCRIPTOR MEDIA_URL="file:///K:/ExperimentData/D8_SD.mpeg" MIME_TYPE="video/mpeg"/>
+        <MEDIA_DESCRIPTOR MEDIA_URL="file:///C:/Users/vinmac.MPI_NL/Desktop/D8.mpeg" MIME_TYPE="video/mpeg" RELATIVE_MEDIA_URL="./D8.mpeg"/>
+        <PROPERTY NAME="URN">urn:nl-mpi-tools-elan-eaf:125614fd-bf50-4778-af55-e14c71860cb6</PROPERTY>
         <PROPERTY NAME="lastUsedAnnotationId">4</PROPERTY>
     </HEADER>
     <TIME_ORDER>
-        <TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="7000"/>
-        <TIME_SLOT TIME_SLOT_ID="ts2" TIME_VALUE="7797"/>
-        <TIME_SLOT TIME_SLOT_ID="ts3" TIME_VALUE="10608"/>
-        <TIME_SLOT TIME_SLOT_ID="ts4" TIME_VALUE="11216"/>
-        <TIME_SLOT TIME_SLOT_ID="ts5" TIME_VALUE="1222222"/>
-        <TIME_SLOT TIME_SLOT_ID="ts6" TIME_VALUE="1222816"/>
-        <TIME_SLOT TIME_SLOT_ID="ts7" TIME_VALUE="1234189"/>
-        <TIME_SLOT TIME_SLOT_ID="ts8" TIME_VALUE="1235013"/>
+        <TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="6110"/>
+        <TIME_SLOT TIME_SLOT_ID="ts2" TIME_VALUE="6710"/>
+        <TIME_SLOT TIME_SLOT_ID="ts3" TIME_VALUE="9600"/>
+        <TIME_SLOT TIME_SLOT_ID="ts4" TIME_VALUE="10110"/>
+        <TIME_SLOT TIME_SLOT_ID="ts5" TIME_VALUE="1220910"/>
+        <TIME_SLOT TIME_SLOT_ID="ts6" TIME_VALUE="1221410"/>
+        <TIME_SLOT TIME_SLOT_ID="ts7" TIME_VALUE="1232820"/>
+        <TIME_SLOT TIME_SLOT_ID="ts8" TIME_VALUE="1233310"/>
     </TIME_ORDER>
     <TIER LINGUISTIC_TYPE_REF="default-lt" TIER_ID="synch">
         <ANNOTATION>

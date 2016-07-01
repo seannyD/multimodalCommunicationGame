@@ -52,6 +52,10 @@ trial,
 target,
 choice,
 correct,
+trialStart,
+trialEnd,
+trialValue,
+startOfNextTrial,
 signallingPlayer, 
 role,
 turnNumber,
@@ -111,7 +115,9 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 			
 			condition = stimOrder[0][2]
 			conditionS = stimOrder[0][0]
-			if trialS> stimOrder[1][0]-2000:
+			# count trials within stimuli if it starts within 10 seconds
+			#  of the second block annotation start
+			if trialS> stimOrder[1][0]-25000:
 				condition = stimOrder[1][2]
 				conditionS = stimOrder[1][0]
 			
@@ -140,6 +146,10 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 							trialTarget,
 							trialChoice,
 							trialCorrect,
+							trialS,
+							trialE,
+							trialV,
+							nextTrialStart,
 							signallingPlayer, 
 							role,
 							turnCount,
