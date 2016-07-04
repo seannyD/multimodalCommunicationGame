@@ -1,4 +1,5 @@
-## Function for plotting
+## Function for plotting mirrored histograms
+# see http://stackoverflow.com/questions/29928712/how-to-create-mirrored-histograms
 multhist <- function(..., bin.width, col, dir, xlab = NULL, ylab = NULL,
                      main = NULL, legends=NULL) {
   
