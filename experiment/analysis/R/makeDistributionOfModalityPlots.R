@@ -133,3 +133,5 @@ multhist(propAcousticSignals_AuditoryStimT3,propAcousticSignals_VisualStimT3,
          xlab="Proportion of Acoustic signals",
          ylab="Number of trials")
 dev.off()
+
+

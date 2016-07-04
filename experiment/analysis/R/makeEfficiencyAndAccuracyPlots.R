@@ -2,6 +2,8 @@ library(gplots)
 setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment/analysis/R/")
 d = read.csv("../../data/FinalSignalData.csv")
 
+d$game = d$game +1
+
 plotmeans(trialLength~paste(modalityCondition,condition), 
           data=d[!duplicated(d$trialString),], 
           connect=list(1:2,3:4,5:6))
@@ -15,7 +17,7 @@ for(stimType in unique(d$condition)){
             data = d[d$modalityCondition=='vocal' & !duplicated(d$trialString)
                      & d$condition==stimType,],
             col=1,barcol = 1,n.label = F,
-            ylim=c(0,30),
+            ylim=c(0,20),
             xlab="Game",
             ylab="Trial length (s)", las=1)
   plotmeans(trialLength/1000~game,
@@ -30,7 +32,7 @@ for(stimType in unique(d$condition)){
             add=T,col=3,barcol = 3,n.label = F,
             xaxt='n')
   if(stimType=="Auditory"){
-    legend(2.5,25,legend=c('vocal','multimodal','visual'), col=1:3,lty=1,pch=1)
+    legend(2.5,20,legend=c('Acoustic','Multimodal','Visual'), col=1:3,lty=1,pch=1)
   }
   title(main=stimType)
 }
@@ -62,7 +64,7 @@ for(stimType in unique(d$condition)){
             add=T,col=3,barcol = 3,n.label = F,
             xaxt='n')
   if(stimType=="Auditory"){
-    legend(2.5,0.5,legend=c('vocal','multimodal','visual'), col=1:3,lty=1,pch=1)
+    legend(2.5,0.5,legend=c('Acoustic','Multimodal','Visual'), col=1:3,lty=1,pch=1)
   }
   title(main=stimType)
 }

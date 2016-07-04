@@ -37,7 +37,8 @@ cols = brewer.pal(3,'Pastel1')
 yrange = c(0,35)
 
 
-pdf("../../results/graphs/Repairs/TotalNumberOfRepairs.pdf")
+pdf("../../results/graphs/Repairs/TotalNumberOfRepairs.pdf",
+    width=10, height=5)
 par(mfrow=c(1,2))
 
 barplot(t(visual[2,,]), beside=T,
@@ -54,7 +55,7 @@ barplot(t(auditory[2,,]), beside=T,
         main = "Auditory stimuli",
         ylim=yrange)
 
-legend(12, 40, legend=c("Multimodal",'Visual',"Vocal"),
+legend(10, yrange[2], legend=c("Multimodal",'Visual',"Vocal"),
        pch=15,
        col = cols)
 dev.off()
