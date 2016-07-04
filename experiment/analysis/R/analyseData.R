@@ -6,6 +6,8 @@ library(gplots)
 # 16 trials per game
 # 64 per block
 # 128 per experiment
+# 1920 trials in 15 dyads
+
 
 source("multiHist.R")
 
@@ -29,6 +31,14 @@ overlaps = function(sigs1,sigs2, margin=50){
        numberOfOverlaps=numberOfOverlaps,
        propOverlapsTime=proportionOfOverlapsTime,
        propOverlapsActs = propOverlapsActs))
+}
+
+overlaps2 = function(t1Start,t1End,t2Start,t2End){
+  if(t1Start < t2Start){
+    return(t1End - t2Start)
+  } else{
+    return(t2End - t1Start)
+  }
 }
 
 plotTurn = function(sigs1,sigs2){
@@ -75,6 +85,43 @@ d$turnType  = gsub("\\.","",d$turnType)
 # Remove first turn by matcher
 d = d[d$turnType!='T0',]
 
+##############################
+# Are there any turns that belong to two trials?
+# This can happen if the turns overlap with two trials
+# If so, just match the turn with the trial with which it overlaps the most
+
+d$turnString = paste(d$condition,d$modalityCondition,d$dyadNumber,d$turnStart,d$turnEnd)
+numTrials = tapply(d$trialString, d$turnString,function(X){length(unique(X))})
+
+casesToExclude = c()
+for(turnName in names(numTrials[numTrials>1])){
+  dx = d[turnString == turnName,]
+  
+  t1 = dx[dx$trial==min(dx$trial),][1,]
+  t2 = dx[dx$trial==max(dx$trial),][1,]
+  
+  t1and2= rbind(t1,t2)[order(c(t1$trialStart,t2$trialEnd)),]
+  
+  turnS = t1$turnStart[1]
+  turnE = t1$turnEnd[1]
+  
+  overlap1 = overlaps2(t1$trialStart[1],t1$trialEnd[1],turnS,turnE)
+  overlap2 = overlaps2(t2$trialStart[1],t2$trialEnd[1],turnS,turnE)
+  
+  if(overlap1 > overlap2){
+    # delete t2
+    casesToExclude  = c(casesToExclude,
+                        which(d$turnString==turnName & d$trialString==t2$trialString))
+  } else{
+    # delete t1
+    casesToExclude  = c(casesToExclude,
+                        which(d$turnString==turnName & d$trialString==t1$trialString))
+  }
+
+}
+
+# take out cases 
+d = d[- casesToExclude,]
 
 
 
