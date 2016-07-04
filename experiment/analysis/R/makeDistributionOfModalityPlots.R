@@ -16,6 +16,19 @@ getPropTimeAcoustic = function(acousticSel,visualSel){
                       d[visualSel,]$trialString,
                       sum)
   
+  dyads.vis = tapply(d[visualSel,]$dyadNumber,
+                      d[visualSel,]$trialString,
+                      head,n=1)
+  games.vis = tapply(d[visualSel,]$game,
+                 d[visualSel,]$trialString,
+                 head,n=1)
+  dyads.ac = tapply(d[acousticSel,]$dyadNumber,
+                     d[acousticSel,]$trialString,
+                     head,n=1)
+  games.ac = tapply(d[acousticSel,]$game,
+                     d[acousticSel,]$trialString,
+                     head,n=1)
+  
   # Make sure there's a time for each trial
   # if the trial time is NA, set it to zero
   allTrials = unique(d[d$modalityCondition=="multi",]$trialString)
@@ -39,7 +52,12 @@ getPropTimeAcoustic = function(acousticSel,visualSel){
     propAcousticSignals[grepl("Visual",names(propAcousticSignals))]
   
   return(list(propAcousticSignals_AuditoryStim=propAcousticSignals_AuditoryStim,
-              propAcousticSignals_VisualStim=propAcousticSignals_VisualStim))
+              propAcousticSignals_VisualStim=propAcousticSignals_VisualStim,
+              dayds.ac= dyads.ac[!is.na(dyads.ac)],
+              games.ac = games.ac[!is.na(games.ac)],
+              dyads.vis=dyads.vis[!is.na(dyads.vis)],
+              games.vis=games.vis[!is.na(games.vis)]
+              ))
 }
 
 # which cases are T1s with acoustic/visual signals?
@@ -49,6 +67,10 @@ visualT1s = d$modalityCondition=="multi" & d$turnType=='T1' & d$modality=="Visua
 x = getPropTimeAcoustic(acousticT1s,visualT1s)
 propAcousticSignals_AuditoryStim = x[[1]]
 propAcousticSignals_VisualStim = x[[2]]
+dyads_propAcousticSignals_A= x[[3]]
+games_propAcousticSignals_A= x[[4]]
+dyads_propAcousticSignals_V= x[[5]]
+games_propAcousticSignals_V= x[[6]]
 
 # Plot histograms
 cols= c(rgb(0,1,0,0.5),rgb(1,0,0,0.5))
@@ -134,4 +156,13 @@ multhist(propAcousticSignals_AuditoryStimT3,propAcousticSignals_VisualStimT3,
          ylab="Number of trials")
 dev.off()
 
+library(lattice)
+xyplot(trialLength/1000~game | dyadNumber+condition, 
+       data=d[d$modalityCondition=="multi",], 
+       type='a', 
+       ylim=c(0,40),
+       main="Trial length in the multimodal condition")
 
+xyplot(propAcousticSignals_AuditoryStim~games_propAcousticSignals_A|factor(dyads_propAcousticSignals_A), type='p')
+
+xyplot(propAcousticSignals_VisualStim~games_propAcousticSignals_V|factor(dyads_propAcousticSignals_V), type='p')
