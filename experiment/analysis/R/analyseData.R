@@ -52,7 +52,6 @@ for(f in files){
 
 d$trialString = paste(d$condition,d$dyadNumber, d$game,d$trial)
 
-
 experDetails = read.delim("../../data/ExperimentDetails.tab",sep='\t', stringsAsFactors = F)
 experDetails$dyad = paste("D",experDetails$dyad,sep='')
 rownames(experDetails) = experDetails$dyad
@@ -61,6 +60,18 @@ d$modalityCondition = experDetails[d$dyadNumber,]$condition
 
 # we don't have info on when the very last trial of each block ends, so assume it's the end of the trial
 d[d$game==3 & d$trial==15,]$startOfNextTrial = d[d$game==3 & d$trial==15,]$trialEnd
+
+# fix stuff
+
+d$turnType  = gsub("\\.","",d$turnType)
+
+# Exclude cases
+
+# Remove first turn by matcher
+d = d[d$turnType!='T0',]
+
+
+
 
 # work out trail length
 #  From start of first turn to when the listener selects a meaning.
@@ -138,9 +149,57 @@ for(stimType in unique(d$condition)){
 }
 dev.off()
 
+# which cases are T1s with acoustic/visual signals?
+acousticT1s = d$modalityCondition=="multi" & d$turnType=='T3' & d$modality=="Acoustic"
+visualT1s = d$modalityCondition=="multi" & d$turnType=='T3' & d$modality=="Visual"
+
+# Add the signal time for each modality for each trial
+acousticTime = tapply(d[acousticT1s,]$signalLength,
+                      d[acousticT1s,]$trialString,
+                      sum)
+
+visualTime = tapply(d[visualT1s,]$signalLength,
+                    d[visualT1s,]$trialString,
+                      sum)
+
+# Make sure there's a time for each trial
+# if the trial time is NA, set it to zero
+allTrials = unique(d[d$modalityCondition=="multi",]$trialString)
+visualTime= visualTime[allTrials]
+visualTime[is.na(visualTime)] = 0
+acousticTime= acousticTime[allTrials]
+acousticTime[is.na(acousticTime)] = 0
+
+propAcousticSignals = acousticTime / (acousticTime+visualTime)
+names(propAcousticSignals) = allTrials
+
+propAcousticSignals = propAcousticSignals[!is.na(propAcousticSignals)]
+
+x = hist(propAcousticSignals, plot = F)
+x$counts = x$counts/length(unique(d[d$modalityCondition=="multi",]$trialString))
+plot(x, ylab="Proportion of trials")
+
+propAcousticSignals_AuditoryStim = 
+  propAcousticSignals[grepl("Auditory",names(propAcousticSignals))]
+propAcousticSignals_VisualStim = 
+  propAcousticSignals[grepl("Visual",names(propAcousticSignals))]
 
 
 
+cols= c(rgb(0,1,0,0.5),rgb(1,0,0,0.5))
+
+breaks = seq(0,1,0.05)
+
+hist(propAcousticSignals_AuditoryStim, col=cols[1], border=cols[1], breaks=breaks)
+hist(propAcousticSignals_VisualStim, add=T, col=cols[2], border = cols[2], breaks=breaks)
+
+densityAuditory = density(propAcousticSignals_AuditoryStim)
+densityVisual = density(propAcousticSignals_VisualStim)
+
+
+plot(c(0,1),c(0,max(densityVisual$y)), type='n')
+lines(densityAuditory)
+lines(densityVisual,col='red')
 
 
 turnD = data.frame()
