@@ -80,7 +80,9 @@ d = d[d$turnType!='T0',]
 
 # work out trail length
 #  From start of first turn to when the listener selects a meaning.
-trialLengths = tapply(d$startOfNextTrial, d$trialString, max)- tapply(d$turnStart, d$trialString, head,n=1)
+#  The trials track the matchers turn, so that the end of the trial is when
+#  the matcher makes a choice.
+trialLengths = tapply(d$trialEnd, d$trialString, max)- tapply(d$turnStart, d$trialString, head,n=1)
 
 d$trialLength = trialLengths[d$trialString]
 
