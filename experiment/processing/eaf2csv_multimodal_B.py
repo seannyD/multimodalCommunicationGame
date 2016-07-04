@@ -74,7 +74,7 @@ resTitles = resTitles.replace("\n","").replace(" ","").split(",")
 for eafpath in glob.glob(eaffolder+'*.eaf'):
 
 	
-
+	print(eafpath)
 	res = []
 	eaffile = pympi.Eaf(eafpath)
 	filename = eafpath[(eafpath.rindex("/")+1):]
