@@ -29,44 +29,47 @@
         <String>Modification Date</String>
     </prefList>
     <pref key="LayoutManager.SplitPaneDividerLocation">
-        <Int>2</Int>
+        <Int>1</Int>
     </pref>
     <pref key="TimeLineViewer.ZoomLevel">
-        <Float>26.0</Float>
+        <Float>10.0</Float>
     </pref>
     <pref key="LayoutManager.SelectedTabIndex">
         <Int>7</Int>
     </pref>
+    <pref key="SegmentationViewer.ActiveTier">
+        <String>Trials 2</String>
+    </pref>
     <prefGroup key="TierColors">
         <pref key="Visual 2">
-            <Object class="java.awt.Color">0,160,90</Object>
+            <Object class="java.awt.Color">0,0,160</Object>
         </pref>
         <pref key="Stimuli">
-            <Object class="java.awt.Color">90,0,160</Object>
+            <Object class="java.awt.Color">160,0,90</Object>
         </pref>
         <pref key="Part 1">
             <Object class="java.awt.Color">90,0,90</Object>
         </pref>
         <pref key="Acoustic 1">
-            <Object class="java.awt.Color">160,0,0</Object>
+            <Object class="java.awt.Color">0,160,160</Object>
         </pref>
         <pref key="Acoustic 2">
-            <Object class="java.awt.Color">160,90,90</Object>
+            <Object class="java.awt.Color">160,90,160</Object>
         </pref>
         <pref key="Visual 1">
-            <Object class="java.awt.Color">0,0,90</Object>
+            <Object class="java.awt.Color">90,90,0</Object>
         </pref>
         <pref key="Part 2">
-            <Object class="java.awt.Color">160,90,0</Object>
+            <Object class="java.awt.Color">90,90,160</Object>
         </pref>
         <pref key="Trials 2">
-            <Object class="java.awt.Color">90,160,90</Object>
+            <Object class="java.awt.Color">160,90,0</Object>
         </pref>
         <pref key="synch">
-            <Object class="java.awt.Color">160,160,0</Object>
+            <Object class="java.awt.Color">160,0,160</Object>
         </pref>
         <pref key="Trials 1">
-            <Object class="java.awt.Color">160,90,160</Object>
+            <Object class="java.awt.Color">160,90,90</Object>
         </pref>
     </prefGroup>
     <prefList key="CommentViewer.Columns.Hidden">
@@ -74,19 +77,22 @@
         <String>Recipient</String>
     </prefList>
     <pref key="FrameLocation">
-        <Object class="java.awt.Point">464,24</Object>
+        <Object class="java.awt.Point">-8,-8</Object>
     </pref>
     <pref key="SelectionBeginTime">
-        <Long>195497</Long>
+        <Long>1644100</Long>
     </pref>
     <pref key="LayoutManager.CurrentMode">
         <Int>1</Int>
     </pref>
     <pref key="MediaTime">
-        <Long>204381</Long>
+        <Long>1644100</Long>
+    </pref>
+    <pref key="SegmentationViewer.ZoomLevel">
+        <Float>10.0</Float>
     </pref>
     <pref key="FrameSize">
-        <Object class="java.awt.Dimension">1261,1044</Object>
+        <Object class="java.awt.Dimension">1936,1176</Object>
     </pref>
     <prefGroup key="AAM-LR Phone level audio segmentation">
         <pref key="base_url">
@@ -132,9 +138,9 @@
         <String>AAM-LR Phone level audio segmentation</String>
     </pref>
     <pref key="TimeScaleBeginTime">
-        <Long>176228</Long>
+        <Long>1679700</Long>
     </pref>
     <pref key="SelectionEndTime">
-        <Long>204381</Long>
+        <Long>1648650</Long>
     </pref>
 </preferences>
