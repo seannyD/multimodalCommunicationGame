@@ -1,7 +1,8 @@
 filename,dyadNumber,condition,game,trial,target,choice,correct,trialStart,trialEnd,trialValue,startOfNextTrial,signallingPlayer,role,turnNumber,turnType,turnStart,turnEnd,turnLength,modality,signalStart,signalEnd,signalLength,signalType
-D4_IMG_Coded_TT.eaf,D4,Visual,0,0,3,3,Correct,912062,922485,Ga0 Tu0 Ta3 {4 5 *3*} Ch3,931559,2,Director,1,"T1",908600,919200,10600,Acoustic,908600,909600,1000,"X"
-D4_IMG_Coded_TT.eaf,D4,Visual,0,0,3,3,Correct,912062,922485,Ga0 Tu0 Ta3 {4 5 *3*} Ch3,931559,2,Director,1,"T1",908600,919200,10600,Acoustic,917600,918300,700,"X"
-D4_IMG_Coded_TT.eaf,D4,Visual,0,0,3,3,Correct,912062,922485,Ga0 Tu0 Ta3 {4 5 *3*} Ch3,931559,2,Director,1,"T1",908600,919200,10600,Acoustic,918600,919210,610,"X"
+D4_IMG_Coded_TT.eaf,D4,Visual,0,0,3,3,Correct,912062,922485,Ga0 Tu0 Ta3 {4 5 *3*} Ch3,927700,2,Director,1,"T1",908600,919200,10600,Acoustic,908600,909600,1000,"X"
+D4_IMG_Coded_TT.eaf,D4,Visual,0,0,3,3,Correct,912062,922485,Ga0 Tu0 Ta3 {4 5 *3*} Ch3,927700,2,Director,1,"T1",908600,919200,10600,Acoustic,917600,918300,700,"X"
+D4_IMG_Coded_TT.eaf,D4,Visual,0,0,3,3,Correct,912062,922485,Ga0 Tu0 Ta3 {4 5 *3*} Ch3,927700,2,Director,1,"T1",908600,919200,10600,Acoustic,918600,919210,610,"X"
+D4_IMG_Coded_TT.eaf,D4,Visual,0,1,8,8,Correct,927700,948951,Ga0 Tu1 Ta8 {5 *8* 3} Ch8,950956,1,Director,1,"T1",929010,930000,990,Acoustic,929010,930000,990,"X"
 D4_IMG_Coded_TT.eaf,D4,Visual,0,2,4,5,Incorrect,950956,972059,Ga0 Tu2 Ta4 {6 *5* 4} Ch5,977101,2,Director,1,"T1",964500,965200,700,Acoustic,964500,965200,700,"X"
 D4_IMG_Coded_TT.eaf,D4,Visual,0,3,7,7,Correct,977101,1016060,Ga0 Tu3 Ta7 {8 *7* 3} Ch7,1019234,1,Director,1,"T1",981700,982410,710,Acoustic,981700,982410,710,"X"
 D4_IMG_Coded_TT.eaf,D4,Visual,0,4,6,2,Incorrect,1019234,1029202,Ga0 Tu4 Ta6 {*2* 6 8} Ch2,1032812,2,Director,1,"T1",1020300,1024200,3900,Acoustic,1020300,1024200,3900,"X"
