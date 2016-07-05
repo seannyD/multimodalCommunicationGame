@@ -1,0 +1,34 @@
+---
+title: "Modality effects in a signalling game"
+output: pdf_document
+knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), "../../results/MainResults_Accuracy.pdf")) })
+---
+
+# Intro 
+
+This script uses data compiled by *analyseData.R*.
+
+## Load libraries
+
+```{r warning=F}
+library(lme4)
+library(sjPlot)
+```
+
+```{r echo=F}
+try(setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment/analysis/R/"))
+```
+
+## Load data
+
+```{r}
+d = read.csv("../../data/FinalSignalData.csv")
+```
+
+We don't need info on every signal in each turn, just the trial time.  Keep only 1st signal in each trial.
+
+```{r}
+d = d[!duplicated(d$trialString),]
+```
+
+

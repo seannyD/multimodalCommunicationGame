@@ -87,12 +87,14 @@ d$turnType  = gsub("\\.","",d$turnType)
 checkForGaps = table(d$dyadNumber,d$game,d$trial)
 sum(checkForGaps==0)
 gaps = which(checkForGaps==0, arr.ind=T)
-for(i in 1:nrow(gaps)){
-  print(
-    c(sort(unique(d$dyadNumber))[gaps[i,1]],
-    "Game",sort(unique(d$game))[gaps[i,2]],
-    "Trial",sort(unique(d$trial))[gaps[i,3]])
-  )
+if(nrow(gaps)>0){
+  for(i in 1:nrow(gaps)){
+    print(
+      c(sort(unique(d$dyadNumber))[gaps[i,1]],
+      "Game",sort(unique(d$game))[gaps[i,2]],
+      "Trial",sort(unique(d$trial))[gaps[i,3]])
+    )
+  }
 }
 
 # Exclude cases
@@ -110,7 +112,7 @@ numTrials = tapply(d$trialString, d$turnString,function(X){length(unique(X))})
 
 casesToExclude = c()
 for(turnName in names(numTrials[numTrials>1])){
-  dx = d[turnString == turnName,]
+  dx = d[d$turnString == turnName,]
   
   t1 = dx[dx$trial==min(dx$trial),][1,]
   t2 = dx[dx$trial==max(dx$trial),][1,]
@@ -151,6 +153,30 @@ d$trialLength = trialLengths[d$trialString]
 d = d[d$trialLength> 2000,]
 
 d$correct = d$correct=="Correct"
+
+# Check for gaps again
+
+checkForGaps = table(d$dyadNumber,d$condition,d$game,d$trial)
+sum(checkForGaps==0)
+gaps = which(checkForGaps==0, arr.ind=T)
+if(nrow(gaps)>0){
+  cat("",file="../../processing/ListOfTrialsWithoutTurns.txt")
+  for(i in 1:nrow(gaps)){
+    cat(
+    paste(
+        sort(unique(d$dyadNumber))[gaps[i,1]],
+        "Signals",sort(unique(d$game))[gaps[i,2]],
+        "Game",sort(unique(d$game))[gaps[i,3]],
+        "Trial",sort(unique(d$trial))[gaps[i,4]],"\n", sep=' '),
+      file = "../../processing/ListOfTrialsWithoutTurns.txt",
+      append = T
+    )
+     
+    
+  }
+}
+
+
 
 
 # Write the data to a main file

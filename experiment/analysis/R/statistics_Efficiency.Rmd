@@ -1,7 +1,7 @@
 ---
-title: "Untitled"
+title: "Modality effects in a signalling game"
 output: pdf_document
-knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), "../../results/MainResults.pdf")) })
+knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), "../../results/MainResults_Efficiency.pdf")) })
 ---
 
 # Intro 
@@ -9,7 +9,8 @@ knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = e
 This script uses data compiled by *analyseData.R*.
 
 ## Load libraries
-```{r}
+
+```{r warning=F}
 library(lme4)
 library(sjPlot)
 ```
@@ -22,6 +23,12 @@ try(setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experi
 
 ```{r}
 d = read.csv("../../data/FinalSignalData.csv")
+```
+
+We don't need info on every signal in each turn, just the trial time.  Keep only 1st signal in each trial.
+
+```{r}
+d = d[!duplicated(d$trialString),]
 ```
 
 
@@ -51,28 +58,30 @@ Here's a graph showing the distribution of trial lengths by conditions:
 Make a series of models with random effects for dyad, director and item.
 
 ```{r}
-m0 = lmer(trialLength ~ 1 + 
+m0 = lmer(trialLength.log ~ 1 + 
             (1|dyadNumber) + (1|playerId) + (1|itemId),
           data=d)
-m1 = lmer(trialLength ~ 1 + modalityCondition + 
+m1 = lmer(trialLength.log ~ 1 + modalityCondition + 
             (1|dyadNumber) + (1|playerId) + (1|itemId),
           data=d)
-m2 = lmer(trialLength ~ 1 + modalityCondition + condition + 
+m2 = lmer(trialLength.log ~ 1 + modalityCondition + condition + 
             (1|dyadNumber) + (1|playerId) + (1|itemId),
           data=d)
-m3 = lmer(trialLength ~ 1 + modalityCondition + condition + game +  
+m3 = lmer(trialLength.log ~ 1 + modalityCondition + condition + game +  
             (1|dyadNumber) + (1|playerId) + (1|itemId),
           data=d)
-m4 = lmer(trialLength ~ 1 + modalityCondition * condition + game + 
+m4 = lmer(trialLength.log ~ 1 + modalityCondition * condition + game + 
             (1|dyadNumber) + (1|playerId) + (1|itemId),
           data=d)
-m5 = lmer(trialLength ~ 1 + (modalityCondition * condition) + game + (game:condition) +
+m5 = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + game + (game:condition) +
             (1|dyadNumber) + (1|playerId) + (1|itemId),
           data=d)
-m6 = lmer(trialLength ~ 1 + modalityCondition * condition * game + 
+m6 = lmer(trialLength.log ~ 1 + modalityCondition * condition * game + 
             (1|dyadNumber) + (1|playerId),
           data=d)
 ```
+
+\newpage
 
 # Results
 
@@ -115,7 +124,9 @@ Plot the strength of the fixed effects:
 sjp.lmer(m6, 'fe', 
          show.intercept = T,
          sort.est=NULL,
-         axis.labels = feLabels2[2:12])
+         axis.labels = feLabels2[2:12],
+         xlab="Trial time (ms)",
+         geom.colors = c(1))
 ```
 
 

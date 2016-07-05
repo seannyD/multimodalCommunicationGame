@@ -1,7 +1,8 @@
 filename,dyadNumber,condition,game,trial,target,choice,correct,trialStart,trialEnd,trialValue,startOfNextTrial,signallingPlayer,role,turnNumber,turnType,turnStart,turnEnd,turnLength,modality,signalStart,signalEnd,signalLength,signalType
 D5_TT_Coded.eaf,D5,Visual,0,0,3,5,Incorrect,476207,497078,Ga0 Tu0 Ta3 {4 *5* 3} Ch5,498902,1,Director,1,"T1",480040,484026,3986,Visual,480040,484026,3986,"X"
-D5_TT_Coded.eaf,D5,Visual,0,2,4,4,Correct,498902,533717,Ga0 Tu2 Ta4 {6 5 *4*} Ch4,507555,2,Matcher,1,"T1",501815,507221,5406,Visual,501815,507221,5406,"X"
-D5_TT_Coded.eaf,D5,Visual,0,2,4,4,Correct,498902,533717,Ga0 Tu2 Ta4 {6 5 *4*} Ch4,507555,1,Director,1,"T1",523435,532219,8784,Visual,523435,532219,8784,"X"
+D5_TT_Coded.eaf,D5,Visual,0,1,8,5,Incorrect,501000,518020,Ga0 Tu1 Ta8 {*5* 8 3} Ch5,537059,2,Director,1,"T1",501815,507221,5406,Visual,501815,507221,5406,"X"
+D5_TT_Coded.eaf,D5,Visual,0,2,4,4,Correct,498902,533717,Ga0 Tu2 Ta4 {6 5 *4*} Ch4,501000,2,Matcher,1,"T1",501815,507221,5406,Visual,501815,507221,5406,"X"
+D5_TT_Coded.eaf,D5,Visual,0,2,4,4,Correct,498902,533717,Ga0 Tu2 Ta4 {6 5 *4*} Ch4,501000,1,Director,1,"T1",523435,532219,8784,Visual,523435,532219,8784,"X"
 D5_TT_Coded.eaf,D5,Visual,0,3,7,7,Correct,537059,565291,Ga0 Tu3 Ta7 {8 *7* 3} Ch7,567581,2,Director,1,"T1",539026,559222,20196,Visual,539026,559222,20196,"X"
 D5_TT_Coded.eaf,D5,Visual,0,4,6,6,Correct,567581,587772,Ga0 Tu4 Ta6 {2 *6* 8} Ch6,591202,1,Director,1,"T1",570026,586021,15995,Visual,570030,576611,6581,"X"
 D5_TT_Coded.eaf,D5,Visual,0,4,6,6,Correct,567581,587772,Ga0 Tu4 Ta6 {2 *6* 8} Ch6,591202,1,Director,1,"T1",570026,586021,15995,Visual,577408,586028,8620,"X"
