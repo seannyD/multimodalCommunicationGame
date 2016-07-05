@@ -32,7 +32,7 @@
         <Int>2</Int>
     </pref>
     <pref key="TimeLineViewer.ZoomLevel">
-        <Float>10.0</Float>
+        <Float>208.0</Float>
     </pref>
     <pref key="LayoutManager.SelectedTabIndex">
         <Int>7</Int>
@@ -44,11 +44,14 @@
         <pref key="Stimuli">
             <Object class="java.awt.Color">0,0,160</Object>
         </pref>
+        <pref key="Part 1">
+            <Object class="java.awt.Color">160,90,90</Object>
+        </pref>
         <pref key="Acoustic 1">
             <Object class="java.awt.Color">0,160,160</Object>
         </pref>
-        <pref key="Part 1">
-            <Object class="java.awt.Color">160,90,90</Object>
+        <pref key="Part 2">
+            <Object class="java.awt.Color">90,160,160</Object>
         </pref>
         <pref key="Visual 1">
             <Object class="java.awt.Color">90,0,90</Object>
@@ -56,14 +59,11 @@
         <pref key="Acoustic 2">
             <Object class="java.awt.Color">90,160,90</Object>
         </pref>
-        <pref key="Part 2">
-            <Object class="java.awt.Color">90,160,160</Object>
+        <pref key="synch">
+            <Object class="java.awt.Color">90,0,0</Object>
         </pref>
         <pref key="Trials 2">
             <Object class="java.awt.Color">160,160,90</Object>
-        </pref>
-        <pref key="synch">
-            <Object class="java.awt.Color">90,0,0</Object>
         </pref>
         <pref key="Trials 1">
             <Object class="java.awt.Color">0,90,0</Object>
@@ -74,16 +74,16 @@
         <String>Recipient</String>
     </prefList>
     <pref key="FrameLocation">
-        <Object class="java.awt.Point">783,352</Object>
+        <Object class="java.awt.Point">144,23</Object>
     </pref>
     <pref key="SelectionBeginTime">
-        <Long>39400</Long>
+        <Long>1150213</Long>
     </pref>
     <pref key="LayoutManager.CurrentMode">
         <Int>1</Int>
     </pref>
     <pref key="MediaTime">
-        <Long>56300</Long>
+        <Long>1150213</Long>
     </pref>
     <pref key="FrameSize">
         <Object class="java.awt.Dimension">1355,1096</Object>
@@ -132,9 +132,9 @@
         <String>AAM-LR Phone level audio segmentation</String>
     </pref>
     <pref key="TimeScaleBeginTime">
-        <Long>0</Long>
+        <Long>1148769</Long>
     </pref>
     <pref key="SelectionEndTime">
-        <Long>56300</Long>
+        <Long>1150724</Long>
     </pref>
 </preferences>

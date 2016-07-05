@@ -165,7 +165,7 @@ if(nrow(gaps)>0){
     cat(
     paste(
         sort(unique(d$dyadNumber))[gaps[i,1]],
-        "Signals",sort(unique(d$game))[gaps[i,2]],
+        "Signals",sort(unique(d$condition))[gaps[i,2]],
         "Game",sort(unique(d$game))[gaps[i,3]],
         "Trial",sort(unique(d$trial))[gaps[i,4]],"\n", sep=' '),
       file = "../../processing/ListOfTrialsWithoutTurns.txt",
