@@ -156,9 +156,11 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 			conditionS = stimOrder[0][0]
 			# count trials within stimuli if it starts within 10 seconds
 			#  of the second block annotation start
-			if trialS> stimOrder[1][0]-25000:
-				condition = stimOrder[1][2]
-				conditionS = stimOrder[1][0]
+			# (but some files only have one block)
+			if len(stimOrder)>1:
+				if trialS> stimOrder[1][0]-25000:
+					condition = stimOrder[1][2]
+					conditionS = stimOrder[1][0]
 			
 			for role in ["Director","Matcher"]:
 				

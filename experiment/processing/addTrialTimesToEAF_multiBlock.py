@@ -68,11 +68,22 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 
 	currentEDetails = EDetails[dyadNum]
 	
-	blockOrder = ["IMG","SOU"]
-	if currentEDetails[1]=="SOU":
-		blockOrder = ["SOU","IMG"]
-	
 	eaffile = pympi.Eaf(eafpath)
+	
+	blockOrder = ["IMG","SOU"]
+	
+	# some files only have one block in them.
+	stimTier = eaffile.get_annotation_data_for_tier("Stimuli")
+	if len(stimTier) ==1:
+		if stimTier[0][2] == "Visual":
+			blockOrder = ["IMG"]
+		else:
+			blockOrder = ["SOU"]
+				
+	else:
+		if currentEDetails[1]=="SOU":
+			blockOrder = ["SOU","IMG"]
+	
 	
 	if not "Trials 1" in eaffile.get_tier_names():
 	
@@ -144,8 +155,8 @@ for eafpath in glob.glob(eaffolder+'*.eaf'):
 			
 	# copy the file, even if we haven't modified it
 	newFilename = 	"../data/eafWithTrialsTier/"+filename+"_TT.eaf"
-	if "Coded" in oldFilename:
-		newFilename = "../data/eafWithTrialsTier/"+filename+"_TT_Coded.eaf"
+	if oldFilename.count("Coded")>0:
+		newFilename = "../data/eafWithTrialsTier/"+oldFilename+"_TT.eaf"
 	eaffile.to_file(newFilename)
 
 
