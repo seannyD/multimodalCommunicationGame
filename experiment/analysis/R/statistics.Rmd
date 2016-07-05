@@ -1,0 +1,121 @@
+---
+title: "Untitled"
+output: pdf_document
+knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), "../../results/MainResults.pdf")) })
+---
+
+# Intro 
+
+This script uses data compiled by *analyseData.R*.
+
+## Load libraries
+```{r}
+library(lme4)
+library(sjPlot)
+```
+
+```{r echo=F}
+try(setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment/analysis/R/"))
+```
+
+## Load data
+
+```{r}
+d = read.csv("../../data/FinalSignalData.csv")
+```
+
+
+# Descriptive stats
+
+The distribution of trial times is very skewed:
+
+```{r}
+hist(d$trialLength)
+```
+
+So we transform it using a log transform, then center the data.
+
+```{r}
+d$trialLength.log = log(d$trialLength)
+meanLogTrialLength = mean(d$trialLength.log)
+d$trialLength.log = d$trialLength.log - meanLogTrialLength 
+hist(d$trialLength.log)
+```
+
+Here's a graph showing the distribution of trial lengths by conditions:
+
+![The efficiency of trials in different conditions](../../results/graphs/Efficiency.pdf)
+
+# Mixed models
+
+Make a series of models with random effects for dyad, director and item.
+
+```{r}
+m0 = lmer(trialLength ~ 1 + 
+            (1|dyadNumber) + (1|playerId) + (1|itemId),
+          data=d)
+m1 = lmer(trialLength ~ 1 + modalityCondition + 
+            (1|dyadNumber) + (1|playerId) + (1|itemId),
+          data=d)
+m2 = lmer(trialLength ~ 1 + modalityCondition + condition + 
+            (1|dyadNumber) + (1|playerId) + (1|itemId),
+          data=d)
+m3 = lmer(trialLength ~ 1 + modalityCondition + condition + game +  
+            (1|dyadNumber) + (1|playerId) + (1|itemId),
+          data=d)
+m4 = lmer(trialLength ~ 1 + modalityCondition * condition + game + 
+            (1|dyadNumber) + (1|playerId) + (1|itemId),
+          data=d)
+m5 = lmer(trialLength ~ 1 + (modalityCondition * condition) + game + (game:condition) +
+            (1|dyadNumber) + (1|playerId) + (1|itemId),
+          data=d)
+m6 = lmer(trialLength ~ 1 + modalityCondition * condition * game + 
+            (1|dyadNumber) + (1|playerId),
+          data=d)
+```
+
+# Results
+
+Compare the fit of the models:
+
+```{r}
+anova(m0,m1,m2,m3,m4,m5,m6)
+
+finalModel = m6
+
+```
+
+## Plot the fixed effects
+
+Relabel the effects:
+
+```{r}
+feLabels = matrix(c(
+"(Intercept)"             ,"Intercept"      ,                          
+"modalityConditionvisual" ,"Visual modality",
+"modalityConditionvocal"  , "Acoustic modality",
+"conditionVisual" , "Visual stimuli",
+"game"             , "Game",
+"modalityConditionvisual:conditionVisual"  , "Visual modality:Visual stimuli",
+"modalityConditionvocal:conditionVisual" , "Acoustic modality:Visual stimuli",
+"modalityConditionvisual:game"    , "Visual modality:Game",
+"modalityConditionvocal:game"     , "Acoustic modality:Game",
+"conditionVisual:game"             , "Visual stimuli:Game",
+"modalityConditionvisual:conditionVisual:game", "Visual modality:Visual stimuli:game",
+"modalityConditionvocal:conditionVisual:game", "Acoustic modality:Visual stimuli:game"
+), ncol=2, byrow = T)
+
+feLabels2 = as.vector(feLabels[match(names(fixef(m6)),feLabels[,1]),2])
+
+```
+
+Plot the strength of the fixed effects:
+
+```{r}
+sjp.lmer(m6, 'fe', 
+         show.intercept = T,
+         sort.est=NULL,
+         axis.labels = feLabels2[2:12])
+```
+
+

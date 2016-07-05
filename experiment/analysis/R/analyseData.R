@@ -73,12 +73,27 @@ rownames(experDetails) = experDetails$dyad
 
 d$modalityCondition = experDetails[d$dyadNumber,]$condition
 
+d$playerId = paste(d$dyadNumber,d$signallingPlayer)
+
+d$itemId = paste(d$condition,d$target)
+
 # we don't have info on when the very last trial of each block ends, so assume it's the end of the trial
 d[d$game==3 & d$trial==15,]$startOfNextTrial = d[d$game==3 & d$trial==15,]$trialEnd
 
 # fix stuff
 
 d$turnType  = gsub("\\.","",d$turnType)
+
+checkForGaps = table(d$dyadNumber,d$game,d$trial)
+sum(checkForGaps==0)
+gaps = which(checkForGaps==0, arr.ind=T)
+for(i in 1:nrow(gaps)){
+  print(
+    c(sort(unique(d$dyadNumber))[gaps[i,1]],
+    "Game",sort(unique(d$game))[gaps[i,2]],
+    "Trial",sort(unique(d$trial))[gaps[i,3]])
+  )
+}
 
 # Exclude cases
 
