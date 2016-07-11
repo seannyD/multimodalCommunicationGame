@@ -1,4 +1,5 @@
 filename,dyadNumber,condition,game,trial,target,choice,correct,trialStart,trialEnd,trialValue,startOfNextTrial,signallingPlayer,role,turnNumber,turnType,turnStart,turnEnd,turnLength,modality,signalStart,signalEnd,signalLength,signalType
+D19_TT_Coded.eaf,D19,Visual,0,0,8,8,Correct,42730,63962,Ga0 Tu0 Ta8 {1 *8* 6} Ch8,63962,1,Director,1,"T1",54229,63026,8797,Visual,54229,63026,8797,"X"
 D19_TT_Coded.eaf,D19,Visual,0,0,8,8,Correct,63962,152711,Ga0 Tu0 Ta8 {1 *8* 6} Ch8,154557,1,Director,1,"T1",147040,152229,5189,Visual,147040,152229,5189,"X"
 D19_TT_Coded.eaf,D19,Visual,0,1,6,6,Correct,154557,168933,Ga0 Tu1 Ta6 {*6* 7 8} Ch6,169598,2,Director,1,"T1",156019,163812,7793,Visual,156019,163812,7793,"X"
 D19_TT_Coded.eaf,D19,Visual,0,2,5,5,Correct,169598,189503,Ga0 Tu2 Ta5 {7 *5* 6} Ch5,195747,1,Director,1,"T1",174610,185813,11203,Visual,174610,185813,11203,"X"

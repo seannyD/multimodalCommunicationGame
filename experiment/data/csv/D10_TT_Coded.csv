@@ -1,4 +1,5 @@
 filename,dyadNumber,condition,game,trial,target,choice,correct,trialStart,trialEnd,trialValue,startOfNextTrial,signallingPlayer,role,turnNumber,turnType,turnStart,turnEnd,turnLength,modality,signalStart,signalEnd,signalLength,signalType
+D10_TT_Coded.eaf,D10,Auditory,0,0,2,2,Correct,37629,85279,Ga0 Tu0 Ta2 {5 1 *2*} Ch2,95090,1,Director,1,"T1",51796,53634,1838,Acoustic,51796,53634,1838,"X"
 D10_TT_Coded.eaf,D10,Auditory,0,1,3,3,Correct,95090,120665,Ga0 Tu1 Ta3 {8 *3* 4} Ch3,123787,2,Director,1,"T1",107188,112229,5041,Acoustic,107188,112229,5041,"X"
 D10_TT_Coded.eaf,D10,Auditory,0,2,7,7,Correct,123787,146272,Ga0 Tu2 Ta7 {*7* 2 3} Ch7,148617,1,Director,1,"T1",129404,131229,1825,Acoustic,129404,131229,1825,"X"
 D10_TT_Coded.eaf,D10,Auditory,0,3,1,1,Correct,148617,175072,Ga0 Tu3 Ta1 {6 4 *1*} Ch1,178820,2,Director,1,"T1",162810,165215,2405,Acoustic,162810,165215,2405,"X"

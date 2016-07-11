@@ -4,6 +4,8 @@ d = read.csv("../../data/FinalSignalData.csv")
 
 d$game = d$game +1
 
+#d = d[d$correct,]
+
 plotmeans(trialLength~paste(modalityCondition,condition), 
           data=d[!duplicated(d$trialString),], 
           connect=list(1:2,3:4,5:6))

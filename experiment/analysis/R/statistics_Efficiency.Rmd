@@ -59,7 +59,7 @@ Make a series of models with random effects for dyad, director and item.
 
 ```{r}
 m0 = lmer(trialLength.log ~ 1 + 
-            (1|dyadNumber) + (1|playerId) + (1|itemId),
+            (1|dyadNumber) + (1|dyadNumber:playerId) + (1|itemId),
           data=d)
 m1 = lmer(trialLength.log ~ 1 + modalityCondition + 
             (1|dyadNumber) + (1|playerId) + (1|itemId),
@@ -77,7 +77,7 @@ m5 = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + game + (game:c
             (1|dyadNumber) + (1|playerId) + (1|itemId),
           data=d)
 m6 = lmer(trialLength.log ~ 1 + modalityCondition * condition * game + 
-            (1|dyadNumber) + (1|playerId),
+            (1|dyadNumber) + (1|playerId) + (1|itemId),
           data=d)
 ```
 
@@ -128,5 +128,8 @@ sjp.lmer(m6, 'fe',
          xlab="Trial time (ms)",
          geom.colors = c(1))
 ```
+
+
+
 
 

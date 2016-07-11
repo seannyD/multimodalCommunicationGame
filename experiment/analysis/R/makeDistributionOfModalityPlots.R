@@ -87,7 +87,7 @@ multhist(propAcousticSignals_AuditoryStim,propAcousticSignals_VisualStim,
          col=c(2,3),
          dir=c(1,-1), 
          main="T1",
-         legends = c("Acoustic","Visual"),
+         legends = c("Auditory","Visual"),
          xlab="Proportion of Acoustic signals",
          ylab="Number of trials")
 dev.off()
@@ -106,7 +106,7 @@ multhist(propAcousticSignals_AuditoryStim_director,
          col=c(2,3),
          dir=c(1,-1), 
          main="Director Turns",
-         legends = c("Acoustic","Visual"),
+         legends = c("Auditory","Visual"),
          xlab="Proportion of Acoustic signals",
          ylab="Number of trials")
 dev.off()
@@ -127,7 +127,7 @@ multhist(propAcousticSignals_AuditoryStimT2,propAcousticSignals_VisualStimT2,
          col=c(1,2),
          dir=c(1,-1),
          main='T2',
-         legends = c("Acoustic","Visual"),
+         legends = c("Auditory","Visual"),
          xlab="Proportion of Acoustic signals",
          ylab="Number of trials")
 dev.off()
@@ -151,7 +151,7 @@ multhist(propAcousticSignals_AuditoryStimT3,propAcousticSignals_VisualStimT3,
          col=c(1,2),
          dir=c(1,-1),
          main='T3',
-         legends = c("Acoustic","Visual"),
+         legends = c("Auditory","Visual"),
          xlab="Proportion of Acoustic signals",
          ylab="Number of trials")
 dev.off()

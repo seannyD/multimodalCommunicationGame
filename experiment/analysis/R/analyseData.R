@@ -84,6 +84,13 @@ d[d$game==3 & d$trial==15,]$startOfNextTrial = d[d$game==3 & d$trial==15,]$trial
 
 d$turnType  = gsub("\\.","",d$turnType)
 
+# Exclude cases
+
+# Remove first turn by matcher
+d = d[d$turnType!='T0',]
+
+# Check for gaps
+
 checkForGaps = table(d$dyadNumber,d$game,d$trial)
 sum(checkForGaps==0)
 gaps = which(checkForGaps==0, arr.ind=T)
@@ -97,10 +104,6 @@ if(nrow(gaps)>0){
   }
 }
 
-# Exclude cases
-
-# Remove first turn by matcher
-d = d[d$turnType!='T0',]
 
 ##############################
 # Are there any turns that belong to two trials?
