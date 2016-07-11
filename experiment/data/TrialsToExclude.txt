@@ -1,47 +1,10 @@
-D19
-Visual stimuli
-Ga0 Tu11
-Discard
-
-
-D18
-Auditory stimuli
-G0 Tu11
-Discard
-
-Visual stimuli
-Ga0 Tu6
-Discard
-
-
-D16
-Auditory stimuli
-Ga0 Tu1 + Tu2
-Discard
-
-
-D12
-Auditory stimuli
-Ga0 Tu8
-Discard
-
-
-D9
-Visual stimuli
-Ga1 Tu15
-Discard
-
-
-D8
-Auditory stimuli
-Ga0 Tu5
-Discard
-
-Auditory stimuli
-Ga2 Tu13
-Discard
-
-
-D4
-Visual stimuli
-16:30
+dyad	condition	game	trial
+D19	Visual	0	11
+D18	Auditory	0	11
+D18	Visual	0	6
+D16	Auditory	0	1
+D16	Auditory	0	2
+D12	Auditory	0	8
+D9	Visual	1	15
+D8	Auditory	0	5
+D8	Auditory	2	13

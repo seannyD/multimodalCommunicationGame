@@ -86,6 +86,15 @@ d$turnType  = gsub("\\.","",d$turnType)
 
 # Exclude cases
 
+ex = read.table("../../data/TrialsToExclude.txt", stringsAsFactors = F, header=T)
+for(i in 1:nrow(ex)){
+  d = d[!(d$game==ex[i,]$game & 
+          d$dyadNumber==ex[i,]$dyad & 
+          d$condition==ex[i,]$condition &
+          d$trial==ex[i,]$trial),]
+}
+
+
 # Remove first turn by matcher
 d = d[d$turnType!='T0',]
 
