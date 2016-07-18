@@ -247,7 +247,10 @@ feLabels = matrix(c(
 "modalityConditionvocal:incorrectTRUE","Acoustic modality:Incorrect",
 "modalityConditionvisual:I(trialTotal^2)", "Visual modality:Game^2",
 "modalityConditionvocal:I(trialTotal^2)", "Acoustic modality:Game^2",
-"I(trialTotal^2)","Game^2"
+"I(trialTotal^2)","Game^2",
+"firstBlockVisual","Visual stims first",
+"modalityConditionvisual:firstBlockVisual","Visual modality:Visual stim first",
+"modalityConditionvocal:firstBlockVisual","Acoustic modality:Visual stim first"
 ), ncol=2, byrow = T)
 
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
