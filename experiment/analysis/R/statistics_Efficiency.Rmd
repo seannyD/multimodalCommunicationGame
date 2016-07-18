@@ -136,6 +136,13 @@ conXgame = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + trialTot
             (1 + modalityCondition|itemId),
           data=d)
 # Add interaction between modality and trial
+modXgame = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + trialTotal + 
+            (trialTotal:condition) + (modalityCondition:game) +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+
+# Add 3-way interaction
 moXcoXga = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
@@ -195,7 +202,7 @@ blocXmod = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal
 Compare the fit of the models:
 
 ```{r anova}
-anova(m0,modality,cond,game,modXcond,conXgame,
+anova(m0,modality,cond,game,modXcond,conXgame, modXgame,
       moXcoXga,incor,moXincor,gamQuad,modXgamQ,
       block, blocXmod)
 ```
@@ -250,7 +257,9 @@ feLabels = matrix(c(
 "I(trialTotal^2)","Game^2",
 "firstBlockVisual","Visual stims first",
 "modalityConditionvisual:firstBlockVisual","Visual modality:Visual stim first",
-"modalityConditionvocal:firstBlockVisual","Acoustic modality:Visual stim first"
+"modalityConditionvocal:firstBlockVisual","Acoustic modality:Visual stim first",
+"modalityConditionvisual:trialTotal","Visual modality:Game",
+"modalityConditionvocal:trialTotal","Acoustic modality:Game"
 ), ncol=2, byrow = T)
 
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
