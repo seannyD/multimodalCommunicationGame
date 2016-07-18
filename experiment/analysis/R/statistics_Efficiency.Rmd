@@ -10,9 +10,12 @@ This script uses data compiled by *analyseData.R*.
 
 ## Load libraries
 
-```{r warning=F}
+```{r warning=FALSE, message=FALSE}
 library(lme4)
 library(sjPlot)
+library(ggplot2)
+library(lattice)
+library(influence.ME)
 ```
 
 ```{r echo=F}
@@ -25,6 +28,7 @@ try(setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experi
 d = read.csv("../../data/FinalSignalData.csv")
 ```
 
+
 We don't need info on every signal in each turn, just the trial time.  Keep only 1st signal in each trial.
 
 ```{r}
@@ -33,6 +37,10 @@ d = d[!duplicated(d$trialString),]
 
 
 # Descriptive stats
+
+Here is a graph showing the distribution of trial lengths by conditions:
+
+![The efficiency of trials in different conditions](../../results/graphs/Efficiency.pdf)
 
 The distribution of trial times is very skewed:
 
@@ -49,36 +57,135 @@ d$trialLength.log = d$trialLength.log - meanLogTrialLength
 hist(d$trialLength.log)
 ```
 
-Here's a graph showing the distribution of trial lengths by conditions:
+Make a variable to represent proportion of games played:
 
-![The efficiency of trials in different conditions](../../results/graphs/Efficiency.pdf)
+```{r}
+# Make a variable that represents the number of trials played
+d$trialTotal = d$trial + (d$game * (max(d$trial)+1))
+# Convert to proportion of games played, so that estimates reflect change per game.
+d$trialTotal = d$trialTotal / 16
+# Center the trialTotal variable so intercept reflects after the first game
+d$trialTotal = d$trialTotal - 1
+
+```
+
+Make a variable for which stimuli the players experienced first.
+
+```{r}
+firstBlock = tapply(as.character(d$condition),d$dyadNumber,head,n=1)
+d$firstBlock = as.factor(firstBlock[match(d$dyadNumber,names(firstBlock))])
+```
+
+
+Reorder some levels so that the intercept reflects the most frequent condition.
+
+```{r}
+
+d$incorrect = !d$correct
+
+```
+
+
+
+\newpage
 
 # Mixed models
 
-Make a series of models with random effects for dyad, director and item.
+Make a series of models with random effects for dyad, director (nested within dyad) and item.
 
-```{r}
+Not all random slopes are appropriate.  For example, items are used in only one stimulus condition, so a random slope for condition by item is not appropriate.  Similarly, each dyad only plays in one modality condition.
+
+It's reasonable to have a random slope for trial by dyad, but this caused unreliable model convergence, so is not included.
+
+The final random slopes were for condition and incorrectness by dyad/player, and modality condition by item.
+
+```{r models, cache=TRUE}
+# No fixed effects
 m0 = lmer(trialLength.log ~ 1 + 
-            (1|dyadNumber) + (1|dyadNumber:playerId) + (1|itemId),
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
           data=d)
-m1 = lmer(trialLength.log ~ 1 + modalityCondition + 
-            (1|dyadNumber) + (1|playerId) + (1|itemId),
+# Add modality condition
+modality = lmer(trialLength.log ~ 1 + modalityCondition + 
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
           data=d)
-m2 = lmer(trialLength.log ~ 1 + modalityCondition + condition + 
-            (1|dyadNumber) + (1|playerId) + (1|itemId),
+# Add stimulus condition
+cond = lmer(trialLength.log ~ 1 + modalityCondition + condition + 
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
           data=d)
-m3 = lmer(trialLength.log ~ 1 + modalityCondition + condition + game +  
-            (1|dyadNumber) + (1|playerId) + (1|itemId),
+# Add trial total
+game = lmer(trialLength.log ~ 1 + modalityCondition + condition + trialTotal +  
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
           data=d)
-m4 = lmer(trialLength.log ~ 1 + modalityCondition * condition + game + 
-            (1|dyadNumber) + (1|playerId) + (1|itemId),
+```
+
+
+```{r models2, cache=TRUE}
+# Add interaction between condition and stimulus condition
+modXcond = lmer(trialLength.log ~ 1 + modalityCondition * condition + trialTotal + 
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
           data=d)
-m5 = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + game + (game:condition) +
-            (1|dyadNumber) + (1|playerId) + (1|itemId),
+# Add interaction between condition and trial
+conXgame = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + trialTotal + 
+            (trialTotal:condition) +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
           data=d)
-m6 = lmer(trialLength.log ~ 1 + modalityCondition * condition * game + 
-            (1|dyadNumber) + (1|playerId) + (1|itemId),
+# Add interaction between modality and trial
+moXcoXga = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
           data=d)
+# Add whether the response was incorrect
+incor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            incorrect +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+# Add the interaction between modality and incorrectness
+moXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            incorrect + (modalityCondition:incorrect) +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+# Add the quadratic effect of trial
+gamQuad = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            I(trialTotal^2) +
+            incorrect + (modalityCondition:incorrect) +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+# Add interaction between quadratic effect of trial and modality
+modXgamQ = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            I(trialTotal^2) +
+            incorrect + (modalityCondition:incorrect) +
+            (modalityCondition:I(trialTotal^2)) +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+# Add block order
+block = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            I(trialTotal^2) +
+            incorrect + (modalityCondition:incorrect) +
+            (modalityCondition:I(trialTotal^2)) +
+            firstBlock +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+# Add interaction between block order and modality
+blocXmod = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            I(trialTotal^2) +
+            incorrect + (modalityCondition:incorrect) +
+            (modalityCondition:I(trialTotal^2)) +
+            firstBlock * modalityCondition +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+
 ```
 
 \newpage
@@ -87,12 +194,35 @@ m6 = lmer(trialLength.log ~ 1 + modalityCondition * condition * game +
 
 Compare the fit of the models:
 
-```{r}
-anova(m0,m1,m2,m3,m4,m5,m6)
-
-finalModel = m6
-
+```{r anova}
+anova(m0,modality,cond,game,modXcond,conXgame,
+      moXcoXga,incor,moXincor,gamQuad,modXgamQ,
+      block, blocXmod)
 ```
+
+Pick final model for estimates:
+
+```{r}
+finalModel = blocXmod
+```
+
+Check model predictions.  The model predictions are in the right range and direction, fitting linear quite well:
+
+```{r}
+plot(predict(blocXmod),d$trialLength.log, pch=16, col=rgb(0,0,0,0.4),
+     ylim=c(-1.5,2),xlim=c(-1.5,2))
+abline(a=0,b=1, col=2, lwd=2)
+abline(h=0, col=2)
+abline(v=0, col=2)
+```
+
+The residuals are ok, though it tends to do worse at higher values.  This is expected from using the log scale.
+
+```{r}
+qqnorm(resid(blocXmod))
+qqline(resid(blocXmod))
+```
+
 
 ## Plot the fixed effects
 
@@ -104,30 +234,67 @@ feLabels = matrix(c(
 "modalityConditionvisual" ,"Visual modality",
 "modalityConditionvocal"  , "Acoustic modality",
 "conditionVisual" , "Visual stimuli",
-"game"             , "Game",
+"trialTotal"             , "Game",
 "modalityConditionvisual:conditionVisual"  , "Visual modality:Visual stimuli",
 "modalityConditionvocal:conditionVisual" , "Acoustic modality:Visual stimuli",
-"modalityConditionvisual:game"    , "Visual modality:Game",
-"modalityConditionvocal:game"     , "Acoustic modality:Game",
-"conditionVisual:game"             , "Visual stimuli:Game",
-"modalityConditionvisual:conditionVisual:game", "Visual modality:Visual stimuli:game",
-"modalityConditionvocal:conditionVisual:game", "Acoustic modality:Visual stimuli:game"
+"modalityConditionvisual:trialTotal"    , "Visual modality:Game",
+"modalityConditionvocal:trialTotal"     , "Acoustic modality:Game",
+"conditionVisual:trialTotal"             , "Visual stimuli:Game",
+"modalityConditionvisual:conditionVisual:trialTotal", "Visual modality:Visual stimuli:Game",
+"modalityConditionvocal:conditionVisual:trialTotal", "Acoustic modality:Visual stimuli:Game",
+"incorrectTRUE","Inorrect",
+"modalityConditionvisual:incorrectTRUE","Visual modality:Incorrect",
+"modalityConditionvocal:incorrectTRUE","Acoustic modality:Incorrect",
+"modalityConditionvisual:I(trialTotal^2)", "Visual modality:Game^2",
+"modalityConditionvocal:I(trialTotal^2)", "Acoustic modality:Game^2",
+"I(trialTotal^2)","Game^2"
 ), ncol=2, byrow = T)
 
-feLabels2 = as.vector(feLabels[match(names(fixef(m6)),feLabels[,1]),2])
+feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
 
 ```
 
 Plot the strength of the fixed effects:
 
 ```{r}
-sjp.lmer(m6, 'fe', 
+x = sjp.lmer(finalModel, 'fe', 
          show.intercept = T,
          sort.est=NULL,
-         axis.labels = feLabels2[2:12],
+         axis.labels = feLabels2[2:length(feLabels2)],
          xlab="Trial time (ms)",
-         geom.colors = c(1))
+         geom.colors = c(1,1),
+         show.p=F,
+         show.values = F,
+         string.interc="Intercept")
 ```
+
+Attempt plot with axes in milliseconds.
+
+```{r}
+convertEst = function(X){
+  exp(meanLogTrialLength+X) - exp(meanLogTrialLength)
+}
+
+x$plot.list[[1]]$data$estimate =convertEst(x$plot.list[[1]]$data$estimate)
+x$plot.list[[1]]$data$conf.low = convertEst(x$plot.list[[1]]$data$conf.low)
+x$plot.list[[1]]$data$conf.high =  convertEst(x$plot.list[[1]]$data$conf.high)
+
+x$plot.list[[1]] + 
+  scale_y_continuous(limits=c(-5000,10000), name="Difference (ms)") +
+  scale_x_discrete(labels=feLabels2)
+
+```
+
+\newpage
+
+## Random effects
+
+There is a reasonable amount of variaition in the random effects, suggesting that dyads and players differ.  This justifies the use of mixed effects modelling.
+
+```{r}
+dotplot(ranef(finalModel))
+```
+
 
 
 

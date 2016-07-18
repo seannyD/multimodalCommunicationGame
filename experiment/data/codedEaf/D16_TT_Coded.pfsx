@@ -50,14 +50,14 @@
         <pref key="Acoustic 1">
             <Object class="java.awt.Color">0,90,0</Object>
         </pref>
-        <pref key="Acoustic 2">
-            <Object class="java.awt.Color">0,160,160</Object>
+        <pref key="Part 2">
+            <Object class="java.awt.Color">160,160,90</Object>
         </pref>
         <pref key="Visual 1">
             <Object class="java.awt.Color">160,0,160</Object>
         </pref>
-        <pref key="Part 2">
-            <Object class="java.awt.Color">160,160,90</Object>
+        <pref key="Acoustic 2">
+            <Object class="java.awt.Color">0,160,160</Object>
         </pref>
         <pref key="synch">
             <Object class="java.awt.Color">0,90,160</Object>
@@ -74,16 +74,16 @@
         <String>Recipient</String>
     </prefList>
     <pref key="FrameLocation">
-        <Object class="java.awt.Point">233,236</Object>
+        <Object class="java.awt.Point">0,23</Object>
     </pref>
     <pref key="SelectionBeginTime">
-        <Long>0</Long>
+        <Long>207317</Long>
     </pref>
     <pref key="LayoutManager.CurrentMode">
         <Int>1</Int>
     </pref>
     <pref key="MediaTime">
-        <Long>0</Long>
+        <Long>207317</Long>
     </pref>
     <pref key="FrameSize">
         <Object class="java.awt.Dimension">1920,1042</Object>
@@ -132,9 +132,9 @@
         <String>AAM-LR Phone level audio segmentation</String>
     </pref>
     <pref key="TimeScaleBeginTime">
-        <Long>1600</Long>
+        <Long>126480</Long>
     </pref>
     <pref key="SelectionEndTime">
-        <Long>0</Long>
+        <Long>223244</Long>
     </pref>
 </preferences>
