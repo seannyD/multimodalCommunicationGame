@@ -159,17 +159,32 @@ moXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d)
+# Add the interaction between condition and incorrectness
+coXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            incorrect + (modalityCondition:incorrect) +
+              (condition:incorrect) +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+# Add the three-way interaction between condition, modality and incorrectness
+coXmoXin = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            (incorrect*condition*modalityCondition)+
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+
+
 # Add the quadratic effect of trial
 gamQuad = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
-            incorrect + (modalityCondition:incorrect) +
+            (incorrect*condition*modalityCondition)+
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d)
 # Add interaction between quadratic effect of trial and modality
 modXgamQ = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
-            incorrect + (modalityCondition:incorrect) +
+            (incorrect*condition*modalityCondition)+
             (modalityCondition:I(trialTotal^2)) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
@@ -177,7 +192,7 @@ modXgamQ = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal
 # Add block order
 block = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
-            incorrect + (modalityCondition:incorrect) +
+            (incorrect*condition*modalityCondition)+
             (modalityCondition:I(trialTotal^2)) +
             firstBlock +
             (1 + condition + incorrect |dyadNumber/playerId) + 
@@ -186,7 +201,7 @@ block = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
 # Add interaction between block order and modality
 blocXmod = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
-            incorrect + (modalityCondition:incorrect) +
+            (incorrect*condition*modalityCondition)+
             (modalityCondition:I(trialTotal^2)) +
             firstBlock * modalityCondition +
             (1 + condition + incorrect |dyadNumber/playerId) + 
@@ -203,8 +218,8 @@ Compare the fit of the models:
 
 ```{r anova}
 anova(m0,modality,cond,game,modXcond,conXgame, modXgame,
-      moXcoXga,incor,moXincor,gamQuad,modXgamQ,
-      block, blocXmod)
+      moXcoXga,incor,moXincor,coXincor,coXmoXin,
+      gamQuad,modXgamQ,block, blocXmod)
 ```
 
 Pick final model for estimates:
@@ -259,7 +274,10 @@ feLabels = matrix(c(
 "modalityConditionvisual:firstBlockVisual","Visual modality:Visual stim first",
 "modalityConditionvocal:firstBlockVisual","Acoustic modality:Visual stim first",
 "modalityConditionvisual:trialTotal","Visual modality:Game",
-"modalityConditionvocal:trialTotal","Acoustic modality:Game"
+"modalityConditionvocal:trialTotal","Acoustic modality:Game",
+"conditionVisual:incorrectTRUE","Visual stimuli:incorrect",
+"modalityConditionvisual:conditionVisual:incorrectTRUE","Visual modality:Visual stimuli:incorrect",
+"modalityConditionvocal:conditionVisual:incorrectTRUE","Acoustic modality:Visual stimuli:incorrect"
 ), ncol=2, byrow = T)
 
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
