@@ -1,6 +1,8 @@
+# This file creates mirrored histograms, and also the data file "../../data/Final_Multimodal_data.csv"
+
 library(gplots)
 setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment/analysis/R/")
-d = read.csv("../../data/FinalSignalData.csv")
+d = read.csv("../../data/FinalSignalData.csv", stringsAsFactors = F)
 
 # load function to make mirrored plots
 source("multiHist.R")
@@ -38,9 +40,10 @@ getPropTimeAcoustic = function(acousticSel,visualSel){
   acousticTime[is.na(acousticTime)] = 0
   
   propAcousticSignals = acousticTime / (acousticTime+visualTime)
+  propAcousticSignals[is.nan(propAcousticSignals)] = NA
   names(propAcousticSignals) = allTrials
   
-  propAcousticSignals = propAcousticSignals[!is.na(propAcousticSignals)]
+ #propAcousticSignals = propAcousticSignals[!is.na(propAcousticSignals)]
   
   #x = hist(propAcousticSignals, plot = F)
   #x$counts = x$counts/length(unique(d[d$modalityCondition=="multi",]$trialString))
@@ -60,6 +63,12 @@ getPropTimeAcoustic = function(acousticSel,visualSel){
               ))
 }
 
+############
+
+
+mx = d[d$modalityCondition=='multi',]
+mx = mx[!duplicated(mx$trialString),]
+
 # which cases are T1s with acoustic/visual signals?
 acousticT1s = d$modalityCondition=="multi" & d$turnType=='T1' & d$modality=="Acoustic"
 visualT1s = d$modalityCondition=="multi" & d$turnType=='T1' & d$modality=="Visual"
@@ -71,6 +80,11 @@ dyads_propAcousticSignals_A= x[[3]]
 games_propAcousticSignals_A= x[[4]]
 dyads_propAcousticSignals_V= x[[5]]
 games_propAcousticSignals_V= x[[6]]
+
+mx$T1.propAc = c(propAcousticSignals_AuditoryStim,
+                 propAcousticSignals_VisualStim
+                 )[mx$trialString]
+
 
 # Plot histograms
 cols= c(rgb(0,1,0,0.5),rgb(1,0,0,0.5))
@@ -120,6 +134,10 @@ x = getPropTimeAcoustic(acousticT2s,visualT2s)
 propAcousticSignals_AuditoryStimT2 = x[[1]]
 propAcousticSignals_VisualStimT2 = x[[2]]
 
+mx$T2.propAc = c(propAcousticSignals_AuditoryStimT2,
+                 propAcousticSignals_VisualStimT2
+                )[mx$trialString]
+
 # Mirrored histogram
 pdf("../../results/graphs/PropModality/PropModality_T2.pdf")
 multhist(propAcousticSignals_AuditoryStimT2,propAcousticSignals_VisualStimT2,
@@ -144,6 +162,10 @@ x = getPropTimeAcoustic(acousticT3s,visualT3s)
 propAcousticSignals_AuditoryStimT3 = x[[1]]
 propAcousticSignals_VisualStimT3 = x[[2]]
 
+mx$T3Plus.propAc = c(propAcousticSignals_AuditoryStimT3,
+                 propAcousticSignals_VisualStimT3
+                )[mx$trialString]
+
 # Mirrored histogram
 pdf("../../results/graphs/PropModality/PropModality_Director_postT1.pdf")
 multhist(propAcousticSignals_AuditoryStimT3,propAcousticSignals_VisualStimT3,
@@ -156,6 +178,78 @@ multhist(propAcousticSignals_AuditoryStimT3,propAcousticSignals_VisualStimT3,
          ylab="Number of trials")
 dev.off()
 
+# T4 and beyond for Matcher
+acousticT4s = d$modalityCondition=="multi" & 
+  d$turnType!='T2' & d$role=="Director" &
+  d$modality=="Acoustic"
+visualT4s = d$modalityCondition=="multi" &
+  d$turnType!='T2' & d$role=="Director" &
+  d$modality=="Visual"
+
+x = getPropTimeAcoustic(acousticT4s,visualT4s)
+propAcousticSignals_AuditoryStimT4 = x[[1]]
+propAcousticSignals_VisualStimT4 = x[[2]]
+
+mx$T4Plus.propAc = c(propAcousticSignals_AuditoryStimT4,
+                 propAcousticSignals_VisualStimT4
+                )[mx$trialString]
+
+
+# All director turns
+acousticD = d$modalityCondition=="multi" & 
+  d$role=="Director" &
+  d$modality=="Acoustic"
+visualD = d$modalityCondition=="multi" &
+  d$role=="Director" &
+  d$modality=="Visual"
+
+x = getPropTimeAcoustic(acousticD,visualD)
+propAcousticSignals_AuditoryStimD = x[[1]]
+propAcousticSignals_VisualStimD = x[[2]]
+
+mx$Director.propAc = c(propAcousticSignals_AuditoryStimD,
+                     propAcousticSignals_VisualStimD
+                    )[mx$trialString]
+
+# All matcher turns
+acousticM = d$modalityCondition=="multi" & 
+  d$role!="Director" &
+  d$modality=="Acoustic"
+visualM = d$modalityCondition=="multi" &
+  d$role!="Director" &
+  d$modality=="Visual"
+
+x = getPropTimeAcoustic(acousticM,visualM)
+propAcousticSignals_AuditoryStimM = x[[1]]
+propAcousticSignals_VisualStimM = x[[2]]
+
+mx$Matcher.propAc = c(propAcousticSignals_AuditoryStimM,
+                       propAcousticSignals_VisualStimM
+                      )[mx$trialString]
+
+
+### How many turns have multimodal utts?
+getMultimodalUttsPerTurn <- function(turnSel){
+  dx = d[turnSel,]
+  # if there's only one signal, or only one modality used
+  if(nrow(dx)==1 | length(unique(dx$modality))==1){
+    return(list(mutli=0, total=nrow(dx)))
+  }
+  
+  
+  
+}
+
+
+for(turn in unique(d$turnString)){
+  turnSel = d$modalityCondition=='multi' & d$turnString==turn
+}
+
+
+
+write.csv(mx,"../../data/Final_Multimodal_Trial_data.csv", row.names = F)
+
+###############
 library(lattice)
 xyplot(trialLength/1000~game | dyadNumber+condition, 
        data=d[d$modalityCondition=="multi",], 

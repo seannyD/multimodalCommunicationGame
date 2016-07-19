@@ -3,7 +3,9 @@
 multhist <- function(..., bin.width, col, dir, xlab = NULL, ylab = NULL,
                      main = NULL, legends=NULL) {
   
+  
   vals <- list(...)
+  vals = lapply(vals,function(X){X[!is.na(X)]})
   vrng <- range(vals)
   
   brks <- seq(vrng[1] - abs(vrng[1]*0.1), 

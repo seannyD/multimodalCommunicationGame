@@ -1,0 +1,104 @@
+---
+title: "Analysis of multimodal condition"
+output: pdf_document
+---
+
+This script uses data compiled by *analyseData.R*.
+
+## Load libraries
+
+```{r warning=FALSE, message=FALSE}
+library(lme4)
+library(sjPlot)
+library(ggplot2)
+library(lattice)
+library(influence.ME)
+```
+
+```{r echo=F}
+try(setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment/analysis/R/"))
+```
+
+## Load data
+
+```{r}
+d = read.csv("../../data/Final_Turn_data.csv", stringsAsFactors = F)
+d = d[d$modalityCondition == "multi",]
+```
+
+# Analysis
+
+```{r}
+
+d2 = d[!duplicated(d$trialString),]
+
+x = tapply(d[d$turnType=="T1",]$turnModalityType, d[d$turnType=="T1",]$trialString,head,n=1)
+d2$turnModality.T1 = x[d2$trialString]
+
+
+d2 = d2[!is.na(d2$turnModality.T1),]
+
+d2$turnModality.T1 = relevel(factor(as.character(d2$turnModality.T1)),"unimodal visual")
+
+
+x = tapply(d[d$turnType=="T2",]$turnModalityType, d[d$turnType=="T2",]$trialString,head,n=1)
+d2$turnModality.T2 = x[d2$trialString]
+
+d2$turnModality.T2[is.na(d2$turnModality.T2)] = "none"
+
+d2$turnModality.T2 = relevel(factor(d2$turnModality.T2),'none')
+
+d2$condition= relevel(factor(d2$condition),"Visual")
+
+
+d2$trialTotal = d2$trial + (d2$game * (max(d2$trial)+1))
+# Convert to proportion of games played, so that estimates reflect change per game.
+d2$trialTotal = d2$trialTotal / 16
+# Center the trialTotal variable so intercept reflects after the first game
+d2$trialTotal = d2$trialTotal - 1
+
+d2$incorrect = !d2$correct
+
+
+d2$trialLength.logcenter = log(d2$trialLength)
+d2$trialLength.logcenter = d2$trialLength.logcenter - mean(d2$trialLength.logcenter)
+```
+
+
+
+```{r}
+
+m0 = glmer(turnModality.T2 == "multi" ~
+            (turnModality.T1=='multi')*condition +
+            (1 | dyadNumber)+
+            (1 | itemId),
+          data= d2[!d2$turnModality.T2 %in% c("none","unimodal mixed"),], family = binomial)
+summary(m0)
+
+m0 = lmer(trialLength.logcenter ~ 
+         turnModality.T1 * condition *
+              incorrect +
+             trialTotal + 
+            I(trialTotal^2) +
+            (1 | dyadNumber)+
+            (1 | itemId),
+          data= d2)
+summary(m0)
+
+mx = glmer(correct ~ 
+         turnModality.T1 + turnModality.T2 +
+           condition +
+             trialTotal + 
+            I(trialTotal^2) +
+            (1 | dyadNumber)+
+            (1 | itemId),
+          data= d2[!d2$turnModality.T2 %in% c("unimodal mixed"),], family  = binomial)
+
+
+```
+
+
+```{r}
+sjp.lmer(mx,'fe', show.ci=T)
+```
+
