@@ -37,7 +37,7 @@ turnD = data.frame()
 
 # For each trial
 for(turn in unique(d$turnString)){
-    turnData = d[trialData$turnString == turn,]
+    turnData = d[d$turnString == turn,]
     
     numModalitiesUsed = length(unique(turnData$modality))
     useVisual = "Visual" %in% turnData$modality
