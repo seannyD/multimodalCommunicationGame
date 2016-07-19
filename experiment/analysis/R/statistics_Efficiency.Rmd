@@ -101,7 +101,7 @@ The final random slopes were for condition and incorrectness by dyad/player, and
 
 ```{r models, cache=TRUE}
 # No fixed effects
-m0 = lmer(trialLength.log ~ 1 + 
+m0 =  lmer(trialLength.log ~ 1 + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d)
@@ -125,7 +125,7 @@ game = lmer(trialLength.log ~ 1 + modalityCondition + condition + trialTotal +
 
 ```{r models2, cache=TRUE}
 # Add interaction between condition and stimulus condition
-modXcond = lmer(trialLength.log ~ 1 + modalityCondition * condition + trialTotal + 
+modXcond =  lmer(trialLength.log ~ 1 + modalityCondition * condition + trialTotal + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d)
