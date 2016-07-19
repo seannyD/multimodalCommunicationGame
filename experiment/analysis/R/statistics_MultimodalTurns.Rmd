@@ -99,6 +99,6 @@ mx = glmer(correct ~
 
 
 ```{r}
-sjp.lmer(mx,'fe', show.ci=T) 
+sjp.lmer(mx,'fe', show.ci=T)  
 ```
 
