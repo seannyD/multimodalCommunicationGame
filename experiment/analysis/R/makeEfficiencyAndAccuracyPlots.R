@@ -84,9 +84,9 @@ par(mfrow=c(1,2))
 for(stimType in unique(d2$condition)){
   
   dx = d2[d2$modalityCondition=='multi' 
-          & !duplicated(d2$trialString) 
           & d2$condition==stimType
           & d2$turnType=="T1",]
+  dx = dx[!duplicated(dx$trialString), ]
   
   plotmeans(trialLength/1000~game,
             data = dx[dx$turnModalityType=="multi",],
