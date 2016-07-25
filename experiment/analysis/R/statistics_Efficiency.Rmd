@@ -231,6 +231,7 @@ modXgamQ = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal
 # Add block order
 block = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
+            numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
             (modalityCondition:I(trialTotal^2)) +
             firstBlock +

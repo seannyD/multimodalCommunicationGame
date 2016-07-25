@@ -121,5 +121,5 @@ for(stimType in unique(d2$condition)){
  
   title(main=paste(stimType,"stimuli"))
 }
-legend(2,20, legend=c("Multi","Visual","Acoustic"), col=2, lty=1:3,pch=c(1,2,4))
+legend(2,20, legend=c("Multi","Acoustic","Visual"), col=2, lty=1:3,pch=c(1,2,4))
 dev.off()
