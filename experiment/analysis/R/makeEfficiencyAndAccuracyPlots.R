@@ -41,7 +41,8 @@ for(stimType in unique(d$condition)){
 dev.off()
 
 
-
+############
+# Accuracy
 
 pdf("../../results/graphs/Accuracy.pdf", width=10, height=6)
 par(mfrow=c(1,2))
@@ -70,4 +71,55 @@ for(stimType in unique(d$condition)){
   }
   title(main=stimType)
 }
+dev.off()
+
+
+###########
+#
+
+d2 = read.csv("../../data/Final_Turn_data.csv", stringsAsFactors = F)
+
+pdf("../../results/graphs/Efficiency_MultimodalCondition.pdf", width=10, height=6)
+par(mfrow=c(1,2))
+for(stimType in unique(d2$condition)){
+  
+  dx = d2[d2$modalityCondition=='multi' 
+          & !duplicated(d2$trialString) 
+          & d2$condition==stimType
+          & d2$turnType=="T1",]
+  
+  plotmeans(trialLength/1000~game,
+            data = dx[dx$turnModalityType=="multi",],
+            col=2,barcol = 1,n.label = F,
+            lty=1,
+            ylim=c(0,20),
+            xlab="Game",
+            ylab="Trial length (s)", las=1)
+  if(sum(dx$turnModalityType=="unimodal acoustic")>0){
+  plotmeans(trialLength/1000~game,
+            data = dx[dx$turnModalityType=="unimodal acoustic",],
+            col=2,barcol = 1,n.label = F,
+            lty=2,
+            pch=2,
+            add = T,
+            ylim=c(0,20),
+            xlab="",
+            ylab="", las=1)
+  }
+  
+  if(sum(dx$turnModalityType=="unimodal visual")>0){
+  plotmeans(trialLength/1000~game,
+            data = dx[dx$turnModalityType=="unimodal visual",],
+            col=2,barcol = 1,n.label = F,
+            lty=3,
+            pch=4,
+            add = T,
+            ylim=c(0,20),
+            xlab="",
+            ylab="", las=1)
+  }
+ 
+  title(main=paste(stimType,"stimuli"))
+}
+legend(2,20, legend=c("Multi","Visual","Acoustic"), col=2, lty=1:3,pch=c(1,2,4))
 dev.off()
