@@ -28,6 +28,13 @@ try(setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experi
 d = read.csv("../../data/FinalSignalData.csv")
 ```
 
+Work out number of turns in each trial.
+
+```{r}
+# Number of turns in each trial
+numTurns = tapply(d$trialString, d$trialString, length)
+d$numberOfTurns = numTurns[d$trialString]
+```
 
 We don't need info on every signal in each turn, just the trial time.  Keep only 1st signal in each trial.
 
@@ -147,27 +154,57 @@ moXcoXga = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d)
+
+# Add number of turns
+nTurns = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+                numberOfTurns +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+# interaction between turns and modality
+nTurnXmo = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+                numberOfTurns*modalityCondition +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+
+nTurnXco = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+                numberOfTurns*modalityCondition+ numberOfTurns:condition +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+
+tuXmoXco = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+                numberOfTurns*modalityCondition*condition +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d)
+
 # Add whether the response was incorrect
 incor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            numberOfTurns*modalityCondition*condition +
             incorrect +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d)
 # Add the interaction between modality and incorrectness
 moXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            numberOfTurns*modalityCondition*condition +
             incorrect + (modalityCondition:incorrect) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d)
 # Add the interaction between condition and incorrectness
 coXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+            numberOfTurns*modalityCondition*condition +
             incorrect + (modalityCondition:incorrect) +
               (condition:incorrect) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d)
 # Add the three-way interaction between condition, modality and incorrectness
-coXmoXin = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+coXmoXin = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
+            numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
@@ -177,6 +214,7 @@ coXmoXin = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal
 # Add the quadratic effect of trial
 gamQuad = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
+            numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
@@ -184,6 +222,7 @@ gamQuad = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal 
 # Add interaction between quadratic effect of trial and modality
 modXgamQ = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
+            numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
             (modalityCondition:I(trialTotal^2)) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
@@ -201,6 +240,7 @@ block = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
 # Add interaction between block order and modality
 blocXmod = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
+            numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
             (modalityCondition:I(trialTotal^2)) +
             firstBlock * modalityCondition +
@@ -218,7 +258,8 @@ Compare the fit of the models:
 
 ```{r anova}
 anova(m0,modality,cond,game,modXcond,conXgame, modXgame,
-      moXcoXga,incor,moXincor,coXincor,coXmoXin,
+      moXcoXga,nTurns,nTurnXmo,nTurnXco,tuXmoXco,
+      incor,moXincor,coXincor,coXmoXin,
       gamQuad,modXgamQ,block, blocXmod)
 ```
 
@@ -277,7 +318,14 @@ feLabels = matrix(c(
 "modalityConditionvocal:trialTotal","Acoustic modality:Game",
 "conditionVisual:incorrectTRUE","Visual stimuli:incorrect",
 "modalityConditionvisual:conditionVisual:incorrectTRUE","Visual modality:Visual stimuli:incorrect",
-"modalityConditionvocal:conditionVisual:incorrectTRUE","Acoustic modality:Visual stimuli:incorrect"
+"modalityConditionvocal:conditionVisual:incorrectTRUE","Acoustic modality:Visual stimuli:incorrect",
+
+"modalityConditionvisual:conditionVisual:numberOfTurns","modalityConditionvisual:conditionVisual:numberOfTurns",
+"modalityConditionvocal:conditionVisual:numberOfTurns","modalityConditionvocal:conditionVisual:numberOfTurns",
+"conditionVisual:numberOfTurns","conditionVisual:numberOfTurns",
+"modalityConditionvisual:numberOfTurns","modalityConditionvisual:numberOfTurns",
+"modalityConditionvocal:numberOfTurns","modalityConditionvocal:numberOfTurns",
+"numberOfTurns","numberOfTurns"
 ), ncol=2, byrow = T)
 
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
