@@ -8,11 +8,7 @@ This script uses data compiled by *analyseData.R*.
 ## Load libraries
 
 ```{r warning=FALSE, message=FALSE}
-library(lme4)
-library(sjPlot)
-library(ggplot2)
-library(lattice)
-library(influence.ME)
+library(party)
 ```
 
 ```{r echo=F}
@@ -26,30 +22,43 @@ d = read.csv("../../data/Final_Turn_data.csv", stringsAsFactors = F)
 d = d[d$modalityCondition == "multi",]
 ```
 
-# Analysis
+## Prepare variables
 
 ```{r}
+# Relabel modalities
+d[d$turnModalityType=="multi",]$turnModalityType = "M"
+d[d$turnModalityType=="unimodal acoustic",]$turnModalityType = "A"
+d[d$turnModalityType=="unimodal visual",]$turnModalityType = "V"
 
+# Only need one record per trial
 d2 = d[!duplicated(d$trialString),]
 
+# get turn modality type for T1
 x = tapply(d[d$turnType=="T1",]$turnModalityType, d[d$turnType=="T1",]$trialString,head,n=1)
 d2$turnModality.T1 = x[d2$trialString]
 
-
+# remove NAs
 d2 = d2[!is.na(d2$turnModality.T1),]
+# relevel
+d2$turnModality.T1 = relevel(factor(as.character(d2$turnModality.T1)),"V")
 
-d2$turnModality.T1 = relevel(factor(as.character(d2$turnModality.T1)),"unimodal visual")
-
-
+# get turn modality type for T2
 x = tapply(d[d$turnType=="T2",]$turnModalityType, d[d$turnType=="T2",]$trialString,head,n=1)
 d2$turnModality.T2 = x[d2$trialString]
+d2$turnModality.T2[is.na(d2$turnModality.T2)] = "n"
+d2$turnModality.T2 = relevel(factor(d2$turnModality.T2),'n')
 
-d2$turnModality.T2[is.na(d2$turnModality.T2)] = "none"
+# get turn modality type for T3
+x = tapply(d[d$turnType=="T3",]$turnModalityType, d[d$turnType=="T3",]$trialString,head,n=1)
+d2$turnModality.T3 = x[d2$trialString]
+d2$turnModality.T3[is.na(d2$turnModality.T3)] = "n"
+d2$turnModality.T3 = relevel(factor(d2$turnModality.T3),'n')
 
-d2$turnModality.T2 = relevel(factor(d2$turnModality.T2),'none')
+```
 
-d2$condition= relevel(factor(d2$condition),"Visual")
+Make game variable.
 
+```{r}
 
 d2$trialTotal = d2$trial + (d2$game * (max(d2$trial)+1))
 # Convert to proportion of games played, so that estimates reflect change per game.
@@ -59,46 +68,68 @@ d2$trialTotal = d2$trialTotal - 1
 
 d2$incorrect = !d2$correct
 
+```
+
+Scale trial length variable.
+
+```{r}
 
 d2$trialLength.logcenter = log(d2$trialLength)
 d2$trialLength.logcenter = d2$trialLength.logcenter - mean(d2$trialLength.logcenter)
 ```
 
+# Binary trees
 
 
 ```{r}
+cx = ctree(turnModality.T1~ 
+             factor(turnModality.T2)+
+             factor(turnModality.T3) + 
+             factor(condition) +
+             game
+           , data=d2)
+plot(cx, terminal_panel = node_barplot(cx, id=F))
 
-m0 = glmer(turnModality.T2 == "multi" ~
-            (turnModality.T1=='multi')*condition +
-            (1 | dyadNumber)+
-            (1 | itemId),
-          data= d2[!d2$turnModality.T2 %in% c("none","unimodal mixed"),], family = binomial)
-summary(m0)
+```
+\newpage
+```{r}
+cxT3 = ctree(turnModality.T3~ 
+             factor(turnModality.T2)+
+             factor(turnModality.T1) + 
+             factor(condition) +
+             game
+           , data=d2[d2$turnModality.T3!="n",])
+plot(cxT3, terminal_panel = node_barplot(cxT3, id=F))
 
-m0 = lmer(trialLength.logcenter ~ 
-         turnModality.T1 * condition *
-              incorrect +
-             trialTotal + 
-            I(trialTotal^2) +
-            (1 | dyadNumber)+
-            (1 | itemId),
-          data= d2)
-summary(m0)
-
-mx = glmer(correct ~ 
-         turnModality.T1 + turnModality.T2 +
-           condition +
-             trialTotal + 
-            I(trialTotal^2) +
-            (1 | dyadNumber)+
-            (1 | itemId),
-          data= d2[!d2$turnModality.T2 %in% c("unimodal mixed"),], family  = binomial)
-
+```
+\newpage
+```{r}
+cx2 = ctree(turnModality.T1~ 
+             factor(turnModality.T2)+
+             factor(turnModality.T3) + 
+             factor(condition) +
+             game +
+             factor(dyadNumber)
+           , data=d2)
+plot(cx2, terminal_panel = node_barplot(cx2, id=F))
 
 ```
 
+Graphs are also written to results/graphs/cTree/
 
-```{r}
-sjp.lmer(mx,'fe', show.ci=T)  
+```{r echo=F, message=F, warning=F}
+# Print to files
+pdf("../../results/graphs/cTrees/cTree_PredictT1Modality.pdf", height=4)
+plot(cx, terminal_panel = node_barplot(cx, id=F))
+dev.off()
+
+pdf("../../results/graphs/cTrees/cTree_PredictT3Modality.pdf", height=4)
+plot(cxT3, terminal_panel = node_barplot(cxT3, id=F))
+dev.off()
+
+pdf("../../results/graphs/cTrees/cTree_PredictT1Modality_GraphB.pdf", width=12)
+plot(cx2, terminal_panel = node_barplot(cx2, id=F))
+dev.off()
+
 ```
 
