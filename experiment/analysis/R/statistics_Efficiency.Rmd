@@ -93,6 +93,17 @@ d$incorrect = !d$correct
 ```
 
 
+```{r}
+
+turnD = read.csv("../../data/Final_Turn_data.csv")
+turnD = turnD[turnD$turnType=="T1",]
+turnD = turnD[turnD$role == "Director",]
+d$multimodal = turnD[match(d$trialString, turnD$trialString),]$turnModalityType == "multi"
+d$multimodal[is.na(d$multimodal)] = F
+
+```
+
+
 
 \newpage
 
@@ -102,7 +113,7 @@ Make a series of models with random effects for dyad, director (nested within dy
 
 Not all random slopes are appropriate.  For example, items are used in only one stimulus condition, so a random slope for condition by item is not appropriate.  Similarly, each dyad only plays in one modality condition.
 
-It's reasonable to have a random slope for trial by dyad, but this caused unreliable model convergence, so is not included.
+It is reasonable to have a random slope for trial by dyad, but this caused unreliable model convergence, so is not included.
 
 The final random slopes were for condition and incorrectness by dyad/player, and modality condition by item.
 
@@ -111,22 +122,22 @@ The final random slopes were for condition and incorrectness by dyad/player, and
 m0 =  lmer(trialLength.log ~ 1 + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # Add modality condition
 modality = lmer(trialLength.log ~ 1 + modalityCondition + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # Add stimulus condition
 cond = lmer(trialLength.log ~ 1 + modalityCondition + condition + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # Add trial total
 game = lmer(trialLength.log ~ 1 + modalityCondition + condition + trialTotal +  
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 ```
 
 
@@ -135,50 +146,50 @@ game = lmer(trialLength.log ~ 1 + modalityCondition + condition + trialTotal +
 modXcond =  lmer(trialLength.log ~ 1 + modalityCondition * condition + trialTotal + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # Add interaction between condition and trial
 conXgame = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + trialTotal + 
             (trialTotal:condition) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # Add interaction between modality and trial
 modXgame = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + trialTotal + 
             (trialTotal:condition) + (modalityCondition:game) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 
 # Add 3-way interaction
 moXcoXga = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 
 # Add number of turns
 nTurns = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
                 numberOfTurns +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # interaction between turns and modality
 nTurnXmo = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
                 numberOfTurns*modalityCondition +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 
 nTurnXco = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
                 numberOfTurns*modalityCondition+ numberOfTurns:condition +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 
 tuXmoXco = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
                 numberOfTurns*modalityCondition*condition +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 
 # Add whether the response was incorrect
 incor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
@@ -186,14 +197,18 @@ incor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
             incorrect +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
+```
+
+
+```{r models3, cache=TRUE}
 # Add the interaction between modality and incorrectness
 moXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             numberOfTurns*modalityCondition*condition +
             incorrect + (modalityCondition:incorrect) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # Add the interaction between condition and incorrectness
 coXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             numberOfTurns*modalityCondition*condition +
@@ -201,53 +216,77 @@ coXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal
               (condition:incorrect) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # Add the three-way interaction between condition, modality and incorrectness
 coXmoXin = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
             numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 
+# Add multimodal signal
+
+multim = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
+            numberOfTurns*modalityCondition*condition +
+            (incorrect*condition*modalityCondition)+
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
+multiXco = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
+            numberOfTurns*modalityCondition*condition +
+            (incorrect*condition*modalityCondition)+
+            multimodal*condition +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
 
 # Add the quadratic effect of trial
 gamQuad = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
             numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
+            multimodal*condition +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
+```
+
+```{r models4, cache=TRUE}
 # Add interaction between quadratic effect of trial and modality
 modXgamQ = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
             numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
+            multimodal*condition +
             (modalityCondition:I(trialTotal^2)) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # Add block order
 block = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
             numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
+            multimodal*condition +
             (modalityCondition:I(trialTotal^2)) +
             firstBlock +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = FALSE)
 # Add interaction between block order and modality
 blocXmod = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
             numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
+            multimodal*condition +
             (modalityCondition:I(trialTotal^2)) +
             firstBlock * modalityCondition +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d)
+          data=d, REML = TRUE)   # Last model is REML to get estimates
 
 ```
 
@@ -258,10 +297,12 @@ blocXmod = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal
 Compare the fit of the models:
 
 ```{r anova}
-anova(m0,modality,cond,game,modXcond,conXgame, modXgame,
+modelComparison = anova(m0,modality,cond,game,modXcond,conXgame, modXgame,
       moXcoXga,nTurns,nTurnXmo,nTurnXco,tuXmoXco,
       incor,moXincor,coXincor,coXmoXin,
+      multim,multiXco,
       gamQuad,modXgamQ,block, blocXmod)
+modelComparison
 ```
 
 Pick final model for estimates:
@@ -293,47 +334,66 @@ qqline(resid(blocXmod))
 Relabel the effects:
 
 ```{r}
-feLabels = matrix(c(
-"(Intercept)"             ,"Intercept"      ,                          
-"modalityConditionvisual" ,"Visual modality",
-"modalityConditionvocal"  , "Acoustic modality",
-"conditionVisual" , "Visual stimuli",
-"trialTotal"             , "Game",
-"modalityConditionvisual:conditionVisual"  , "Visual modality:Visual stimuli",
-"modalityConditionvocal:conditionVisual" , "Acoustic modality:Visual stimuli",
-"modalityConditionvisual:trialTotal"    , "Visual modality:Game",
-"modalityConditionvocal:trialTotal"     , "Acoustic modality:Game",
-"conditionVisual:trialTotal"             , "Visual stimuli:Game",
-"modalityConditionvisual:conditionVisual:trialTotal", "Visual modality:Visual stimuli:Game",
-"modalityConditionvocal:conditionVisual:trialTotal", "Acoustic modality:Visual stimuli:Game",
-"incorrectTRUE","Inorrect",
-"modalityConditionvisual:incorrectTRUE","Visual modality:Incorrect",
-"modalityConditionvocal:incorrectTRUE","Acoustic modality:Incorrect",
-"modalityConditionvisual:I(trialTotal^2)", "Visual modality:Game^2",
-"modalityConditionvocal:I(trialTotal^2)", "Acoustic modality:Game^2",
-"I(trialTotal^2)","Game^2",
-"firstBlockVisual","Visual stims first",
-"modalityConditionvisual:firstBlockVisual","Visual modality:Visual stim first",
-"modalityConditionvocal:firstBlockVisual","Acoustic modality:Visual stim first",
-"modalityConditionvisual:trialTotal","Visual modality:Game",
-"modalityConditionvocal:trialTotal","Acoustic modality:Game",
-"conditionVisual:incorrectTRUE","Visual stimuli:incorrect",
-"modalityConditionvisual:conditionVisual:incorrectTRUE","Visual modality:Visual stimuli:incorrect",
-"modalityConditionvocal:conditionVisual:incorrectTRUE","Acoustic modality:Visual stimuli:incorrect",
 
-"modalityConditionvisual:conditionVisual:numberOfTurns","modalityConditionvisual:conditionVisual:numberOfTurns",
-"modalityConditionvocal:conditionVisual:numberOfTurns","modalityConditionvocal:conditionVisual:numberOfTurns",
-"conditionVisual:numberOfTurns","conditionVisual:numberOfTurns",
-"modalityConditionvisual:numberOfTurns","modalityConditionvisual:numberOfTurns",
-"modalityConditionvocal:numberOfTurns","modalityConditionvocal:numberOfTurns",
-"numberOfTurns","numberOfTurns"
-), ncol=2, byrow = T)
+feLabels = matrix(c(
+"(Intercept)"             ,"Intercept"      , NA,                         
+"modalityConditionvisual" ,"Visual modality", "modality",
+"modalityConditionvocal"  , "Acoustic modality", "modality",
+"conditionVisual" , "Visual stimuli","cond",
+"trialTotal"             , "Game","game",
+"modalityConditionvisual:conditionVisual"  , "Visual modality:Visual stimuli", "modXcond",
+"modalityConditionvocal:conditionVisual" , "Acoustic modality:Visual stimuli","modXcond",
+"modalityConditionvisual:trialTotal"    , "Visual modality:Game","modXgame",
+"modalityConditionvocal:trialTotal"     , "Acoustic modality:Game", "modXgame",
+"conditionVisual:trialTotal"             , "Visual stimuli:Game","conXgame",
+"modalityConditionvisual:conditionVisual:trialTotal", "Visual modality:Visual stimuli:Game", "moXcoXga",
+"modalityConditionvocal:conditionVisual:trialTotal", "Acoustic modality:Visual stimuli:Game", "moXcoXga",
+"incorrectTRUE","Inorrect","incor",
+"modalityConditionvisual:incorrectTRUE","Visual modality:Incorrect","moXincor",
+"modalityConditionvocal:incorrectTRUE","Acoustic modality:Incorrect","moXincor",
+"modalityConditionvisual:I(trialTotal^2)", "Visual modality:Game^2","modXgamQ",
+"modalityConditionvocal:I(trialTotal^2)", "Acoustic modality:Game^2","modXgamQ",
+"I(trialTotal^2)","Game^2","gamQuad",
+"firstBlockVisual","Visual stims first","block",
+"modalityConditionvisual:firstBlockVisual","Visual modality:Visual stim first","blocXmod",
+"modalityConditionvocal:firstBlockVisual","Acoustic modality:Visual stim first","blocXmod",
+"conditionVisual:incorrectTRUE","Visual stimuli:incorrect","coXincor",
+"modalityConditionvisual:conditionVisual:incorrectTRUE","Visual modality:Visual stimuli:incorrect","coXmoXin",
+"modalityConditionvocal:conditionVisual:incorrectTRUE","Acoustic modality:Visual stimuli:incorrect","coXmoXin",
+
+"modalityConditionvisual:conditionVisual:numberOfTurns","VisualModality:Visual stim:NumTurns","tuXmoXco",
+"modalityConditionvocal:conditionVisual:numberOfTurns","Vocal Modality:Visual stim:NumTurns","tuXmoXco",
+"conditionVisual:numberOfTurns","Visual stim:NumTurns","nTurnXco",
+"modalityConditionvisual:numberOfTurns","VisualModality:NumTurns","nTurnXmo",
+"modalityConditionvocal:numberOfTurns","Vocal Modality:NumTurns","nTurnXmo",
+"numberOfTurns","Number of turns","nTurns",
+"multimodalTRUE","Multimodal T1","multim",
+"conditionVisual:multimodalTRUE","VisualStim:MultimodalT1","multiXco"
+), ncol=3, byrow = T)
 
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
+feModel = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),3])
 
+sig = modelComparison$`Pr(>Chisq)`
+names(sig) = rownames(modelComparison)
+
+sig.data = data.frame(estimate = fixef(finalModel),
+                      y=1:length(fixef(finalModel)),
+                      sig=sig[feModel])
+
+cols= c("black",'red')
+sig.data$pointCol = cols[1]
+sig.data$pointCol[!is.na(sig.data$sig)] = 
+  cols[1 + (sig.data$sig[!is.na(sig.data$sig)] < 0.05)]
+sig.data$pointCol[!is.na(sig.data$sig) & 
+                    sig.data$sig < 0.1 & 
+                    sig.data$sig >=0.05] = "orange"
+  
+sig.data$fade = F
 ```
 
 Plot the strength of the fixed effects:
+
 
 ```{r}
 x = sjp.lmer(finalModel, 'fe', 
@@ -344,8 +404,13 @@ x = sjp.lmer(finalModel, 'fe',
          geom.colors = c(1,1),
          show.p=F,
          show.values = F,
-         string.interc="Intercept")
+         p.kr = FALSE,
+         string.interc="Intercept",
+         prnt.plot = F) 
+x$plot.list[[1]] +  geom_point(data=sig.data,aes(y=estimate,x=y,fade=fade), color=sig.data$pointCol)
 ```
+
+\newpage
 
 Attempt plot with axes in milliseconds.
 
@@ -359,9 +424,8 @@ x$plot.list[[1]]$data$conf.low = convertEst(x$plot.list[[1]]$data$conf.low)
 x$plot.list[[1]]$data$conf.high =  convertEst(x$plot.list[[1]]$data$conf.high)
 
 x$plot.list[[1]] + 
-  scale_y_continuous(limits=c(-5000,10000), name="Difference (ms)") +
-  scale_x_discrete(labels=feLabels2)
-
+  scale_y_continuous(name="Difference (ms)") +
+  scale_x_discrete(labels=feLabels2) 
 ```
 
 \newpage
@@ -373,6 +437,13 @@ There is a reasonable amount of variaition in the random effects, suggesting tha
 ```{r}
 dotplot(ranef(finalModel))
 ```
+
+qq-plots of random effects
+
+```{r}
+sjp.lmer(finalModel, type = "re.qq")
+```
+
 
 
 

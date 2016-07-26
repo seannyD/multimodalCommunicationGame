@@ -32,7 +32,7 @@
         <Int>2</Int>
     </pref>
     <pref key="TimeLineViewer.ZoomLevel">
-        <Float>10.0</Float>
+        <Float>30.0</Float>
     </pref>
     <pref key="LayoutManager.SelectedTabIndex">
         <Int>7</Int>
@@ -44,20 +44,20 @@
         <pref key="Stimuli">
             <Object class="java.awt.Color">160,0,90</Object>
         </pref>
-        <pref key="Acoustic 1">
-            <Object class="java.awt.Color">90,90,0</Object>
-        </pref>
         <pref key="Part 1">
             <Object class="java.awt.Color">0,0,90</Object>
         </pref>
-        <pref key="Part 2">
-            <Object class="java.awt.Color">0,160,90</Object>
+        <pref key="Acoustic 1">
+            <Object class="java.awt.Color">90,90,0</Object>
+        </pref>
+        <pref key="Visual 1">
+            <Object class="java.awt.Color">0,160,0</Object>
         </pref>
         <pref key="Acoustic 2">
             <Object class="java.awt.Color">90,160,90</Object>
         </pref>
-        <pref key="Visual 1">
-            <Object class="java.awt.Color">0,160,0</Object>
+        <pref key="Part 2">
+            <Object class="java.awt.Color">0,160,90</Object>
         </pref>
         <pref key="Trials 2">
             <Object class="java.awt.Color">0,90,0</Object>
@@ -80,19 +80,19 @@
         <Object class="java.awt.Point">889,23</Object>
     </pref>
     <pref key="SelectionBeginTime">
-        <Long>979190</Long>
+        <Long>1320500</Long>
     </pref>
     <pref key="LayoutManager.CurrentMode">
         <Int>1</Int>
     </pref>
     <pref key="MediaTime">
-        <Long>996442</Long>
+        <Long>1320500</Long>
     </pref>
     <pref key="SegmentationViewer.ZoomLevel">
         <Float>10.0</Float>
     </pref>
     <pref key="FrameSize">
-        <Object class="java.awt.Dimension">800,1047</Object>
+        <Object class="java.awt.Dimension">958,1047</Object>
     </pref>
     <prefGroup key="AAM-LR Phone level audio segmentation">
         <pref key="base_url">
@@ -138,9 +138,9 @@
         <String>AAM-LR Phone level audio segmentation</String>
     </pref>
     <pref key="TimeScaleBeginTime">
-        <Long>958600</Long>
+        <Long>1318233</Long>
     </pref>
     <pref key="SelectionEndTime">
-        <Long>1003694</Long>
+        <Long>1337925</Long>
     </pref>
 </preferences>
