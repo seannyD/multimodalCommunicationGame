@@ -385,9 +385,10 @@ cols= c("black",'red')
 sig.data$pointCol = cols[1]
 sig.data$pointCol[!is.na(sig.data$sig)] = 
   cols[1 + (sig.data$sig[!is.na(sig.data$sig)] < 0.05)]
-sig.data$pointCol[!is.na(sig.data$sig) & 
-                    sig.data$sig < 0.1 & 
-                    sig.data$sig >=0.05] = "orange"
+# Mark marginal effects
+#sig.data$pointCol[!is.na(sig.data$sig) & 
+#                    sig.data$sig < 0.1 & 
+#                    sig.data$sig >=0.05] = "orange"
   
 sig.data$fade = F
 ```
@@ -423,9 +424,16 @@ x$plot.list[[1]]$data$estimate =convertEst(x$plot.list[[1]]$data$estimate)
 x$plot.list[[1]]$data$conf.low = convertEst(x$plot.list[[1]]$data$conf.low)
 x$plot.list[[1]]$data$conf.high =  convertEst(x$plot.list[[1]]$data$conf.high)
 
+sig.data2 = sig.data
+sig.data2$estimate = x$plot.list[[1]]$data$estimate
+
 x$plot.list[[1]] + 
   scale_y_continuous(name="Difference (ms)") +
-  scale_x_discrete(labels=feLabels2) 
+  scale_x_discrete(labels=feLabels2) + 
+  geom_point(data=sig.data2,aes(y=estimate,x=y,fade=fade), color=sig.data$pointCol) +
+  coord_flip(ylim=c(-5000,10000))
+  
+
 ```
 
 \newpage
