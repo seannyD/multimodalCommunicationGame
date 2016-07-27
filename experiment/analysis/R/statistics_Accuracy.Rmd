@@ -105,6 +105,7 @@ cx = ctree(correct ~ modalityCondition + condition +
             trialLength +
             numberOfTurns +
             matcherResponds +
+             T3 +
             multimodal+
             firstBlock,
           data=d)

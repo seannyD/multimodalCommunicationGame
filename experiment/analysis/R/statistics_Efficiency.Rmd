@@ -73,7 +73,7 @@ d$trialTotal = d$trial + (d$game * (max(d$trial)+1))
 # Convert to proportion of games played, so that estimates reflect change per game.
 d$trialTotal = d$trialTotal / 16
 # Center the trialTotal variable so intercept reflects after the first game
-d$trialTotal = d$trialTotal - 1
+d$trialTotal = d$trialTotal - 2
 
 ```
 
@@ -93,6 +93,7 @@ d$incorrect = !d$correct
 
 ```
 
+Variable for whether T1 was a multimodal signal.
 
 ```{r}
 
@@ -391,13 +392,12 @@ sig.data$pointCol[!is.na(sig.data$sig)] =
 #                    sig.data$sig < 0.1 & 
 #                    sig.data$sig >=0.05] = "orange"
   
-sig.data$fade = F
+sig.data$fade = sig.data$sig > 0.05
 ```
 
 Plot the strength of the fixed effects:
 
-
-```{r}
+```{r fixEf}
 x = sjp.lmer(finalModel, 'fe', 
          show.intercept = T,
          sort.est=NULL,
@@ -409,14 +409,17 @@ x = sjp.lmer(finalModel, 'fe',
          p.kr = FALSE,
          string.interc="Intercept",
          prnt.plot = F) 
-x$plot.list[[1]] +  geom_point(data=sig.data,aes(y=estimate,x=y,fade=fade), color=sig.data$pointCol)
+
+x$plot.list[[1]]$data$fade = sig.data$fade
+
+x$plot.list[[1]] 
 ```
 
 \newpage
 
 Attempt plot with axes in milliseconds.
 
-```{r}
+```{r fixEfMilliseconds}
 convertEst = function(X){
   exp(meanLogTrialLength+X) - exp(meanLogTrialLength)
 }
@@ -426,12 +429,14 @@ x$plot.list[[1]]$data$conf.low = convertEst(x$plot.list[[1]]$data$conf.low)
 x$plot.list[[1]]$data$conf.high =  convertEst(x$plot.list[[1]]$data$conf.high)
 
 sig.data2 = sig.data
-sig.data2$estimate = x$plot.list[[1]]$data$estimate
+#sig.data2$estimate = x$plot.list[[1]]$data$estimate
+
+x$plot.list[[1]]$data$fade = sig.data2$fade
 
 x$plot.list[[1]] + 
   scale_y_continuous(name="Difference (ms)") +
   scale_x_discrete(labels=feLabels2) + 
-  geom_point(data=sig.data2,aes(y=estimate,x=y,fade=fade), color=sig.data$pointCol) +
+  #geom_point(data=sig.data2,aes(y=estimate,x=y,fade=fade), color=sig.data$pointCol) +
   coord_flip(ylim=c(-5000,10000))
   
 
@@ -443,13 +448,13 @@ x$plot.list[[1]] +
 
 There is a reasonable amount of variaition in the random effects, suggesting that dyads and players differ.  This justifies the use of mixed effects modelling.
 
-```{r}
+```{r ranEf}
 dotplot(ranef(finalModel))
 ```
 
 qq-plots of random effects
 
-```{r}
+```{r ranEfQQ}
 sjp.lmer(finalModel, type = "re.qq")
 ```
 
