@@ -32,7 +32,8 @@ Work out number of turns in each trial.
 
 ```{r}
 # Number of turns in each trial
-numTurns = tapply(d$trialString, d$trialString, length)
+numTurns = tapply(d$turnString, d$trialString, 
+                  function(X){length(unique(X))})
 d$numberOfTurns = numTurns[d$trialString]
 ```
 
@@ -401,7 +402,7 @@ x = sjp.lmer(finalModel, 'fe',
          show.intercept = T,
          sort.est=NULL,
          axis.labels = feLabels2[2:length(feLabels2)],
-         xlab="Trial time (ms)",
+         xlab="Trial time (log ms)",
          geom.colors = c(1,1),
          show.p=F,
          show.values = F,

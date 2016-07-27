@@ -1,6 +1,9 @@
 ---
-title: "Modality effects in a signalling game"
-output: pdf_document
+title: "Modality effects in a signalling game: Accuracy"
+output:
+    pdf_document:
+        includes:
+            in_header: header.tex 
 knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), "../../results/MainResults_Accuracy.pdf")) })
 ---
 
@@ -10,9 +13,13 @@ This script uses data compiled by *analyseData.R*.
 
 ## Load libraries
 
-```{r warning=F}
+```{r warning=FALSE, message=FALSE}
 library(lme4)
 library(sjPlot)
+library(ggplot2)
+library(lattice)
+library(influence.ME)
+library(party)
 ```
 
 ```{r echo=F}
@@ -25,10 +32,251 @@ try(setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experi
 d = read.csv("../../data/FinalSignalData.csv")
 ```
 
+Work out number of turns in each trial.
+
+```{r}
+# Number of turns in each trial
+numTurns = tapply(d$turnString, d$trialString, 
+                  function(X){length(unique(X))})
+d$numberOfTurns = numTurns[d$trialString]
+
+matcherResponds = tapply(d$turnType, d$trialString, 
+                         function(X){"T2" %in% X})
+d$matcherResponds = matcherResponds[d$trialString]
+
+```
+
 We don't need info on every signal in each turn, just the trial time.  Keep only 1st signal in each trial.
 
 ```{r}
 d = d[!duplicated(d$trialString),]
 ```
+
+
+
+# Descriptive stats
+
+Here is a graph showing the distribution of accuracy by conditions:
+
+![The efficiency of trials in different conditions](../../results/graphs/Accuracy.pdf)
+
+Make a variable to represent proportion of games played:
+
+```{r}
+# Make a variable that represents the number of trials played
+d$trialTotal = d$trial + (d$game * (max(d$trial)+1))
+# Convert to proportion of games played, so that estimates reflect change per game.
+d$trialTotal = d$trialTotal / 16
+# Center the trialTotal variable so intercept reflects after the first game
+d$trialTotal = d$trialTotal
+
+```
+
+Make a variable for which stimuli the players experienced first.
+
+```{r}
+firstBlock = tapply(as.character(d$condition),d$dyadNumber,head,n=1)
+d$firstBlock = as.factor(firstBlock[match(d$dyadNumber,names(firstBlock))])
+```
+
+Variable to indicate whether T1 is multimodal.
+
+```{r}
+turnD = read.csv("../../data/Final_Turn_data.csv")
+turnD = turnD[turnD$turnType=="T1",]
+turnD = turnD[turnD$role == "Director",]
+d$multimodal = turnD[match(d$trialString, turnD$trialString),]$turnModalityType == "multi"
+d$multimodal[is.na(d$multimodal)] = F
+```
+
+Transformed trial time.
+
+```{r}
+d$trialLength.log = log(d$trialLength)
+meanLogTrialLength = mean(d$trialLength.log)
+d$trialLength.log = d$trialLength.log - meanLogTrialLength 
+```
+
+
+Get an idea of the structure of the data from a binary tree:
+```{r}
+cx = ctree(correct ~ modalityCondition + condition +
+            trialTotal +
+            trialLength +
+            numberOfTurns +
+            matcherResponds +
+            multimodal+
+            firstBlock,
+          data=d)
+```
+\blandscape
+```{r fig.width=20, fig.height=8}
+plot(cx, terminal_panel=node_barplot(cx))
+```
+\elandscape
+
+
+\newpage
+
+# Mixed models
+
+There are celing effects in the data, which reduces variance and makes model convergence difficult.  Experimentation revealed that random effects other than random intercepts for dyad and item lead to non-convergence.
+
+The final models do not converge within standard tolerances, but the convergence is acceptable.
+
+```{r models, cache=TRUE}
+# No fixed effects
+
+gc = glmerControl(optimizer = "Nelder_Mead" ,optCtrl = list(maxfun=50000))
+
+m0 = glmer(correct ~ 1 +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+mod = glmer(correct ~ 1 + modalityCondition +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+con = glmer(correct ~ 1 + modalityCondition + condition +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+modXcon = glmer(correct ~ 1 + modalityCondition * condition +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+game = glmer(correct ~ 1 + modalityCondition * condition +
+            trialTotal +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+trialL = glmer(correct ~ 1 + modalityCondition * condition +
+            trialTotal +
+            trialLength.log+
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+trialLXmo = glmer(correct ~ 1 + modalityCondition * condition +
+            trialTotal +
+            trialLength.log * modalityCondition+
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+multi = glmer(correct ~ 1 + modalityCondition * condition +
+            trialTotal +
+            trialLength.log * modalityCondition+
+            multimodal+
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+block = glmer(correct ~ 1 + modalityCondition * condition +
+            trialTotal +
+            trialLength.log * modalityCondition+
+            multimodal+
+            firstBlock +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+```
+
+\newpage
+
+# Results
+
+Compare the fit of the models:
+
+```{r anova}
+modelComparison = anova(m0,mod,con,modXcon, 
+                        game, trialL,trialLXmo,
+                        multi, block)
+modelComparison
+```
+
+Pick final model for estimates:
+
+```{r}
+finalModel = block
+```
+
+## Plot the fixed effects
+
+Relabel the effects:
+
+```{r}
+
+feLabels = matrix(c(
+"(Intercept)"             ,"Intercept"      , NA,                         
+"modalityConditionvisual" ,"Visual modality", "mod",
+"modalityConditionvocal"  , "Acoustic modality", "mod",
+"conditionVisual" , "Visual stimuli","con",
+"trialTotal"             , "Game","game",
+"modalityConditionvisual:conditionVisual"  , "Visual modality:Visual stimuli", "modXcon",
+"modalityConditionvocal:conditionVisual" , "Acoustic modality:Visual stimuli","modXcon",
+"firstBlockVisual","Visual stims first","block",
+"trialLength.log","Trial length","trialL",
+"modalityConditionvisual:trialLength.log","Visual modality:Trial length",'trialLXmo',
+"modalityConditionvocal:trialLength.log","Acoustic modality:Trial length",'trialLXmo',
+"multimodalTRUE","Multimodal T1","multi",
+"trialLength.log",'Trial Length','trialL'
+), ncol=3, byrow = T)
+
+feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
+
+```
+
+Plot the strength of the fixed effects:
+
+
+```{r}
+sjp.glmer(finalModel, 'fe', 
+         show.intercept = T,
+         sort.est=NULL,
+         axis.labels = feLabels2[2:length(feLabels2)],
+         axis.title="Odds of correct selection",
+         geom.colors = c(1,1),
+         show.values = F,
+         show.p = F,
+         fade.ns = T,
+         string.interc="Intercept") 
+```
+
+\newpage
+
+## Random effects
+
+```{r}
+sjp.glmer(finalModel,'re', sort.est ="sort.all", 
+          facet.grid = F,
+          geom.colors= c(1,1))
+```
+
+qq-plots of random effects
+
+```{r}
+sjp.glmer(finalModel, type = "re.qq")
+```
+
+
+
+
+
 
 
