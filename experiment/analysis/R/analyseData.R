@@ -84,6 +84,13 @@ d[d$game==3 & d$trial==15,]$startOfNextTrial = d[d$game==3 & d$trial==15,]$trial
 
 d$turnType  = gsub("\\.","",d$turnType)
 
+# There are some turns with lengths less than 200 milliseconds.  These are coding artefacts which should be removed
+d = d[d$turnLength>200,]
+
+# There are some signals with lengths less than 200 milliseconds.  These are coding artefacts which should be removed
+d = d[d$signalLength>200,]
+
+
 # Exclude cases
 
 ex = read.table("../../data/TrialsToExclude.txt", stringsAsFactors = F, header=T)
@@ -112,6 +119,8 @@ if(nrow(gaps)>0){
     )
   }
 }
+
+
 
 
 ##############################

@@ -46,6 +46,18 @@ d$matcherResponds = matcherResponds[d$trialString]
 
 ```
 
+Variable for length of first T1
+
+```{r}
+T1L = tapply(d[d$turnType=="T1",]$turnLength,
+             d[d$turnType=="T1",]$trialString, head, n=1)
+d$T1Length = T1L[d$trialString]
+d$T1Length[is.na(d$T1Length)] = mean(d$T1Length,na.rm=T)
+d$T1Length.log = log(d$T1Length)
+d$T1Length.log = d$T1Length.log - mean(d$T1Length.log)
+```
+
+
 We don't need info on every signal in each turn, just the trial time.  Keep only 1st signal in each trial.
 
 ```{r}
@@ -89,6 +101,17 @@ d$multimodal = turnD[match(d$trialString, turnD$trialString),]$turnModalityType 
 d$multimodal[is.na(d$multimodal)] = F
 ```
 
+Make a variable to represent proportion of games played:
+
+```{r}
+# Make a variable that represents the number of trials played
+d$trialTotal = d$trial + (d$game * (max(d$trial)+1))
+# Convert to proportion of games played, so that estimates reflect change per game.
+d$trialTotal = d$trialTotal / 16
+# Center the trialTotal variable so intercept reflects after the first game
+d$trialTotal = d$trialTotal - 2
+```
+
 Transformed trial time.
 
 ```{r}
@@ -105,7 +128,7 @@ cx = ctree(correct ~ modalityCondition + condition +
             trialLength +
             numberOfTurns +
             matcherResponds +
-             T3 +
+            T1Length +
             multimodal+
             firstBlock,
           data=d)
@@ -177,9 +200,28 @@ trialLXmo = glmer(correct ~ 1 + modalityCondition * condition +
           data=d, family=binomial,
           control = gc)
 
+t1L = glmer(correct ~ 1 + modalityCondition * condition +
+            trialTotal +
+            trialLength.log * modalityCondition+
+            T1Length.log +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+t1LXmo = glmer(correct ~ 1 + modalityCondition * condition +
+            trialTotal +
+            trialLength.log * modalityCondition+
+            T1Length.log*modalityCondition +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
 multi = glmer(correct ~ 1 + modalityCondition * condition +
             trialTotal +
             trialLength.log * modalityCondition+
+            T1Length.log*modalityCondition +
             multimodal+
             (1 |dyadNumber) +
             (1 |itemId) ,
@@ -189,6 +231,7 @@ multi = glmer(correct ~ 1 + modalityCondition * condition +
 block = glmer(correct ~ 1 + modalityCondition * condition +
             trialTotal +
             trialLength.log * modalityCondition+
+            T1Length.log*modalityCondition +
             multimodal+
             firstBlock +
             (1 |dyadNumber) +
@@ -207,6 +250,7 @@ Compare the fit of the models:
 ```{r anova}
 modelComparison = anova(m0,mod,con,modXcon, 
                         game, trialL,trialLXmo,
+                        t1L, t1LXmo, 
                         multi, block)
 modelComparison
 ```

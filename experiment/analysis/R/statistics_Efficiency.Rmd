@@ -37,6 +37,18 @@ numTurns = tapply(d$turnString, d$trialString,
 d$numberOfTurns = numTurns[d$trialString]
 ```
 
+Variable for length of first T1
+
+```{r}
+T1L = tapply(d[d$turnType=="T1",]$turnLength,
+             d[d$turnType=="T1",]$trialString, head, n=1)
+d$T1Length = T1L[d$trialString]
+d$T1Length[is.na(d$T1Length)] = mean(d$T1Length,na.rm=T)
+d$T1Length.log = log(d$T1Length)
+d$T1Length.log = d$T1Length.log - mean(d$T1Length.log)
+```
+
+
 We don't need info on every signal in each turn, just the trial time.  Keep only 1st signal in each trial.
 
 ```{r}
@@ -64,6 +76,15 @@ meanLogTrialLength = mean(d$trialLength.log)
 d$trialLength.log = d$trialLength.log - meanLogTrialLength 
 hist(d$trialLength.log)
 ```
+
+Get the length of the first T1
+```{r}
+
+
+
+```
+
+
 
 Make a variable to represent proportion of games played:
 
