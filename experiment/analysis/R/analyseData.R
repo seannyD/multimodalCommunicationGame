@@ -158,9 +158,10 @@ for(turnName in names(numTrials[numTrials>1])){
 
 }
 
-# take out cases 
-d = d[- casesToExclude,]
-
+if(length(casesToExclude)>0){
+  # take out cases 
+  d = d[- casesToExclude,]
+}
 
 
 # work out trail length

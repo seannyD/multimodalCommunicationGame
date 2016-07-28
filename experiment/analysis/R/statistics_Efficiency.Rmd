@@ -147,7 +147,7 @@ m0 =  lmer(trialLength.log ~ 1 +
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
 # Add modality condition
-modality = lmer(trialLength.log ~ 1 + modalityCondition + 
+modality =  lmer(trialLength.log ~ 1 + modalityCondition + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
@@ -166,7 +166,7 @@ game = lmer(trialLength.log ~ 1 + modalityCondition + condition + trialTotal +
 
 ```{r models2, cache=TRUE}
 # Add interaction between condition and stimulus condition
-modXcond =  lmer(trialLength.log ~ 1 + modalityCondition * condition + trialTotal + 
+modXcond = lmer(trialLength.log ~ 1 + modalityCondition * condition + trialTotal + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
@@ -184,7 +184,7 @@ modXgame = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + trialTot
           data=d, REML = FALSE)
 
 # Add 3-way interaction
-moXcoXga = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+moXcoXga =  lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
@@ -226,14 +226,14 @@ incor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
 
 ```{r models3, cache=TRUE}
 # Add the interaction between modality and incorrectness
-moXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+moXincor =   lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             numberOfTurns*modalityCondition*condition +
             incorrect + (modalityCondition:incorrect) +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
 # Add the interaction between condition and incorrectness
-coXincor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+coXincor =  lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             numberOfTurns*modalityCondition*condition +
             incorrect + (modalityCondition:incorrect) +
               (condition:incorrect) +
@@ -279,7 +279,7 @@ gamQuad = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal 
 
 ```{r models4, cache=TRUE}
 # Add interaction between quadratic effect of trial and modality
-modXgamQ = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+modXgamQ =  lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
             numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+
@@ -289,7 +289,7 @@ modXgamQ = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
 # Add block order
-block = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+block =  lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
             I(trialTotal^2) +
             numberOfTurns*modalityCondition*condition +
             (incorrect*condition*modalityCondition)+

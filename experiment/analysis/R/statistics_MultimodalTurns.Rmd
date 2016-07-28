@@ -1,6 +1,7 @@
 ---
 title: "Analysis of multimodal condition"
 output: pdf_document
+knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), "../../results/MainResults_MultimodalTurns.pdf")) })
 ---
 
 This script uses data compiled by *analyseData.R*.
