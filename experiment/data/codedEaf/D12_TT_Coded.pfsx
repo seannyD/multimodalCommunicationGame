@@ -13,6 +13,9 @@
         <String>Trials 1</String>
         <String>Trials 2</String>
     </prefList>
+    <pref key="MediaTime">
+        <Long>1457961</Long>
+    </pref>
     <pref key="LayoutManager.VisibleMultiTierViewer">
         <String>mpi.eudico.client.annotator.viewer.TimeLineViewer</String>
     </pref>
@@ -29,13 +32,21 @@
         <String>Modification Date</String>
     </prefList>
     <pref key="LayoutManager.SplitPaneDividerLocation">
-        <Int>2</Int>
+        <Int>1</Int>
     </pref>
+    <pref key="FrameSize">
+        <Object class="java.awt.Dimension">1942,1042</Object>
+    </pref>
+    <prefGroup key="AAM-LR Phone level audio segmentation">
+        <pref key="base_url">
+            <String>http://lux17.mpi.nl/aamlr/</String>
+        </pref>
+    </prefGroup>
     <pref key="TimeLineViewer.ZoomLevel">
-        <Float>1000.0</Float>
+        <Float>53.0</Float>
     </pref>
     <pref key="LayoutManager.SelectedTabIndex">
-        <Int>7</Int>
+        <Int>0</Int>
     </pref>
     <prefGroup key="TierColors">
         <pref key="Visual 2">
@@ -44,26 +55,26 @@
         <pref key="Stimuli">
             <Object class="java.awt.Color">160,90,90</Object>
         </pref>
-        <pref key="Acoustic 1">
-            <Object class="java.awt.Color">160,90,0</Object>
-        </pref>
         <pref key="Part 1">
             <Object class="java.awt.Color">0,90,0</Object>
         </pref>
-        <pref key="Part 2">
-            <Object class="java.awt.Color">0,0,160</Object>
-        </pref>
-        <pref key="Acoustic 2">
-            <Object class="java.awt.Color">0,160,160</Object>
+        <pref key="Acoustic 1">
+            <Object class="java.awt.Color">160,90,0</Object>
         </pref>
         <pref key="Visual 1">
             <Object class="java.awt.Color">160,0,90</Object>
         </pref>
-        <pref key="synch">
-            <Object class="java.awt.Color">0,160,90</Object>
+        <pref key="Acoustic 2">
+            <Object class="java.awt.Color">0,160,160</Object>
+        </pref>
+        <pref key="Part 2">
+            <Object class="java.awt.Color">0,0,160</Object>
         </pref>
         <pref key="Trials 2">
             <Object class="java.awt.Color">90,0,90</Object>
+        </pref>
+        <pref key="synch">
+            <Object class="java.awt.Color">0,160,90</Object>
         </pref>
         <pref key="Trials 1">
             <Object class="java.awt.Color">160,90,160</Object>
@@ -74,25 +85,8 @@
         <String>Recipient</String>
     </prefList>
     <pref key="FrameLocation">
-        <Object class="java.awt.Point">262,23</Object>
+        <Object class="java.awt.Point">-11,-11</Object>
     </pref>
-    <pref key="SelectionBeginTime">
-        <Long>1458405</Long>
-    </pref>
-    <pref key="LayoutManager.CurrentMode">
-        <Int>1</Int>
-    </pref>
-    <pref key="MediaTime">
-        <Long>1458405</Long>
-    </pref>
-    <pref key="FrameSize">
-        <Object class="java.awt.Dimension">1651,1173</Object>
-    </pref>
-    <prefGroup key="AAM-LR Phone level audio segmentation">
-        <pref key="base_url">
-            <String>http://lux17.mpi.nl/aamlr/</String>
-        </pref>
-    </prefGroup>
     <pref key="MultiTierViewer.ActiveTierName">
         <String>synch</String>
     </pref>
@@ -131,10 +125,19 @@
     <pref key="ActiveRecognizerName">
         <String>AAM-LR Phone level audio segmentation</String>
     </pref>
+    <pref key="SelectionBeginTime">
+        <Long>978810</Long>
+    </pref>
+    <pref key="LayoutManager.CurrentMode">
+        <Int>1</Int>
+    </pref>
     <pref key="TimeScaleBeginTime">
-        <Long>1457629</Long>
+        <Long>1445943</Long>
+    </pref>
+    <pref key="LayoutManager.MediaAreaHeight">
+        <Int>459</Int>
     </pref>
     <pref key="SelectionEndTime">
-        <Long>1458411</Long>
+        <Long>981216</Long>
     </pref>
 </preferences>
