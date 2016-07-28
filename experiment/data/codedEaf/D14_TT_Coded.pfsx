@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <preferences version="1.1"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/Prefs_v1.1.xsd">
+    <pref key="MediaTime">
+        <Long>1435714</Long>
+    </pref>
     <prefList key="MultiTierViewer.TierOrder">
         <String>synch</String>
         <String>Part 1</String>
@@ -13,9 +16,6 @@
         <String>Trials 1</String>
         <String>Trials 2</String>
     </prefList>
-    <pref key="MediaTime">
-        <Long>1091592</Long>
-    </pref>
     <pref key="LayoutManager.VisibleMultiTierViewer">
         <String>mpi.eudico.client.annotator.viewer.TimeLineViewer</String>
     </pref>
@@ -31,61 +31,50 @@
         <String>Creation Date</String>
         <String>Modification Date</String>
     </prefList>
-    <pref key="SegmentationViewer.ZoomLevel">
-        <Float>10.0</Float>
-    </pref>
     <pref key="LayoutManager.SplitPaneDividerLocation">
         <Int>1</Int>
     </pref>
     <pref key="FrameSize">
         <Object class="java.awt.Dimension">1942,1042</Object>
     </pref>
-    <prefGroup key="AAM-LR Phone level audio segmentation">
-        <pref key="base_url">
-            <String>http://lux17.mpi.nl/aamlr/</String>
-        </pref>
-    </prefGroup>
+    <pref key="TimeLineViewer.ZoomLevel">
+        <Float>50.0</Float>
+    </pref>
     <pref key="LayoutManager.SelectedTabIndex">
         <Int>2</Int>
     </pref>
-    <pref key="TimeLineViewer.ZoomLevel">
-        <Float>25.0</Float>
-    </pref>
     <prefGroup key="TierColors">
         <pref key="Visual 2">
-            <Object class="java.awt.Color">160,90,0</Object>
+            <Object class="java.awt.Color">160,160,0</Object>
         </pref>
         <pref key="Stimuli">
-            <Object class="java.awt.Color">160,90,90</Object>
+            <Object class="java.awt.Color">90,90,0</Object>
         </pref>
         <pref key="Acoustic 1">
-            <Object class="java.awt.Color">160,160,90</Object>
-        </pref>
-        <pref key="Part 1">
-            <Object class="java.awt.Color">90,160,90</Object>
-        </pref>
-        <pref key="Acoustic 2">
             <Object class="java.awt.Color">160,0,160</Object>
         </pref>
-        <pref key="Visual 1">
-            <Object class="java.awt.Color">0,0,90</Object>
+        <pref key="Part 1">
+            <Object class="java.awt.Color">0,90,0</Object>
         </pref>
         <pref key="Part 2">
-            <Object class="java.awt.Color">0,90,90</Object>
+            <Object class="java.awt.Color">160,90,90</Object>
         </pref>
-        <pref key="Trials 2">
-            <Object class="java.awt.Color">0,160,90</Object>
+        <pref key="Visual 1">
+            <Object class="java.awt.Color">160,90,160</Object>
+        </pref>
+        <pref key="Acoustic 2">
+            <Object class="java.awt.Color">0,160,160</Object>
         </pref>
         <pref key="synch">
-            <Object class="java.awt.Color">160,0,90</Object>
+            <Object class="java.awt.Color">160,90,0</Object>
         </pref>
-        <pref key="Trials 1">
+        <pref key="Trials 2">
             <Object class="java.awt.Color">90,0,0</Object>
         </pref>
+        <pref key="Trials 1">
+            <Object class="java.awt.Color">0,0,160</Object>
+        </pref>
     </prefGroup>
-    <pref key="SegmentationViewer.ActiveTier">
-        <String>Stimuli</String>
-    </pref>
     <prefList key="CommentViewer.Columns.Hidden">
         <String>Sender</String>
         <String>Recipient</String>
@@ -128,22 +117,19 @@
             <Int>75</Int>
         </pref>
     </prefGroup>
-    <pref key="ActiveRecognizerName">
-        <String>AAM-LR Phone level audio segmentation</String>
-    </pref>
     <pref key="SelectionBeginTime">
-        <Long>1096620</Long>
+        <Long>1409810</Long>
     </pref>
     <pref key="TimeScaleBeginTime">
-        <Long>1068032</Long>
+        <Long>1423060</Long>
     </pref>
     <pref key="LayoutManager.CurrentMode">
         <Int>1</Int>
     </pref>
     <pref key="LayoutManager.MediaAreaHeight">
-        <Int>449</Int>
+        <Int>476</Int>
     </pref>
     <pref key="SelectionEndTime">
-        <Long>1110445</Long>
+        <Long>1417216</Long>
     </pref>
 </preferences>
