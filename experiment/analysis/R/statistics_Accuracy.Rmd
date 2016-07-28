@@ -153,7 +153,7 @@ The final models do not converge within standard tolerances, but the convergence
 
 gc = glmerControl(optimizer = "Nelder_Mead" ,optCtrl = list(maxfun=50000))
 
-m0 = glmer(correct ~ 1 +
+m0 =  glmer(correct ~ 1 +
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
