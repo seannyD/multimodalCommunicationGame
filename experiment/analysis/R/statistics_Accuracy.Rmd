@@ -261,6 +261,13 @@ Pick final model for estimates:
 finalModel = block
 ```
 
+Model estimates:
+
+```{r}
+summary(finalModel)
+```
+
+
 ## Plot the fixed effects
 
 Relabel the effects:
@@ -280,7 +287,11 @@ feLabels = matrix(c(
 "modalityConditionvisual:trialLength.log","Visual modality:Trial length",'trialLXmo',
 "modalityConditionvocal:trialLength.log","Acoustic modality:Trial length",'trialLXmo',
 "multimodalTRUE","Multimodal T1","multi",
-"trialLength.log",'Trial Length','trialL'
+"trialLength.log",'Trial Length','trialL',
+"T1Length.log","T1 length","t1L",
+"modalityConditionvisual:T1Length.log","T1 length:Visual modality","t1LXmo",
+"modalityConditionvocal:T1Length.log","T1 length:Acoustic modality","t1LXmo"
+
 ), ncol=3, byrow = T)
 
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
