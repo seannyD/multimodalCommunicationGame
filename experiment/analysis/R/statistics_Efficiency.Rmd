@@ -146,77 +146,22 @@ m0 =  lmer(trialLength.log ~ 1 +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
-# Add modality condition
-modality =  lmer(trialLength.log ~ 1 + modalityCondition + 
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-# Add stimulus condition
-cond = lmer(trialLength.log ~ 1 + modalityCondition + condition + 
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-# Add trial total
-game = lmer(trialLength.log ~ 1 + modalityCondition + condition + trialTotal +  
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+
 ```
 
+Now we add a series of possible confounding factors such as the number of turns etc.  We add the main experimental factors at the end to ensure that they're really contributing to the model over and above
 
 ```{r models2, cache=TRUE}
-# Add interaction between condition and stimulus condition
-modXcond = lmer(trialLength.log ~ 1 + modalityCondition * condition + trialTotal + 
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-# Add interaction between condition and trial
-conXgame = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + trialTotal + 
-            (trialTotal:condition) +
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-# Add interaction between modality and trial
-modXgame = lmer(trialLength.log ~ 1 + (modalityCondition * condition) + trialTotal + 
-            (trialTotal:condition) + (modalityCondition:game) +
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-
-# Add 3-way interaction
-moXcoXga =  lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-
 # Add number of turns
-nTurns = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
+nTurns = lmer(trialLength.log ~ 1 +
                 numberOfTurns +
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-# interaction between turns and modality
-nTurnXmo = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-                numberOfTurns*modalityCondition +
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-
-nTurnXco = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-                numberOfTurns*modalityCondition+ numberOfTurns:condition +
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-
-tuXmoXco = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-                numberOfTurns*modalityCondition*condition +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
 
 # Add whether the response was incorrect
-incor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-            numberOfTurns*modalityCondition*condition +
+incor = lmer(trialLength.log ~ 1 + 
+            numberOfTurns + 
             incorrect +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
@@ -225,93 +170,216 @@ incor = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
 
 
 ```{r models3, cache=TRUE}
-# Add the interaction between modality and incorrectness
-moXincor =   lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-            numberOfTurns*modalityCondition*condition +
-            incorrect + (modalityCondition:incorrect) +
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-# Add the interaction between condition and incorrectness
-coXincor =  lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-            numberOfTurns*modalityCondition*condition +
-            incorrect + (modalityCondition:incorrect) +
-              (condition:incorrect) +
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
-# Add the three-way interaction between condition, modality and incorrectness
-coXmoXin = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
-            numberOfTurns*modalityCondition*condition +
-            (incorrect*condition*modalityCondition)+
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+
 
 # Add multimodal signal
 
-multim = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
-            numberOfTurns*modalityCondition*condition +
-            (incorrect*condition*modalityCondition)+
+multim = lmer(trialLength.log ~ 1 + 
+            numberOfTurns + 
+            incorrect + 
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
 
-multiXco = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal +
-            numberOfTurns*modalityCondition*condition +
-            (incorrect*condition*modalityCondition)+
-            multimodal*condition +
+# Add effect of trial
+
+game = lmer(trialLength.log ~ 1 + 
+            trialTotal + 
+            numberOfTurns + 
+            incorrect + 
+            multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
 
 # Add the quadratic effect of trial
-gamQuad = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-            I(trialTotal^2) +
-            numberOfTurns*modalityCondition*condition +
-            (incorrect*condition*modalityCondition)+
-            multimodal*condition +
+gamQuad = lmer(trialLength.log ~ 1 + 
+            trialTotal + I(trialTotal^2) +
+            numberOfTurns + 
+            incorrect + 
+            multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
 ```
 
-```{r models4, cache=TRUE}
-# Add interaction between quadratic effect of trial and modality
-modXgamQ =  lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-            I(trialTotal^2) +
-            numberOfTurns*modalityCondition*condition +
-            (incorrect*condition*modalityCondition)+
-            multimodal*condition +
-            (modalityCondition:I(trialTotal^2)) +
+
+```{r models5, cache=T}
+# Add modality condition
+modality =  lmer(trialLength.log ~ 1 + modalityCondition + 
+            trialTotal + I(trialTotal^2) +
+            numberOfTurns + 
+            incorrect + 
+            multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
-# Add block order
-block =  lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-            I(trialTotal^2) +
+# Add stimulus condition
+cond = lmer(trialLength.log ~ 1 + modalityCondition + condition + 
+            trialTotal + I(trialTotal^2) +
+            numberOfTurns + 
+            incorrect + 
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
+# Add interaction between modality and stimulus condition
+modXcond = lmer(trialLength.log ~ 1 + modalityCondition*condition +
+           trialTotal + I(trialTotal^2) +
+            numberOfTurns + 
+            incorrect + 
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+```
+
+```{r models6, cache=T}
+# Add interaction between condition and trial
+conXgame = lmer(trialLength.log ~ 1 + modalityCondition*condition +
+            trialTotal + I(trialTotal^2) +
+              condition:trialTotal +
+            numberOfTurns + 
+            incorrect + 
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+# Add interaction between modality and trial
+modXgame = lmer(trialLength.log ~ 1 + modalityCondition*condition +
+             trialTotal + I(trialTotal^2) +
+              condition:trialTotal + modalityCondition:trialTotal +
+            numberOfTurns + 
+            incorrect + 
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
+# Add 3-way interaction
+moXcoXga =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +
+            numberOfTurns + 
+            incorrect + 
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+```
+
+Interactions
+
+```{r}
+# interaction between turns and modality
+nTurnXmo = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +
+            numberOfTurns + numberOfTurns:modalityCondition +
+            incorrect + 
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
+nTurnXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +
+            numberOfTurns + numberOfTurns:modalityCondition +
+            numberOfTurns:condition +
+            incorrect + 
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
+tuXmoXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +
             numberOfTurns*modalityCondition*condition +
-            (incorrect*condition*modalityCondition)+
-            multimodal*condition +
-            (modalityCondition:I(trialTotal^2)) +
+            incorrect + 
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
+# Add the interaction between modality and incorrectness
+moXincor =   lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +
+            numberOfTurns*modalityCondition*condition +
+            incorrect + incorrect:modalityCondition +
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+# Add the interaction between condition and incorrectness
+coXincor =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +
+            numberOfTurns*modalityCondition*condition +
+            incorrect + incorrect:modalityCondition + incorrect:condition +
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+# Add the three-way interaction between condition, modality and incorrectness
+coXmoXin = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +
+            numberOfTurns*modalityCondition*condition +
+            incorrect *modalityCondition*condition +
+            multimodal +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
+```
+
+```{r models4, cache=TRUE}
+# Interaction between multimodality and condition
+multiXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +
+            numberOfTurns*modalityCondition*condition +
+            incorrect *modalityCondition*condition +
+            multimodal + multimodal:condition + 
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
+# Add interaction between quadratic effect of trial and modality
+modXgamQ =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +(modalityCondition:I(trialTotal^2)) +
+            numberOfTurns*modalityCondition*condition +
+            incorrect *modalityCondition*condition +
+            multimodal + multimodal:condition + 
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
+```
+
+
+Check block has no effect
+
+```{r}
+# Add block order
+block =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +(modalityCondition:I(trialTotal^2)) +
+            numberOfTurns*modalityCondition*condition +
+            incorrect *modalityCondition*condition +
+            multimodal + multimodal:condition + 
             firstBlock +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
 # Add interaction between block order and modality
-blocXmod = lmer(trialLength.log ~ 1 + modalityCondition * condition * trialTotal + 
-            I(trialTotal^2) +
+blocXmod = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +(modalityCondition:I(trialTotal^2)) +
             numberOfTurns*modalityCondition*condition +
-            (incorrect*condition*modalityCondition)+
-            multimodal*condition +
-            (modalityCondition:I(trialTotal^2)) +
-            firstBlock * modalityCondition +
+            incorrect *modalityCondition*condition +
+            multimodal + multimodal:condition + 
+            firstBlock*modalityCondition +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = TRUE)   # Last model is REML to get estimates
-
 ```
+
 
 \newpage
 
@@ -331,7 +399,7 @@ modelComparison
 Pick final model for estimates:
 
 ```{r}
-finalModel = blocXmod
+finalModel = modXgamQ
 ```
 
 Final model estimates:
@@ -457,7 +525,9 @@ x$plot.list[[1]]$data$conf.low = convertEst(x$plot.list[[1]]$data$conf.low)
 x$plot.list[[1]]$data$conf.high =  convertEst(x$plot.list[[1]]$data$conf.high)
 
 sig.data2 = sig.data
-#sig.data2$estimate = x$plot.list[[1]]$data$estimate
+sig.data2$estimate = x$plot.list[[1]]$data$estimate
+sig.data2$estimate.lower = x$plot.list[[1]]$data$conf.low
+sig.data2$estimate.upper = x$plot.list[[1]]$data$conf.high
 
 x$plot.list[[1]]$data$fade = sig.data2$fade
 
@@ -471,6 +541,39 @@ x$plot.list[[1]] +
 ```
 
 \newpage
+
+Table for paper
+
+```{r}
+# outdata = x$plot.list[[1]]$data[,c("estimate","conf.low",'conf.high')]
+# 
+# outdata$estimate = round(outdata$estimate)
+# outdata$conf.low = round(outdata$conf.low)
+# outdata$conf.high = round(outdata$conf.high)
+# #outdata = outdata[2:nrow(outdata),]
+# 
+# xd = as.data.frame(summary(finalModel)$coef)
+# #xd = xd[2:nrow(xd),]
+# outdata$wald.t = xd$`t value`
+# 
+# sig = modelComparison$`Pr(>Chisq)`
+# names(sig) = rownames(modelComparison)
+# sigx = sig[feModel]
+# #sigx = sigx[2:length(sigx)]
+# 
+# outdata$model.comparison.p = sigx
+# outdata$estimate = paste(
+#   c("","+")[1+(outdata$estimate>0)],
+#   as.character(outdata$estimate),sep='')
+# 
+# outdata$label = feLabels2
+# 
+# outdata = outdata[,c("label","estimate","conf.low",
+#                      "conf.high","t", "model.comparison.p")]
+# 
+# write.csv(outdata[2:nrow(outdata),],file="../../results/tables/Efficiency_FixedEffects.csv")
+```
+
 
 ## Random effects
 
