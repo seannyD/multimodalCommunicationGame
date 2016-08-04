@@ -334,6 +334,13 @@ Pick final model for estimates:
 finalModel = blocXmod
 ```
 
+Final model estimates:
+
+```{r}
+summary(finalModel)
+```
+
+
 Check model predictions.  The model predictions are in the right range and direction, fitting linear quite well:
 
 ```{r}

@@ -41,21 +41,21 @@ pdf("../../results/graphs/Repairs/TotalNumberOfRepairs.pdf",
     width=10, height=5)
 par(mfrow=c(1,2))
 
-barplot(t(visual[2,,]), beside=T,
-        xlab='Game',
-        ylab="Total number of repairs",
-        col = cols,
-        main = "Visual stimuli",
-        ylim=yrange)
-
 barplot(t(auditory[2,,]), beside=T,
         xlab='Game',
-        ylab="Total number of repairs",
+        ylab="Total number of matcher turns",
         col = cols,
         main = "Auditory stimuli",
         ylim=yrange)
 
-legend(10, yrange[2], legend=c("Multimodal",'Visual',"Vocal"),
+barplot(t(visual[2,,]), beside=T,
+        xlab='Game',
+        ylab="Total number of matcher turns",
+        col = cols,
+        main = "Visual stimuli",
+        ylim=yrange)
+
+legend(10, yrange[2], legend=c("Multimodal",'Visual',"Acoustic"),
        pch=15,
        col = cols)
 dev.off()
