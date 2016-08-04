@@ -149,7 +149,7 @@ m0 =  lmer(trialLength.log ~ 1 +
 
 ```
 
-Now we add a series of possible confounding factors such as the number of turns etc.  We add the main experimental factors at the end to ensure that they're really contributing to the model over and above
+Now we add a series of possible confounding factors such as the number of turns etc.  We add the main experimental factors at the end to ensure that they're really contributing to the model over and above the confounds.
 
 ```{r models2, cache=TRUE}
 # Add number of turns
@@ -291,6 +291,10 @@ nTurnXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
+
+# Turn x modality x condtion
+# Note that the acousitc modality had hardly any matcher turns, 
+#so the factor is dropped
 
 tuXmoXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
              I(trialTotal^2) +
@@ -493,7 +497,7 @@ sig.data$fade = sig.data$sig > 0.05
 
 Plot the strength of the fixed effects:
 
-```{r fixEf}
+```{r fixEf, warning=F}
 x = sjp.lmer(finalModel, 'fe', 
          show.intercept = T,
          sort.est=NULL,
@@ -515,7 +519,7 @@ x$plot.list[[1]]
 
 Attempt plot with axes in milliseconds.
 
-```{r fixEfMilliseconds}
+```{r fixEfMilliseconds, warning=F}
 convertEst = function(X){
   exp(meanLogTrialLength+X) - exp(meanLogTrialLength)
 }
@@ -545,33 +549,34 @@ x$plot.list[[1]] +
 Table for paper
 
 ```{r}
-# outdata = x$plot.list[[1]]$data[,c("estimate","conf.low",'conf.high')]
-# 
-# outdata$estimate = round(outdata$estimate)
-# outdata$conf.low = round(outdata$conf.low)
-# outdata$conf.high = round(outdata$conf.high)
-# #outdata = outdata[2:nrow(outdata),]
-# 
-# xd = as.data.frame(summary(finalModel)$coef)
-# #xd = xd[2:nrow(xd),]
-# outdata$wald.t = xd$`t value`
-# 
-# sig = modelComparison$`Pr(>Chisq)`
-# names(sig) = rownames(modelComparison)
-# sigx = sig[feModel]
-# #sigx = sigx[2:length(sigx)]
-# 
-# outdata$model.comparison.p = sigx
-# outdata$estimate = paste(
-#   c("","+")[1+(outdata$estimate>0)],
-#   as.character(outdata$estimate),sep='')
-# 
-# outdata$label = feLabels2
-# 
-# outdata = outdata[,c("label","estimate","conf.low",
-#                      "conf.high","t", "model.comparison.p")]
-# 
-# write.csv(outdata[2:nrow(outdata),],file="../../results/tables/Efficiency_FixedEffects.csv")
+outdata = x$plot.list[[1]]$data[,c("estimate","conf.low",'conf.high')]
+
+outdata$estimate = round(outdata$estimate)
+outdata$conf.low = round(outdata$conf.low)
+outdata$conf.high = round(outdata$conf.high)
+#outdata = outdata[2:nrow(outdata),]
+
+xd = as.data.frame(summary(finalModel)$coef)
+#xd = xd[2:nrow(xd),]
+outdata$wald.t = xd$`t value`
+
+sig = modelComparison$`Pr(>Chisq)`
+names(sig) = rownames(modelComparison)
+sigx = sig[feModel]
+#sigx = sigx[2:length(sigx)]
+
+outdata$model.comparison.p = sigx
+outdata$estimate = paste(
+  c("","+")[1+(outdata$estimate>0)],
+  as.character(outdata$estimate),sep='')
+
+outdata$label = feLabels2
+
+outdata = outdata[,c("label","estimate","conf.low",
+                     "conf.high","wald.t",
+                     "model.comparison.p")]
+
+write.csv(outdata[2:nrow(outdata),],file="../../results/tables/Efficiency_FixedEffects.csv")
 ```
 
 

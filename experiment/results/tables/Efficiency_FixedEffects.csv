@@ -1,29 +1,28 @@
-"","estimate","conf.low","conf.high","wald.t","model.comparison.p"
-"Visual modality","+3034",-18,7398,1.94612144535765,0.298075484571985
-"Acoustic modality","+4241",-228,11608,1.83260551413065,0.298075484571985
-"Visual stimuli","+2263",231,4858,2.21640705947956,0.398366598949463
-"Game","-1183",-1382,-978,-10.4858114254123,7.39772244237647e-89
-"Game^2","+478",301,659,5.39890954652163,8.86506423058185e-13
-"Number of turns","+2477",1961,3022,10.5887328886177,3.28986398366297e-120
-"Inorrect","+2314",858,4037,3.29000872151388,2.72663253571732e-05
-"Multimodal T1","+391",-403,1279,0.937253831148494,0.547832409120476
-"Visual stims first","-536",-1973,1303,-0.622373184210807,0.621843107091511
-"Visual modality:Visual stimuli","-438",-2010,1617,-0.464277675027853,0.00289852030127955
-"Acoustic modality:Visual stimuli","-3188",-4065,-2059,-4.610903292023,0.00289852030127955
-"Visual modality:Game","+339",-11,706,1.89955480308928,0.0884165766490019
-"Acoustic modality:Game","+231",-114,594,1.30232814962486,0.0884165766490019
-"Visual stimuli:Game","-94",-427,256,-0.536473259075803,0.493319696765377
-"VisualModality:NumTurns","+771",120,1479,2.34106749403379,0.532702998908369
-"Vocal Modality:NumTurns","+729",-1622,4085,0.536454038655882,0.532702998908369
-"Visual stim:NumTurns","+435",-99,1009,1.58503333759359,0.650552976028425
-"Visual stimuli:incorrect","-32",-1283,1487,-0.0458969614372332,0.621090503144775
-"Visual modality:Incorrect","-742",-2005,833,-0.977547898797573,0.044570577383462
-"Acoustic modality:Incorrect","-1585",-2715,-166,-2.1619183656547,0.044570577383462
-"VisualStim:MultimodalT1","-481",-1695,1004,-0.679421894465179,1
-"Visual modality:Game^2","-274",-496,-44,-2.33074745295088,0.044164393092525
-"Acoustic modality:Game^2","-48",-277,190,-0.39830731859986,0.044164393092525
-"Visual modality:Visual stimuli:Game","+196",-288,715,0.77827141948426,0.0480203232108466
-"Acoustic modality:Visual stimuli:Game","-34",-502,467,-0.137115319971306,0.0480203232108466
-"VisualModality:Visual stim:NumTurns","-767",-1440,-15,-1.99677427488892,0.0258912457051263
-"Visual modality:Visual stimuli:incorrect","-145",-1759,1955,-0.152975580200899,0.561900667333172
-"Acoustic modality:Visual stimuli:incorrect","+771",-1016,3080,0.784657896010066,0.561900667333172
+"","label","estimate","conf.low","conf.high","wald.t","model.comparison.p"
+"modalityConditionvisual","Visual modality","+3039",-71,7521,1.90610970938337,0.605754746326545
+"modalityConditionvocal","Acoustic modality","+4240",-268,11714,1.811464134896,0.605754746326545
+"conditionVisual","Visual stimuli","+2262",229,4856,2.21424550007931,0.564858318226107
+"trialTotal","Game","-1184",-1382,-979,-10.4897910839745,2.59070118629982e-95
+"I(trialTotal^2)","Game^2","+477",300,658,5.39454513562274,6.64086392983596e-13
+"numberOfTurns","Number of turns","+2477",1961,3022,10.5866022669362,8.9664480795612e-111
+"incorrectTRUE","Inorrect","+2303",847,4024,3.27364993052669,2.56788232197396e-07
+"multimodalTRUE","Multimodal T1","+397",-399,1286,0.949984654090314,0.227646316407874
+"modalityConditionvisual:conditionVisual","Visual modality:Visual stimuli","-440",-2012,1616,-0.465994148493948,0.000813683219390591
+"modalityConditionvocal:conditionVisual","Acoustic modality:Visual stimuli","-3190",-4067,-2061,-4.61127023453595,0.000813683219390591
+"modalityConditionvisual:trialTotal","Visual modality:Game","+340",-10,707,1.90525814442216,0.00125029606367063
+"modalityConditionvocal:trialTotal","Acoustic modality:Game","+232",-114,594,1.3052055431885,0.00125029606367063
+"conditionVisual:trialTotal","Visual stimuli:Game","-93",-426,257,-0.530077234751298,0.654165119293367
+"modalityConditionvisual:I(trialTotal^2)","Visual modality:Game^2","-273",-495,-44,-2.32706319409803,0.044164393099981
+"modalityConditionvocal:I(trialTotal^2)","Acoustic modality:Game^2","-47",-277,190,-0.397606691238245,0.044164393099981
+"modalityConditionvisual:numberOfTurns","VisualModality:NumTurns","+771",120,1480,2.34131521692826,0.621999313273117
+"modalityConditionvocal:numberOfTurns","Vocal Modality:NumTurns","+734",-1619,4092,0.539959600054973,0.621999313273117
+"conditionVisual:numberOfTurns","Visual stim:NumTurns","+440",-94,1015,1.60372228309454,0.643452757206461
+"modalityConditionvisual:incorrectTRUE","Visual modality:Incorrect","-737",-2002,841,-0.969665184230463,0.0796591569943844
+"modalityConditionvocal:incorrectTRUE","Acoustic modality:Incorrect","-1577",-2708,-155,-2.14832730786179,0.0796591569943844
+"conditionVisual:incorrectTRUE","Visual stimuli:incorrect","-23",-1275,1499,-0.0319617973305025,0.605659910772758
+"conditionVisual:multimodalTRUE","VisualStim:MultimodalT1","-495",-1706,988,-0.698855487962392,0.583963758100745
+"modalityConditionvisual:conditionVisual:trialTotal","Visual modality:Visual stimuli:Game","+194",-290,713,0.769941370178236,0.437677699378541
+"modalityConditionvocal:conditionVisual:trialTotal","Acoustic modality:Visual stimuli:Game","-35",-503,467,-0.139629353440609,0.437677699378541
+"modalityConditionvisual:conditionVisual:numberOfTurns","VisualModality:Visual stim:NumTurns","-769",-1442,-17,-2.00228125354408,0.0421636885120488
+"modalityConditionvisual:conditionVisual:incorrectTRUE","Visual modality:Visual stimuli:incorrect","-164",-1772,1928,-0.173654507973726,0.596083576797787
+"modalityConditionvocal:conditionVisual:incorrectTRUE","Acoustic modality:Visual stimuli:incorrect","+759",-1025,3064,0.773039072930555,0.596083576797787
