@@ -77,15 +77,6 @@ d$trialLength.log = d$trialLength.log - meanLogTrialLength
 hist(d$trialLength.log)
 ```
 
-Get the length of the first T1
-```{r}
-
-
-
-```
-
-
-
 Make a variable to represent proportion of games played:
 
 ```{r}

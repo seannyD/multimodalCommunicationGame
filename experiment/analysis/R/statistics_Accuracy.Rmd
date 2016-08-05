@@ -151,7 +151,7 @@ The final models do not converge within standard tolerances, but the convergence
 ```{r models, cache=TRUE}
 # No fixed effects
 
-gc = glmerControl(optimizer = "Nelder_Mead" ,optCtrl = list(maxfun=50000))
+gc = glmerControl(optimizer = "bobyqa" ,optCtrl = list(maxfun=50000))
 
 m0 =  glmer(correct ~ 1 +
             (1 |dyadNumber) +
@@ -159,34 +159,65 @@ m0 =  glmer(correct ~ 1 +
           data=d, family=binomial,
           control = gc)
 
+game = glmer(correct ~ 1 + 
+            trialTotal +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+trialL = glmer(correct ~ 1 +
+            trialTotal +
+            trialLength.log+
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+t1L = glmer(correct ~ 1 + 
+            trialTotal +
+            trialLength.log +
+            T1Length.log +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+multi = glmer(correct ~ 1 +
+            trialTotal +
+            trialLength.log +
+            T1Length.log +
+            multimodal+
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
 mod = glmer(correct ~ 1 + modalityCondition +
+            trialTotal +
+            trialLength.log +
+            T1Length.log +
+            multimodal+
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
           control = gc)
 
 con = glmer(correct ~ 1 + modalityCondition + condition +
+            trialTotal +
+            trialLength.log +
+            T1Length.log +
+            multimodal+
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
           control = gc)
 
 modXcon = glmer(correct ~ 1 + modalityCondition * condition +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
-          data=d, family=binomial,
-          control = gc)
-
-game = glmer(correct ~ 1 + modalityCondition * condition +
             trialTotal +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
-          data=d, family=binomial,
-          control = gc)
-
-trialL = glmer(correct ~ 1 + modalityCondition * condition +
-            trialTotal +
-            trialLength.log+
+            trialLength.log +
+            T1Length.log +
+            multimodal+
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
@@ -195,15 +226,9 @@ trialL = glmer(correct ~ 1 + modalityCondition * condition +
 trialLXmo = glmer(correct ~ 1 + modalityCondition * condition +
             trialTotal +
             trialLength.log * modalityCondition+
-            (1 |dyadNumber) +
-            (1 |itemId) ,
-          data=d, family=binomial,
-          control = gc)
-
-t1L = glmer(correct ~ 1 + modalityCondition * condition +
-            trialTotal +
-            trialLength.log * modalityCondition+
             T1Length.log +
+            multimodal+
+            trialLength.log +
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
@@ -212,27 +237,21 @@ t1L = glmer(correct ~ 1 + modalityCondition * condition +
 t1LXmo = glmer(correct ~ 1 + modalityCondition * condition +
             trialTotal +
             trialLength.log * modalityCondition+
-            T1Length.log*modalityCondition +
+            T1Length.log *modalityCondition +
+            multimodal+
+            trialLength.log +
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
           control = gc)
 
-multi = glmer(correct ~ 1 + modalityCondition * condition +
-            trialTotal +
-            trialLength.log * modalityCondition+
-            T1Length.log*modalityCondition +
-            multimodal+
-            (1 |dyadNumber) +
-            (1 |itemId) ,
-          data=d, family=binomial,
-          control = gc)
 
 block = glmer(correct ~ 1 + modalityCondition * condition +
             trialTotal +
             trialLength.log * modalityCondition+
-            T1Length.log*modalityCondition +
+            T1Length.log *modalityCondition +
             multimodal+
+            trialLength.log +
             firstBlock +
             (1 |dyadNumber) +
             (1 |itemId) ,
@@ -293,9 +312,9 @@ feLabels = matrix(c(
 "modalityConditionvocal:T1Length.log","T1 length:Acoustic modality","t1LXmo"
 
 ), ncol=3, byrow = T)
-
+feLabels1 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),1])
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
-
+feModel = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),3])
 ```
 
 Plot the strength of the fixed effects:
@@ -313,6 +332,15 @@ sjp.glmer(finalModel, 'fe',
          fade.ns = T,
          string.interc="Intercept") 
 ```
+
+Table of results
+
+```{r}
+x = as.data.frame(summary(finalModel)$coef)
+mc = as.data.frame(modelComparison)
+write.csv(cbind(x,mc[feModel,]), "../../results/tables/Accuracy_FixedEffects.csv")
+```
+
 
 \newpage
 
