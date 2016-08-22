@@ -73,6 +73,8 @@ numTurns  = tapply(d$turnType, d$trialString, function(X){
   length(unique(X))
 })
 
+dyads = tapply(d$dyadNumber, d$trialString, head,n=1)
+
 m = tapply(d$modalityCondition, d$trialString, head, n=1)
 cond = tapply(d$condition, d$trialString, head, n=1)
 
@@ -84,13 +86,14 @@ library(RColorBrewer)
 
 cols = brewer.pal(3,'Pastel1')
 
-pdf("../../results/graphs/Repairs/ProportionOfTrialsWithT2.pdf")
+pdf("../../results/graphs/Repairs/ProportionOfTrialsWithT2.pdf",
+    width=7, height=4)
 barplot(tx2,beside = T,
         ylab = 'Proportion of trials with a T2',
         col = cols,
         ylim=c(0,0.12),
         names.arg = c("Auditory Stimuli","Visual Stimuli"))
-legend(3.15, 0.12, legend=c("Multimodal",'Visual',"Acoustic"),
+legend(3.25, 0.12, legend=c("Multimodal",'Visual',"Acoustic"),
        pch=15,
        col = cols)
 dev.off()
