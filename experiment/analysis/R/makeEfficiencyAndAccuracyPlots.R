@@ -78,6 +78,7 @@ dev.off()
 #
 
 d2 = read.csv("../../data/Final_Turn_data.csv", stringsAsFactors = F)
+d2$game = d2$game +1
 
 pdf("../../results/graphs/Efficiency_MultimodalCondition.pdf", width=10, height=6)
 par(mfrow=c(1,2))
