@@ -6,10 +6,50 @@ knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = e
 
 This script uses data compiled by *analyseData.R*.
 
+```{r echo=F}
+getMEText = function(r,ef, wald=NULL){
+
+AIC = r[2,]$AIC
+loglikDiff = signif(diff(r$logLik),2)
+chi = round(r$Chisq[2],2)
+df = r$`Chi Df`[2]
+p = signif(r$`Pr(>Chisq)`[2],2)
+
+wald.text = ""
+
+if(!is.null(wald)){
+  est = signif(wald[1],2)
+  stder = signif(wald[2],2)
+  t = signif(wald[3],2)
+  wptext = ""
+  if(!is.na(wald[4])){
+    wptext = paste(", Wald p =",signif(wald[4],2))
+  }
+  wald.text = paste("beta = ",est,", std.err = ",stder, ", Wald t = ",t,wptext,';')
+}
+
+begin = 'There was no significant'
+if(p <0.1){
+  begin = "There was a marginal"
+}
+if(p < 0.05){
+  begin = 'There was a significant'  
+}
+
+
+return(paste(begin,ef,"(",wald.text,"log likelihood difference =",
+             loglikDiff,", df = ",df,", Chi Squared =", chi,", p = ",p,")."))
+}
+
+```
+
+
 ## Load libraries
 
 ```{r warning=FALSE, message=FALSE}
 library(party)
+library(lme4)
+library(sjPlot)
 ```
 
 ```{r echo=F}
@@ -78,6 +118,54 @@ Scale trial length variable.
 d2$trialLength.logcenter = log(d2$trialLength)
 d2$trialLength.logcenter = d2$trialLength.logcenter - mean(d2$trialLength.logcenter)
 ```
+
+# Simple mixed effects model
+
+```{r}
+
+m0 = lmer(trialLength.logcenter ~
+            condition*trialTotal +
+            I(trialTotal^2) +
+            (1 | dyadNumber) +
+            (1 | itemId),
+          data = d2)
+
+m1 = lmer(trialLength.logcenter ~
+            condition*trialTotal +
+            I(trialTotal^2) +
+            turnModality.T1 +
+            (1 | dyadNumber) +
+            (1 | itemId),
+          data = d2)
+
+m2 = lmer(trialLength.logcenter ~
+            condition*trialTotal +
+            I(trialTotal^2) +
+            turnModality.T1*condition +
+            (1 | dyadNumber) +
+            (1 | itemId),
+          data = d2)
+
+```
+
+```{r}
+anova(m0,m1,m2)
+```
+
+`r getMEText(anova(m0,m1),"main effect of T1 signal modality")`
+
+`r getMEText(anova(m1,m2),"interaction between T1 signal modality and condition")`
+
+
+
+
+```{r}
+sjp.lmer(m2, 'fe',
+         geom.colors = c(1,1),
+         fade.ns = T)
+```
+
+\newpage
 
 # Binary trees
 

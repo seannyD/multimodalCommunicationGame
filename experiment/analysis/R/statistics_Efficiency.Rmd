@@ -586,7 +586,66 @@ sjp.lmer(finalModel, type = "re.qq")
 ```
 
 
+## Relevel factors to see other comparisons
 
+```{r}
+d2 = d
+d2$condition = relevel(d2$condition,"Visual")
+fm2 = update(finalModel, data=d2)
+summary(fm2)
+
+feLabelsB = feLabels2
+feLabelsB = gsub("Visual stimuli","Acoustic stimuli",feLabelsB)
+feLabelsB = gsub("VisualStim","AcousticStim",feLabelsB)
+feLabelsB = gsub("Visual stim","AcousticStim",feLabelsB)
+
+x2 = sjp.lmer(fm2, 'fe', 
+         show.intercept = T,
+         sort.est=NULL,
+         axis.labels = feLabelsB[2:length(feLabelsB)],
+         xlab="Trial time (log ms)",
+         geom.colors = c(1,1),
+         show.p=F,
+         show.values = F,
+         p.kr = FALSE,
+         string.interc="Intercept",
+         prnt.plot = F) 
+
+x2$plot.list[[1]]$data$fade = sig.data$fade
+
+x2$plot.list[[1]] 
+
+```
+
+
+
+```{r}
+d2 = d
+d2$modalityCondition = relevel(d2$modalityCondition,"visual")
+fm2 = update(finalModel, data=d2)
+summary(fm2)
+
+feLabelsB = feLabels2
+feLabelsB = gsub("Visual modality","Multimodal",feLabelsB)
+
+
+x2 = sjp.lmer(fm2, 'fe', 
+         show.intercept = T,
+         sort.est=NULL,
+         axis.labels = feLabelsB[2:length(feLabelsB)],
+         xlab="Trial time (log ms)",
+         geom.colors = c(1,1),
+         show.p=F,
+         show.values = F,
+         p.kr = FALSE,
+         string.interc="Intercept",
+         prnt.plot = F) 
+
+x2$plot.list[[1]]$data$fade = sig.data$fade
+
+x2$plot.list[[1]] 
+
+```
 
 
 
