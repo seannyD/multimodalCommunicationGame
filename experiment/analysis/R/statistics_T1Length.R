@@ -106,24 +106,27 @@ x
 
 ####
 # Raw data
+
+pdf(file="../../results/graphs/T1_Efficiency.pdf",width=10, height=6)
+
 par(mfrow=c(1,2))
 for(stimType in unique(d$condition)){
   
   plotmeans(turnLength/1000~game,
-            data = d[d$modalityCondition=='multi' & !duplicated(d$trialString)
+            data = d[d$modalityCondition=='vocal' & !duplicated(d$trialString)
                      & d$condition==stimType,],
             col=1,barcol = 1,
             xaxt='n',ylim=c(0,20),
             n.label = F,
             xlab='Game', ylab="T1 length (s)")
-  plotmeans(trialLength/1000~game,
-            data = d[d$modalityCondition=='visual' & !duplicated(d$trialString)
+  plotmeans(turnLength/1000~game,
+            data = d[d$modalityCondition=='multi' & !duplicated(d$trialString)
                      & d$condition==stimType,],
             add=T,col=2,barcol = 2,n.label = F,
             xaxt='n')
   
   plotmeans(turnLength/1000~game,
-            data = d[d$modalityCondition=='vocal' & !duplicated(d$trialString)
+            data = d[d$modalityCondition=='visual' & !duplicated(d$trialString)
                      & d$condition==stimType,],
             add=T,col=3,barcol = 3,n.label = F,
             ylim=c(0,20),
@@ -131,11 +134,11 @@ for(stimType in unique(d$condition)){
             ylab="T1 length (s)", las=1)
   
   if(stimType=="Visual"){
-    legend(1.5,20,legend=c('Multimodal','Visual','Acoustic'), col=1:3,lty=1,pch=1)
+    legend(1.5,20,legend=c('Acoustic','Multimodal','Visual'), col=1:3,lty=1,pch=1)
   }
   title(main=stimType)
 }
-
+dev.off()
 
 
 
