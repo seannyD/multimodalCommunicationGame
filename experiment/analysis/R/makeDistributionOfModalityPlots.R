@@ -92,7 +92,7 @@ breaks = seq(0,1,0.05)
 hist(propAcousticSignals_AuditoryStim, col=cols[1], border=cols[1], breaks=breaks)
 hist(propAcousticSignals_VisualStim, add=T, col=cols[2], border = cols[2], breaks=breaks)
 
-par("../../results/graphs/PropModality/PropModality_T1_2Hist.pdf")
+pdf("../../results/graphs/PropModality/PropModality_T1_2Hist.pdf")
 par(mfrow=c(2,1))
 hist(propAcousticSignals_AuditoryStim, col='white',  breaks=breaks, main='Auditory Stimuli', xlab='', ylab='Number of cases')
 hist(propAcousticSignals_VisualStim, col='white', breaks=breaks, main="Visual Stimuli",xlab='Proportion of acoustic signals', ylab='Number of cases')
@@ -130,10 +130,10 @@ x = getPropTimeAcoustic(acousticDirector ,visualDirector)
 propAcousticSignals_AuditoryStim_director = x[[1]]
 propAcousticSignals_VisualStim_director = x[[2]]
 
-par("../../results/graphs/PropModality/PropModality_Director_2Hist.pdf")
+pdf("../../results/graphs/PropModality/PropModality_Director_2Hist.pdf")
 par(mfrow=c(2,1))
-hist(propAcousticSignals_AuditoryStim_director, col='white',  breaks=breaks, main='Auditory Stimuli', xlab='', ylab='Number of cases')
-hist(propAcousticSignals_VisualStim_director, col='white', breaks=breaks, main="Visual Stimuli",xlab='Proportion of acoustic signals', ylab='Number of cases')
+hist(propAcousticSignals_AuditoryStim_director, col='red', border='black',  breaks=breaks, main='Auditory Stimuli', xlab='', ylab='Number of cases')
+hist(propAcousticSignals_VisualStim_director, col='red', border='black', breaks=breaks, main="Visual Stimuli",xlab='Proportion of acoustic signals', ylab='Number of cases')
 dev.off()
 
 pdf("../../results/graphs/PropModality/PropModality_Director.pdf")
