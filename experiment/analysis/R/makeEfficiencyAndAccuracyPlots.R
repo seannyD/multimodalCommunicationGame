@@ -136,7 +136,7 @@ for(stimType in unique(d$condition)){
             data = d[d$modalityCondition=='vocal' & !duplicated(d$trialString)
                      & d$condition==stimType,],
             col=1,barcol = 1,n.label = F,
-            ylim=c(0,10),
+            ylim=c(0,20),
             xlab="Game",
             ylab="Signal length (s)", las=1)
   plotmeans(signalLength/1000~game,
