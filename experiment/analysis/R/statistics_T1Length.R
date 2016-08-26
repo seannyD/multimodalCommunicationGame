@@ -94,7 +94,8 @@ x = sjp.lmer(m0, 'fe', fade.ns = T,
              xlab= "Turn length (ms)",
              p.kr = FALSE,
              show.values = F,
-             show.p = F)
+             show.p = F,
+             show.intercept = T)
 
 x$plot.list[[1]]$data$estimate =convertEst(x$plot.list[[1]]$data$estimate)
 x$plot.list[[1]]$data$conf.low = convertEst(x$plot.list[[1]]$data$conf.low)
@@ -114,7 +115,7 @@ for(stimType in unique(d$condition)){
   
   plotmeans(turnLength/1000~game,
             data = d[d$modalityCondition=='vocal' & !duplicated(d$trialString)
-                     & d$condition==stimType,],
+                     & d$condition==stimType & d$dyadNumber=="D10",],
             col=1,barcol = 1,
             xaxt='n',ylim=c(0,20),
             n.label = F,
@@ -140,6 +141,43 @@ for(stimType in unique(d$condition)){
 }
 dev.off()
 
+
+
+
+
+
+
+pdf(file="../../results/graphs/MatcherChoosingTime_TrialLengthMinusT1Length.pdf",width=10, height=6)
+par(mfrow=c(1,2))
+for(stimType in unique(d$condition)){
+  
+  plotmeans((trialLength/1000) - (turnLength/1000) ~game,
+            data = d[d$modalityCondition=='vocal' & !duplicated(d$trialString)
+                     & d$condition==stimType & d$dyadNumber=="D10",],
+            col=1,barcol = 1,
+            xaxt='n',ylim=c(0,20),
+            n.label = F,
+            xlab='Game', ylab="Trial Length - T1 length (s)")
+  plotmeans((trialLength/1000) - (turnLength/1000)~game,
+            data = d[d$modalityCondition=='multi' & !duplicated(d$trialString)
+                     & d$condition==stimType,],
+            add=T,col=2,barcol = 2,n.label = F,
+            xaxt='n')
+  
+  plotmeans((trialLength/1000) - (turnLength/1000)~game,
+            data = d[d$modalityCondition=='visual' & !duplicated(d$trialString)
+                     & d$condition==stimType,],
+            add=T,col=3,barcol = 3,n.label = F,
+            ylim=c(0,20),
+            xlab="Game",
+            las=1)
+  
+  if(stimType=="Visual"){
+    legend(1.5,20,legend=c('Acoustic','Multimodal','Visual'), col=1:3,lty=1,pch=1)
+  }
+  title(main=stimType)
+}
+dev.off()
 
 
 

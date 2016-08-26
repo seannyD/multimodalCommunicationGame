@@ -124,3 +124,37 @@ for(stimType in unique(d2$condition)){
 }
 legend(2,20, legend=c("Multi","Acoustic","Visual"), col=2, lty=1:3,pch=c(1,2,4))
 dev.off()
+
+
+########
+
+pdf("../../results/graphs/Signal1_Efficiency.pdf", width=10, height=6)
+par(mfrow=c(1,2))
+for(stimType in unique(d$condition)){
+  
+  plotmeans(signalLength/1000~game,
+            data = d[d$modalityCondition=='vocal' & !duplicated(d$trialString)
+                     & d$condition==stimType,],
+            col=1,barcol = 1,n.label = F,
+            ylim=c(0,10),
+            xlab="Game",
+            ylab="Signal length (s)", las=1)
+  plotmeans(signalLength/1000~game,
+            data = d[d$modalityCondition=='multi' & !duplicated(d$trialString)
+                     & d$condition==stimType,],
+            add=T,col=2,barcol = 2,
+            xaxt='n',
+            n.label = F)
+  plotmeans(signalLength/1000~game,
+            data = d[d$modalityCondition=='visual' & !duplicated(d$trialString)
+                     & d$condition==stimType,],
+            add=T,col=3,barcol = 3,n.label = F,
+            xaxt='n')
+  if(stimType=="Auditory"){
+    legend(2.5,10,legend=c('Visual','Multimodal','Acoustic'), col=3:1,lty=1,pch=1)
+  }
+  title(main=stimType)
+}
+dev.off()
+
+
