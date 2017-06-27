@@ -62,6 +62,15 @@ Here is a graph showing the distribution of trial lengths by conditions:
 
 ![The efficiency of trials in different conditions](../../results/graphs/Efficiency.pdf)
 
+Average trial time for the whole experiment:
+
+```{r}
+mean(d$trialLength)
+sd(d$trialLength)
+```
+
+
+
 The distribution of trial times is very skewed:
 
 ```{r}

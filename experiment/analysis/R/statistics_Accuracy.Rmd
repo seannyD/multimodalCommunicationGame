@@ -72,6 +72,15 @@ Here is a graph showing the distribution of accuracy by conditions:
 
 ![The efficiency of trials in different conditions](../../results/graphs/Accuracy.pdf)
 
+Average accuracy per dyad:
+
+```{r}
+av.acc = tapply(d$correct, d$dyadNumber, function(X){sum(X)/length(X)})
+mean(av.acc)
+```
+
+
+
 Make a variable to represent proportion of games played:
 
 ```{r}

@@ -1,5 +1,3 @@
-# This file creates mirrored histograms, and also the data file "../../data/Final_Multimodal_data.csv"
-
 library(gplots)
 setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment/analysis/R/")
 d = read.csv("../../data/FinalSignalData.csv", stringsAsFactors = F)
@@ -147,6 +145,65 @@ multhist(propAcousticSignals_AuditoryStim_director,
          xlab="Proportion of Acoustic signals",
          ylab="Number of trials")
 dev.off()
+
+
+## Mirrored histogram in ggplot
+
+library(ggplot2)
+require(gridExtra)
+
+df = data.frame(aud=c(propAcousticSignals_AuditoryStim,NA), # fill in one point to make lengths equal
+                vis=propAcousticSignals_VisualStim)
+
+brks = c(-300,-200,-100,0,100,200)
+binwidthx = 1/20
+
+# Don't plot non-multimodal signals
+df = df[df$aud!=0,]
+df = df[df$aud!=1,]
+
+pdf("../../results/graphs/PropModality/Director_T1_Auditory_PropModality.pdf", width=4, height=4)
+g = ggplot(df, aes(aud))
+gaud = g+ geom_histogram( aes(x = aud, y = ..count..), binwidth = binwidthx, fill="gray") + 
+  scale_y_continuous(name = "Number\nof trials") + 
+  theme(plot.title = element_text(hjust=0.5),
+        axis.title.y = element_text(angle=0, vjust=0.5)) +
+  scale_x_continuous(limits =c(-0.05,1.05), name="Signal ratio",breaks=c(0,0.5,1),labels = c("Visual\nonly","Equal length","Auditory\nonly"))
+gaud
+dev.off()
+
+g = ggplot(df, aes(aud))
+g1 = g+ geom_histogram( aes(x = aud, y = -..count..), binwidth = binwidthx, fill="gray") + 
+  scale_y_continuous(name = "Number of trials",breaks=brks,labels = abs(brks), limits = c(-300,0)) + 
+  theme(plot.title = element_text(hjust=0.5),
+        axis.text.y=element_blank(),  
+        axis.ticks.y=element_blank()) +
+  scale_x_continuous(limits =c(-0.1,1.1), name="",breaks=c(0,0.5,1),labels = c("","",""))+ 
+  coord_flip() + ggtitle("Auditory Stimuli")
+
+g2 = ggplot(df, aes(vis))
+g2 = g2 +geom_histogram( aes(x = vis, y = ..count..), binwidth = binwidthx, fill="gray") + 
+  scale_y_continuous(name = "Number of trials",breaks=brks,labels = abs(brks), limits = c(0,300)) +
+  scale_x_continuous(name="",breaks=c(0,0.5,1),labels = c("Visual only","Equal length","Auditory only"),limits = c(-0.1,1.1))+ 
+  theme(plot.title = element_text(hjust=0.5),
+        axis.title.y=element_text(angle=0,vjust = 1),
+        axis.text.y=element_text(angle=0,hjust = 0.5, margin = margin(r=10)),
+        axis.ticks.y = element_blank()) +
+  annotation_custom(
+    grob = textGrob(label = "Ratio", hjust = 0, gp = gpar(cex = 1.2)),
+    ymin = -90,      # Vertical position of the textGrob
+    ymax = -90,
+    xmin = 1.2,         # Note: The grobs are positioned outside the plot area
+    xmax = 1) + 
+  coord_flip() + ggtitle("Visual Stimuli")
+
+g2b <- ggplot_gtable(ggplot_build(g2))
+g2b$layout$clip[g2b$layout$name == "panel"] <- "off"
+
+pdf("../../results/graphs/PropModality/PropModality_T1_ggplot2.pdf", width=8, height=4)
+grid.arrange(g1, g2b, ncol=2,widths=c(1,1.2))
+dev.off()
+
 
 ############
 # T2
