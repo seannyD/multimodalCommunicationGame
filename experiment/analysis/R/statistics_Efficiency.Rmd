@@ -48,6 +48,15 @@ d$T1Length.log = log(d$T1Length)
 d$T1Length.log = d$T1Length.log - mean(d$T1Length.log)
 ```
 
+Did matcher respond?
+
+```{r}
+matcherResponds = tapply(d$turnType, d$trialString, function(X){
+  any(X %in% c("T2","T4","T6","T8",'T10'))
+})
+d$matcherResponds = matcherResponds[d$trialString]
+```
+
 
 We don't need info on every signal in each turn, just the trial time.  Keep only 1st signal in each trial.
 
@@ -271,7 +280,7 @@ moXcoXga =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
 
 Interactions
 
-```{r}
+```{r models8, cache=T}
 # interaction between turns and modality
 nTurnXmo = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
              I(trialTotal^2) +
@@ -294,7 +303,7 @@ nTurnXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
 
 # Turn x modality x condtion
 # Note that the acousitc modality had hardly any matcher turns, 
-#so the factor is dropped
+# so the factor is dropped
 
 tuXmoXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
              I(trialTotal^2) +
@@ -356,6 +365,17 @@ modXgamQ =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE)
 
+# Add whether the matcher responded
+mtchTrn =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +(modalityCondition:I(trialTotal^2)) +
+            numberOfTurns*modalityCondition*condition +
+            incorrect *modalityCondition*condition +
+            multimodal + multimodal:condition + 
+            matcherResponds +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE)
+
 ```
 
 
@@ -368,6 +388,7 @@ block =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             numberOfTurns*modalityCondition*condition +
             incorrect *modalityCondition*condition +
             multimodal + multimodal:condition + 
+            matcherResponds +
             firstBlock +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
@@ -378,6 +399,7 @@ blocXmod = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             numberOfTurns*modalityCondition*condition +
             incorrect *modalityCondition*condition +
             multimodal + multimodal:condition + 
+            matcherResponds +
             firstBlock*modalityCondition +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
@@ -396,14 +418,15 @@ modelComparison = anova(m0,modality,cond,game,modXcond,conXgame, modXgame,
       moXcoXga,nTurns,nTurnXmo,nTurnXco,tuXmoXco,
       incor,moXincor,coXincor,coXmoXin,
       multim,multiXco,
-      gamQuad,modXgamQ,block, blocXmod)
+      gamQuad,modXgamQ,mtchTrn,
+      block, blocXmod)
 modelComparison
 ```
 
 Pick final model for estimates:
 
 ```{r}
-finalModel = modXgamQ
+finalModel = mtchTrn
 ```
 
 Final model estimates:
@@ -470,7 +493,8 @@ feLabels = matrix(c(
 "modalityConditionvocal:numberOfTurns","Vocal Modality:NumTurns","nTurnXmo",
 "numberOfTurns","Number of turns","nTurns",
 "multimodalTRUE","Multimodal T1","multim",
-"conditionVisual:multimodalTRUE","VisualStim:MultimodalT1","multiXco"
+"conditionVisual:multimodalTRUE","VisualStim:MultimodalT1","multiXco",
+"matcherResponds","Matcher Responds"
 ), ncol=3, byrow = T)
 
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])

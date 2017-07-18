@@ -57,6 +57,14 @@ d$T1Length.log = log(d$T1Length)
 d$T1Length.log = d$T1Length.log - mean(d$T1Length.log)
 ```
 
+Did matcher respond?
+
+```{r}
+matcherResponds = tapply(d$turnType, d$trialString, function(X){
+  any(X %in% c("T2","T4","T6","T8",'T10'))
+})
+d$matcherResponds = matcherResponds[d$trialString]
+```
 
 We don't need info on every signal in each turn, just the trial time.  Keep only 1st signal in each trial.
 
@@ -254,6 +262,18 @@ t1LXmo = glmer(correct ~ 1 + modalityCondition * condition +
           data=d, family=binomial,
           control = gc)
 
+mtchTrn = glmer(correct ~ 1 + modalityCondition * condition +
+            trialTotal +
+            trialLength.log * modalityCondition+
+            T1Length.log *modalityCondition +
+            multimodal+
+            trialLength.log +
+            matcherResponds +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
 
 block = glmer(correct ~ 1 + modalityCondition * condition +
             trialTotal +
@@ -261,6 +281,7 @@ block = glmer(correct ~ 1 + modalityCondition * condition +
             T1Length.log *modalityCondition +
             multimodal+
             trialLength.log +
+            matcherResponds +
             firstBlock +
             (1 |dyadNumber) +
             (1 |itemId) ,
@@ -278,7 +299,7 @@ Compare the fit of the models:
 ```{r anova}
 modelComparison = anova(m0,mod,con,modXcon, 
                         game, trialL,trialLXmo,
-                        t1L, t1LXmo, 
+                        t1L, t1LXmo, mtchTrn,
                         multi, block)
 modelComparison
 ```
@@ -318,8 +339,8 @@ feLabels = matrix(c(
 "trialLength.log",'Trial Length','trialL',
 "T1Length.log","T1 length","t1L",
 "modalityConditionvisual:T1Length.log","T1 length:Visual modality","t1LXmo",
-"modalityConditionvocal:T1Length.log","T1 length:Acoustic modality","t1LXmo"
-
+"modalityConditionvocal:T1Length.log","T1 length:Acoustic modality","t1LXmo",
+"matcherResponds","Matcher Responds"
 ), ncol=3, byrow = T)
 feLabels1 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),1])
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])

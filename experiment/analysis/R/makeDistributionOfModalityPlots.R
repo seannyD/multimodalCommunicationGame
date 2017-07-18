@@ -1,4 +1,7 @@
 library(gplots)
+library(ggplot2)
+library(grid)
+library(gridExtra)
 setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment/analysis/R/")
 d = read.csv("../../data/FinalSignalData.csv", stringsAsFactors = F)
 

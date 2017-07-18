@@ -200,8 +200,15 @@ doAnalysis = function(basedir, writefile){
       }
     }
     
+    # Fix assignments to Director/Matcher.
+    # T1, T3, T5 etc always refer to Director
+    # T2, T4, T6 etc. always refer to Matcher
+
+    d[d$role=="Director" & d$turnType %in% c("T2","T4",'T6','T8','T10'),]$role = "Matcher"
+    d[d$role=="Matcher" & d$turnType %in% c("T1","T3",'T5','T7','T9','T11'),]$role = "Director"
     
-    
+    # Fix turn counts
+    #tapply(d$trialString,)
     
     # Write the data to a main file
     write.csv(d, writefile)
