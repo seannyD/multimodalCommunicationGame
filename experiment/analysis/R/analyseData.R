@@ -207,6 +207,43 @@ doAnalysis = function(basedir, writefile){
     d[d$role=="Director" & d$turnType %in% c("T2","T4",'T6','T8','T10'),]$role = "Matcher"
     d[d$role=="Matcher" & d$turnType %in% c("T1","T3",'T5','T7','T9','T11'),]$role = "Director"
     
+    
+    # Did matcher respond in this trial?
+    
+    matcherResponds = tapply(d$turnType, d$trialString, function(X){
+      any(X %in% c("T2","T4","T6","T8",'T10'))
+    })
+    d$matcherResponds = matcherResponds[d$trialString]
+    
+    
+    # Work out cumulative number of trials with interaction
+    d$matcherResponds.cumulative = NA
+    for(dyadx in unique(d$dyadNumber)){
+      for(conditionx in c("Auditory",'Visual')){
+        sel = d$dyadNumber== dyadx & d$condition==conditionx
+        # second part is to get order correct
+        mr2 = tapply(d[sel,]$matcherResponds, d[sel,]$trialString, head,n=1)[unique(d[sel,]$trialString)]
+        mr2 = cumsum(mr2)
+        d[sel,]$matcherResponds.cumulative = mr2[d[sel,]$trialString]
+      }
+    }
+    
+    # Work out cumulative number of extra turns beyond T1
+    d$numTurns.cumulative = NA
+    for(dyadx in unique(d$dyadNumber)){
+      for(conditionx in c("Auditory",'Visual')){
+        sel = d$dyadNumber== dyadx & d$condition==conditionx
+        # second part is to get order correct
+        mr2 = tapply(d[sel,]$turnType, d[sel,]$trialString, function(X){length(unique(X))})[unique(d[sel,]$trialString)]
+        # make it number of additional turns, otherwise it's highly correlated with number of turns
+        mr2 = mr2 -1
+        mr2 = cumsum(mr2)
+        d[sel,]$numTurns.cumulative = mr2[d[sel,]$trialString]
+      }
+    }
+    
+    
+    
     # Fix turn counts
     #tapply(d$trialString,)
     

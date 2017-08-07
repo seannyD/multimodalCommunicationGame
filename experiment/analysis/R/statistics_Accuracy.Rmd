@@ -39,11 +39,6 @@ Work out number of turns in each trial.
 numTurns = tapply(d$turnString, d$trialString, 
                   function(X){length(unique(X))})
 d$numberOfTurns = numTurns[d$trialString]
-
-matcherResponds = tapply(d$turnType, d$trialString, 
-                         function(X){"T2" %in% X})
-d$matcherResponds = matcherResponds[d$trialString]
-
 ```
 
 Variable for length of first T1
@@ -143,7 +138,7 @@ Get an idea of the structure of the data from a binary tree:
 cx = ctree(correct ~ modalityCondition + condition +
             trialTotal +
             trialLength +
-            numberOfTurns +
+            matcherResponds +
             matcherResponds +
             T1Length +
             multimodal+
@@ -210,21 +205,49 @@ multi = glmer(correct ~ 1 +
           data=d, family=binomial,
           control = gc)
 
-mod = glmer(correct ~ 1 + modalityCondition +
+
+mtchTrn = glmer(correct ~ 1 +
             trialTotal +
             trialLength.log +
             T1Length.log +
             multimodal+
+            matcherResponds +
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
           control = gc)
 
-con = glmer(correct ~ 1 + modalityCondition + condition +
+tMtchTr = glmer(correct ~ 1 +
             trialTotal +
             trialLength.log +
             T1Length.log +
             multimodal+
+            matcherResponds +
+            matcherResponds.cumulative +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+con = glmer(correct ~ 1 + condition +
+            trialTotal +
+            trialLength.log +
+            T1Length.log +
+            multimodal+
+            matcherResponds +
+            matcherResponds.cumulative +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+
+mod = glmer(correct ~ 1 + modalityCondition + condition +
+            trialTotal +
+            trialLength.log +
+            T1Length.log +
+            multimodal+
+            matcherResponds +
+            matcherResponds.cumulative +
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
@@ -235,6 +258,8 @@ modXcon = glmer(correct ~ 1 + modalityCondition * condition +
             trialLength.log +
             T1Length.log +
             multimodal+
+            matcherResponds +
+            matcherResponds.cumulative +
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
@@ -245,7 +270,8 @@ trialLXmo = glmer(correct ~ 1 + modalityCondition * condition +
             trialLength.log * modalityCondition+
             T1Length.log +
             multimodal+
-            trialLength.log +
+            matcherResponds +
+            matcherResponds.cumulative +
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
@@ -256,19 +282,21 @@ t1LXmo = glmer(correct ~ 1 + modalityCondition * condition +
             trialLength.log * modalityCondition+
             T1Length.log *modalityCondition +
             multimodal+
-            trialLength.log +
+            matcherResponds +
+            matcherResponds.cumulative +
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
           control = gc)
 
-mtchTrn = glmer(correct ~ 1 + modalityCondition * condition +
+tMaTXmo = glmer(correct ~ 1 + modalityCondition * condition +
             trialTotal +
             trialLength.log * modalityCondition+
             T1Length.log *modalityCondition +
             multimodal+
-            trialLength.log +
             matcherResponds +
+            matcherResponds.cumulative +
+              matcherResponds.cumulative:modalityCondition +
             (1 |dyadNumber) +
             (1 |itemId) ,
           data=d, family=binomial,
@@ -280,7 +308,9 @@ block = glmer(correct ~ 1 + modalityCondition * condition +
             trialLength.log * modalityCondition+
             T1Length.log *modalityCondition +
             multimodal+
-            trialLength.log +
+            matcherResponds +
+            matcherResponds.cumulative +
+              matcherResponds.cumulative:modalityCondition +
             matcherResponds +
             firstBlock +
             (1 |dyadNumber) +
@@ -297,23 +327,34 @@ block = glmer(correct ~ 1 + modalityCondition * condition +
 Compare the fit of the models:
 
 ```{r anova}
-modelComparison = anova(m0,mod,con,modXcon, 
+modelComparison = anova(m0,con,mod,modXcon, 
                         game, trialL,trialLXmo,
-                        t1L, t1LXmo, mtchTrn,
+                        t1L, t1LXmo, mtchTrn, tMtchTr,tMaTXmo,
                         multi, block)
-modelComparison
+x = capture.output(modelComparison)
+x[!grepl(": ",x)]
 ```
 
-Pick final model for estimates:
+Pick final model for estimates with only significant variables:
 
 ```{r}
-finalModel = block
+finalModel = glmer(correct ~ 1 + 
+            modalityCondition * condition +
+            trialTotal +
+            trialLength.log +
+            matcherResponds.cumulative +
+            (1 |dyadNumber) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
 ```
 
 Model estimates:
 
 ```{r}
 summary(finalModel)
+# number of correctly categorised trials
+sum((predict(finalModel)>0) == d$correct)/nrow(d)
 ```
 
 
@@ -340,18 +381,30 @@ feLabels = matrix(c(
 "T1Length.log","T1 length","t1L",
 "modalityConditionvisual:T1Length.log","T1 length:Visual modality","t1LXmo",
 "modalityConditionvocal:T1Length.log","T1 length:Acoustic modality","t1LXmo",
-"matcherResponds","Matcher Responds"
+"matcherRespondsTRUE","Matcher Responds",'mtchTrn',
+"matcherResponds.cumulative","Total interaction","tMtchTr",
+"modalityConditionvisual:matcherResponds.cumulative","Total interaction:Visual Modality","tMaTXmo",
+"modalityConditionvocal:matcherResponds.cumulative","Total interaction:Vocal Modality","tMaTXmo"
 ), ncol=3, byrow = T)
 feLabels1 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),1])
 feLabels2 = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),2])
 feModel = as.vector(feLabels[match(names(fixef(finalModel)),feLabels[,1]),3])
+
+sig = modelComparison$`Pr(>Chisq)`
+names(sig) = rownames(modelComparison)
+
+sig.data = data.frame(
+  estimate = fixef(finalModel),
+  y=1:length(fixef(finalModel)),
+  sig=sig[feModel])
+sig.data$fade = sig.data$sig > 0.05
 ```
 
 Plot the strength of the fixed effects:
 
 
 ```{r}
-sjp.glmer(finalModel, 'fe', 
+x = sjp.glmer(finalModel, 'fe', 
          show.intercept = T,
          sort.est=NULL,
          axis.labels = feLabels2[2:length(feLabels2)],
@@ -360,7 +413,12 @@ sjp.glmer(finalModel, 'fe',
          show.values = F,
          show.p = F,
          fade.ns = T,
-         string.interc="Intercept") 
+         string.interc="Intercept",
+         prnt.plot = F) 
+
+x$plot.list[[1]]$data$fade = sig.data$fade
+
+x$plot.list[[1]] 
 ```
 
 Table of results
@@ -389,6 +447,28 @@ sjp.glmer(finalModel, type = "re.qq")
 ```
 
 
+\newpage
+
+## Plots
+
+```{r}
+gx = sjp.glmer(finalModel, 'eff', vars=c("matcherResponds.cumulative"), 
+               title = '', prnt.plot = F,
+               show.ci=T, facet.grid = F)
+
+pdf("../../results/graphs/CumulativeMatcherTurns.pdf",
+    width=4,height=4)
+gx$plot + 
+  xlab("Number of previous trials where\nmatcher responded") + 
+  ylab("Probability of correct choice") + 
+  #scale_x_continuous(breaks = c(0,5,10,15)) + 
+  coord_cartesian(xlim=c(0,15)) 
+dev.off()
+
+sjp.glmer(finalModel, 'eff',show.ci=T, facet.grid = F)
+sjp.int(finalModel,'eff', show.ci = T)
+
+```
 
 
 
