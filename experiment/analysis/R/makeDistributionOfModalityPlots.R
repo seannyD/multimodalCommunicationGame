@@ -96,7 +96,7 @@ hist(propAcousticSignals_VisualStim, add=T, col=cols[2], border = cols[2], break
 pdf("../../results/graphs/PropModality/PropModality_T1_2Hist.pdf")
 par(mfrow=c(2,1))
 hist(propAcousticSignals_AuditoryStim, col='white',  breaks=breaks, main='Auditory Stimuli', xlab='', ylab='Number of cases')
-hist(propAcousticSignals_VisualStim, col='white', breaks=breaks, main="Visual Stimuli",xlab='Proportion of acoustic signals', ylab='Number of cases')
+hist(propAcousticSignals_VisualStim, col='white', breaks=breaks, main="Visual Stimuli",xlab='Proportion of vocal signals', ylab='Number of cases')
 dev.off()
 
 # Line distributions
@@ -171,7 +171,7 @@ gaud = g+ geom_histogram( aes(x = aud, y = ..count..), binwidth = binwidthx, fil
   scale_y_continuous(name = "Number\nof trials") + 
   theme(plot.title = element_text(hjust=0.5),
         axis.title.y = element_text(angle=0, vjust=0.5)) +
-  scale_x_continuous(limits =c(-0.05,1.05), name="Signal ratio",breaks=c(0,0.5,1),labels = c("Visual\nonly","Equal length","Auditory\nonly"))
+  scale_x_continuous(limits =c(-0.05,1.05), name="Signal ratio",breaks=c(0,0.5,1),labels = c("Gesture\nonly","Equal length","Vocal\nonly"))
 gaud
 dev.off()
 
@@ -187,7 +187,7 @@ g1 = g+ geom_histogram( aes(x = aud, y = -..count..), binwidth = binwidthx, fill
 g2 = ggplot(df, aes(vis))
 g2 = g2 +geom_histogram( aes(x = vis, y = ..count..), binwidth = binwidthx, fill="gray") + 
   scale_y_continuous(name = "Number of trials",breaks=brks,labels = abs(brks), limits = c(0,300)) +
-  scale_x_continuous(name="",breaks=c(0,0.5,1),labels = c("Visual only","Equal length","Auditory only"),limits = c(-0.1,1.1))+ 
+  scale_x_continuous(name="",breaks=c(0,0.5,1),labels = c("Gesture only","Equal length","Vocal only"),limits = c(-0.1,1.1))+ 
   theme(plot.title = element_text(hjust=0.5),
         axis.title.y=element_text(angle=0,vjust = 1),
         axis.text.y=element_text(angle=0,hjust = 0.5, margin = margin(r=10)),
@@ -229,7 +229,7 @@ multhist(propAcousticSignals_AuditoryStimT2,propAcousticSignals_VisualStimT2,
          dir=c(1,-1),
          main='T2',
          legends = c("Auditory","Visual"),
-         xlab="Proportion of Acoustic signals",
+         xlab="Proportion of vocal signals",
          ylab="Number of trials")
 dev.off()
 ############
@@ -257,7 +257,7 @@ multhist(propAcousticSignals_AuditoryStimT3,propAcousticSignals_VisualStimT3,
          dir=c(1,-1),
          main='T3',
          legends = c("Auditory","Visual"),
-         xlab="Proportion of Acoustic signals",
+         xlab="Proportion of vocal signals",
          ylab="Number of trials")
 dev.off()
 

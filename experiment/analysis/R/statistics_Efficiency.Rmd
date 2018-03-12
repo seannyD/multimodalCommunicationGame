@@ -6,7 +6,36 @@ knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = e
 
 # Intro 
 
-This script uses data compiled by *analyseData.R*.
+The main data used in this analysis comes from `../../data/FinalSignalData.csv` (compiled by  `analyseData.R`).  Each row represents one signal, but this script only keeps one signal per trial, and the rest of the analysis is on the trial-by-trial level.  The variables in the data are as follows (some are calculated in the script below):
+
+-  X: ID
+-  filename: Filename of the ELAN file
+-  dyadNumber: ID of the participant dyad
+-  condition: Stimuli type (Auditory or Visual)
+-  game: Game number (0-3)
+-  trial: Trial number (0-15)
+-  target: Target stimuli shown to the director
+-  choice: Meaning chosen by the matcher
+-  correct: True if the matcher's choice is correct
+-  trialStart, trialEnd, trialLength: Start, end and length of trial in milliseconds
+-  trialValue:  A unique string that represents data from the trial.  Numbers in the curly brackets represent the choices given to the matcher
+-  startOfNextTrial: Timestamp for next trial, used in processing the data.
+-  turnStart, turnEnd, turnLength: the start, end and length of the turn in milliseconds.
+-  signalStart, signalEnd, signalLength: the start, end and length of the signal.
+-  signalType:  Annotation value in ELAN, not meaningful
+-  tiralString: Unique string to identify trial
+-  modalityCondition:  The condition for the dyad (multi= multimodal, visual=gesture only, vocal=vocal only)
+-  playerId:  Unique ID for the participant producing the signal 
+-  itemId:  Unique ID for the target stimulus
+-  turnString:  Unque ID for the turn
+-  matcherResponds:  Does matcher take a turn in this trial?
+-  matcherResponds.cumulative: The (scaled) number of previous trials that a has responded.
+-  T1Length, T1Length.log:  Length and log length of the director's first turn.
+-  trialTotal: Number of trials played so far, scaled (and centered) to represent number of games played.
+-  firstBlock:  Block order
+-  incorrect:  Was the matcher's choice incorrect?
+-  multimodal:  Was the director's first turn multimodal?
+
 
 ## Load libraries
 
@@ -16,6 +45,7 @@ library(sjPlot)
 library(ggplot2)
 library(lattice)
 library(influence.ME)
+library(dplyr)
 ```
 
 ```{r echo=F}
@@ -48,7 +78,69 @@ d = d[!duplicated(d$trialString),]
 
 # Descriptive stats
 
+Make a variable to represent proportion of games played:
+
+```{r}
+# Make a variable that represents the number of trials played
+d$trialTotal = d$trial + (d$game * (max(d$trial)+1))
+# Convert to proportion of games played, so that estimates reflect change per game.
+d$trialTotal = d$trialTotal / 16
+```
+
 Here is a graph showing the distribution of trial lengths by conditions:
+
+```{r}
+summary = d %>% 
+  group_by(condition, modalityCondition,game) %>% 
+  summarise(Efficiency=mean(trialLength),
+            sd=sd(trialLength),
+            ci.w =           qnorm(0.95)*sd/sqrt(length(trialLength)),
+            upper=Efficiency+ci.w,
+            lower = Efficiency-ci.w)
+summary$game = summary$game +1
+
+summary$modalityCondition =
+  factor(summary$modalityCondition,
+         levels = c("visual",'multi','vocal'),
+         labels=c("Gestural","Multimodal","Vocal"))
+
+ggplot(d, aes(x=trialTotal, y=trialLength,colour=modalityCondition)) +
+  geom_smooth() + facet_grid(.~condition)
+
+ggplot(d, aes(x=trialTotal, y=trialLength,colour=condition)) +
+  geom_smooth() + facet_grid(.~modalityCondition)
+
+gx1 = ggplot(summary, aes(x=game, y=Efficiency, group=condition, colour=modalityCondition)) + 
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=0.5) +
+  facet_grid(. ~ condition) +
+  stat_summary(fun.y="mean", geom="line", aes(group=modalityCondition)) +
+    geom_point() +
+  scale_colour_discrete(name="Condition") +
+  ggtitle("Efficiency") +
+  xlab("Game") +
+  ylab("Trial length (ms)")
+
+gx1
+pdf("../../results/graphs/Efficiency_gg.pdf",
+    width = 5, height=3)
+gx1
+dev.off()
+
+gx2 = ggplot(summary, aes(x=game, y=Efficiency, group=condition, colour=condition, shape=condition)) + 
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=0.5) +
+  facet_grid(. ~ modalityCondition) +
+  stat_summary(fun.y="mean", geom="line", aes(group=condition)) +
+    geom_point() +
+  scale_colour_discrete(name="Stimuli") +
+  scale_shape_discrete(name="Stimuli") +
+  xlab("Game")
+
+gx2
+pdf("../../results/graphs/Efficiency_gg_alt.pdf",
+    width = 5, height=3)
+gx2
+dev.off()
+```
 
 ![The efficiency of trials in different conditions](../../results/graphs/Efficiency.pdf)
 
@@ -76,13 +168,7 @@ d$trialLength.log = d$trialLength.log - meanLogTrialLength
 hist(d$trialLength.log)
 ```
 
-Make a variable to represent proportion of games played:
-
 ```{r}
-# Make a variable that represents the number of trials played
-d$trialTotal = d$trial + (d$game * (max(d$trial)+1))
-# Convert to proportion of games played, so that estimates reflect change per game.
-d$trialTotal = d$trialTotal / 16
 # Center the trialTotal variable so intercept reflects after the first game
 d$trialTotal = d$trialTotal - 2
 
@@ -145,7 +231,7 @@ m0 =  lmer(trialLength.log ~ 1 +
 
 Now we add a series of possible confounding factors such as whether the matcher responds.  We add the main experimental factors at the end to ensure that they're really contributing to the model over and above the confounds.
 
-```{r models2, cache=TRUE}
+```{r models2, cache=FALSE}
 # Add number of matcher turns
 mtchTrn = lmer(trialLength.log ~ 1 +
                 matcherResponds +
@@ -441,6 +527,7 @@ modelComparison = anova(m0,modality,cond,game,modXcond,conXgame, modXgame,
       multim,multiXco,
       gamQuad,modXgamQ,
       block, blocXmod)
+attributes(modelComparison)$heading = ""
 modelComparison
 ```
 
@@ -731,9 +818,11 @@ x2$plot.list[[1]]
 
 # More plots
 
-```{r}
+```{r eval=F}
 x = sjp.lmer(tMtchTr,'eff', 'matcherResponds.cumulative', show.ci = T, prnt.plot = F)$plot 
+```
 
+```{r eval=F}
 x$data$y = exp(x$data$y + meanLogTrialLength)
 x$data$ci.low = exp(x$data$lower + meanLogTrialLength)
 x$data$ci.high = exp(x$data$upper + meanLogTrialLength)

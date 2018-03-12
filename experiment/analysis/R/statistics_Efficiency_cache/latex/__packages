@@ -5,3 +5,5 @@ sjPlot
 ggplot2
 lattice
 influence.ME
+dplyr
+bindrcpp

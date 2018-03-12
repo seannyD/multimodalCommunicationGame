@@ -20,6 +20,7 @@ library(ggplot2)
 library(lattice)
 library(influence.ME)
 library(party)
+library(dplyr)
 ```
 
 ```{r echo=F}
@@ -73,16 +74,64 @@ d = d[!duplicated(d$trialString),]
 
 Here is a graph showing the distribution of accuracy by conditions:
 
-![The efficiency of trials in different conditions](../../results/graphs/Accuracy.pdf)
-
-Average accuracy per dyad:
-
 ```{r}
-av.acc = tapply(d$correct, d$dyadNumber, function(X){sum(X)/length(X)})
-mean(av.acc)
+summary = d %>% 
+  group_by(condition, modalityCondition,game) %>% 
+  summarise(Accuracy=mean(correct),
+            sd=sd(correct),
+            ci.w =           qnorm(0.95)*sd/sqrt(length(correct)),
+            upper=Accuracy+ci.w,
+            lower = Accuracy-ci.w)
+summary$game = summary$game +1
+
+summary$modalityCondition =
+  factor(summary$modalityCondition,
+         levels = c("visual",'multi','vocal'),
+         labels=c("Gestural","Multimodal","Vocal"))
+
+#ggplot(d, aes(x=trialTotal, y=as.numeric(correct),colour=modalityCondition)) +
+#  geom_smooth() + facet_grid(.~condition)
+
+#ggplot(d, aes(x=trialTotal, y=as.numeric(correct),colour=condition)) +
+#  geom_smooth() + #facet_grid(.~modalityCondition)
+
+ggplot(summary, aes(x=game, y=Accuracy, group=condition, colour=modalityCondition)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin=lower, ymax=upper)) +
+  facet_grid(. ~ condition) +
+  stat_summary(fun.y="mean", geom="line", aes(group=modalityCondition))
+
+gx = ggplot(summary, aes(x=game, y=Accuracy, group=condition, colour=condition, shape=condition)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin=lower, ymax=upper)) +
+  facet_grid(. ~ modalityCondition) +
+  stat_summary(fun.y="mean", geom="line", aes(group=condition)) +
+  scale_colour_discrete(name="Stimuli") +
+  scale_shape_discrete(name="Stimuli") +
+  xlab("Game")
+gx
+pdf("../../results/graphs/Accuracy_gg.pdf",
+    width = 5, height=3)
+gx
+dev.off()
+
+gx1 = ggplot(summary, aes(x=game, y=Accuracy, group=condition, colour=modalityCondition)) + 
+  geom_errorbar(aes(ymin=lower, ymax=upper), width=0.5) +
+  facet_grid(. ~ condition) +
+  stat_summary(fun.y="mean", geom="line", aes(group=modalityCondition)) +
+    geom_point() +
+  scale_colour_discrete(name="Condition") +
+  ggtitle("Accuracy") +
+  xlab("Game")
+
+gx1
+pdf("../../results/graphs/Accuracy_gg_alt.pdf",
+    width = 5, height=3)
+gx1
+dev.off()
 ```
 
-
+\newpage
 
 Make a variable to represent proportion of games played:
 
@@ -95,6 +144,15 @@ d$trialTotal = d$trialTotal / 16
 d$trialTotal = d$trialTotal
 
 ```
+
+Average accuracy per dyad:
+
+```{r}
+av.acc = tapply(d$correct, d$dyadNumber, function(X){sum(X)/length(X)})
+mean(av.acc)
+```
+
+
 
 Make a variable for which stimuli the players experienced first.
 
@@ -451,7 +509,7 @@ sjp.glmer(finalModel, type = "re.qq")
 
 ## Plots
 
-```{r}
+```{r eval=F}
 gx = sjp.glmer(finalModel, 'eff', vars=c("matcherResponds.cumulative"), 
                title = '', prnt.plot = F,
                show.ci=T, facet.grid = F)
@@ -464,11 +522,16 @@ gx$plot +
   #scale_x_continuous(breaks = c(0,5,10,15)) + 
   coord_cartesian(xlim=c(0,15)) 
 dev.off()
-
-sjp.glmer(finalModel, 'eff',show.ci=T, facet.grid = F)
-sjp.int(finalModel,'eff', show.ci = T)
-
 ```
+
+```{r eval=F, echo=F}
+sjp.glmer(finalModel, 'eff',show.ci=T, facet.grid = F)
+```
+
+```{r}
+sjp.int(finalModel,'eff', show.ci = T)
+```
+
 
 
 

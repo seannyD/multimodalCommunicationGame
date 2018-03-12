@@ -1,6 +1,7 @@
 library(ggplot2)
 library(RColorBrewer)
 library(gridExtra)
+library(reshape2)
 setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment/analysis/R/")
 d = read.csv("../../data/Final_Turn_data.csv",stringsAsFactors = F)
 
@@ -84,4 +85,48 @@ grid.arrange(g1, g2, ncol=2, widths=c(1,0.6))
 dev.off()
 
 
+dx2D = d[d$modalityCondition=='multi' & d$role=="Director",]
+dx2M = d[d$modalityCondition=='multi' & d$role=="Matcher",]
+dx2M[dx2M$turnModalityType=="unimodal mixed",]$turnModalityType = "multi"
 
+dir = prop.table(table(dx2D$turnModalityType,
+                 dx2D$condition),
+           margin=2)
+dir = melt(dir)
+dir$Var1 = factor(dir$Var1, levels=c("unimodal acoustic",'multi','unimodal visual'),
+                  labels=c("Vocal only","Multimodal","Gesture only"))
+
+mat = prop.table(table(dx2M$turnModalityType,
+                       dx2M$condition),
+                 margin=2)
+mat = melt(mat)
+mat$Var1 = factor(mat$Var1, levels=c("unimodal acoustic",'multi','unimodal visual'),
+                  labels=c("Vocal only","Multimodal","Gesture only"))
+mat[5,] = c("Vocal only",'Visual',0)
+mat[6,] = c("Vocal only",'Auditory',0)
+mat$value = as.numeric(mat$value)
+
+#mat = as.data.frame(mat)
+#dir = as.data.frame(dir)
+
+dg = ggplot(dir,aes(x=Var2, y=value, fill=Var1))+
+  geom_bar(stat="identity")+
+  xlab("") +
+  ylab("Proportion of turns") +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Directors")
+
+
+mg = ggplot(mat,aes(x=Var2, y=value, fill=Var1))+
+  geom_bar(stat="identity")+
+  xlab("") +
+  ylab("Proportion of turns") +
+  theme(legend.position = "right",
+        plot.title = element_text(hjust = 0.5)) +
+  scale_fill_discrete(name="Modality") +
+  ggtitle("Matchers")
+
+pdf("../../results/graphs/PropModality/DirectorAndMatcher_TurnTypes_Stacked.pdf", width=8, height=4)
+grid.arrange(dg, mg, ncol=2, widths=c(0.74,1))
+dev.off()

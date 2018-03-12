@@ -35,7 +35,7 @@
         <Int>0</Int>
     </pref>
     <pref key="TimeLineViewer.ZoomLevel">
-        <Float>10.0</Float>
+        <Float>34.0</Float>
     </pref>
     <pref key="SegmentationViewer.ActiveTier">
         <String>Trials 2</String>
@@ -47,17 +47,17 @@
         <pref key="Stimuli">
             <Object class="java.awt.Color">160,0,90</Object>
         </pref>
-        <pref key="Acoustic 1">
-            <Object class="java.awt.Color">90,90,0</Object>
-        </pref>
         <pref key="Part 1">
             <Object class="java.awt.Color">0,0,90</Object>
         </pref>
-        <pref key="Acoustic 2">
-            <Object class="java.awt.Color">90,160,90</Object>
+        <pref key="Acoustic 1">
+            <Object class="java.awt.Color">90,90,0</Object>
         </pref>
         <pref key="Part 2">
             <Object class="java.awt.Color">0,160,90</Object>
+        </pref>
+        <pref key="Acoustic 2">
+            <Object class="java.awt.Color">90,160,90</Object>
         </pref>
         <pref key="Visual 1">
             <Object class="java.awt.Color">0,160,0</Object>
@@ -80,13 +80,13 @@
         <Object class="java.awt.Point">0,23</Object>
     </pref>
     <pref key="SelectionBeginTime">
-        <Long>973100</Long>
+        <Long>971975</Long>
     </pref>
     <pref key="LayoutManager.CurrentMode">
         <Int>1</Int>
     </pref>
     <pref key="MediaTime">
-        <Long>990100</Long>
+        <Long>972378</Long>
     </pref>
     <pref key="SegmentationViewer.ZoomLevel">
         <Float>30.0</Float>
@@ -138,12 +138,12 @@
         <String>synch</String>
     </pref>
     <pref key="TimeScaleBeginTime">
-        <Long>936400</Long>
+        <Long>999349</Long>
     </pref>
     <pref key="LayoutManager.MediaAreaHeight">
-        <Int>264</Int>
+        <Int>137</Int>
     </pref>
     <pref key="SelectionEndTime">
-        <Long>990100</Long>
+        <Long>972378</Long>
     </pref>
 </preferences>

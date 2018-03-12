@@ -1,5 +1,7 @@
 library(psych)
-# FS: I have one remark about the second part of Dyad 18 (the one with the two guys). I found a few sections more difficult to do. This was because they communicate so fast between the two of them that it isn't always clear who is taking the turn. One of the guys also keeps making these noises to emphasize where he's pointing at - I didn't code this as being a sound to illustrate which image he was looking at.
+# FS: "I have one remark about the second part of Dyad 18 (the one with the two guys). I found a few sections more difficult to do. This was because they communicate so fast between the two of them that it isn't always clear who is taking the turn. One of the guys also keeps making these noises to emphasize where he's pointing at - I didn't code this as being a sound to illustrate which image he was looking at."
+
+# All but one of the disagreements in modality assignment involved the primary coder coding a turn as multimodal while the secondary coder coded it as unimodal.  Prior to the reliability analysis, the secondary coder flagged 7 trials which were difficult to code because of the speed of the interaction and that they were unsure how to code "small noises to emphasize where [the participant is] pointing at".  Had these been coded according to the coding definitions, then the modality would match between the coders in 90% of trials.
 
 
 library(sjPlot)
@@ -125,11 +127,13 @@ perm = function(X,Y){
   mean(abs(sample(X) -Y))
 }
 trueDiff = mean(abs(res$dLength - res$rLength))
-permDiff = replicate(1000,perm(res$dLength, res$rLength))
+set.seed(2389)
+permDiff = replicate(1001,perm(res$dLength, res$rLength))
 sum(permDiff<trueDiff)
 mean(permDiff)
 
 z = (trueDiff - mean(permDiff)) / sd(permDiff)
+z
 
 
 
@@ -181,11 +185,11 @@ cohen.kappa(x=cbind(res$d.numTurn,res$r.numTurn))
 # 239 trials were coded by a naive second coder (12.7% of all trials, from 9 dyads, about 30 minutes in randomly chosen sections, covering all combinations of stimulus type and modality condition).
 
 # Number of turns
-# For 95% of trials, the two coders agreed on the number of turns in the trial.  When there was disagreement, in 10 of the remaining 12 trials, the second coder coded fewer turns than the primary coder.  The second coder preferred to code a single long turn for the director and ignore minor turns by the matcher, while the primary coder coded separate turns.
+# For 95% of trials, the two coders agreed on the number of turns in the trial (Cohen's weighted Kappa = 0.84).  
 
 # Director T1 turn length
-# The mean absolute difference in T1 turn length between the two coders was 587ms.  When looking at the trials where the coders agreed on the number of turns, this dropped to 379ms.  In addition, the coders' values were correlated with r = 0.98, suggesting that there would be little difference to the statistical analysis given an alternative coder.   Overall, the primary coder was biased to code longer T1s (there were no significant differences in deviation between signal type and modality condition).
+# When looking at the trials where the coders agreed on the number of turns, the coders' trial turn length codings were correlated with r = 0.98.   
 
 # T1 Modality
-# T1 turn modality is only possibly contentious for the multimodal signal condition.  The modality of a turn depends on the timing of signals: if an acoustic signal and a visual signal overlap in time, then the turn is coded as multimodal.  98 multimodal-condition trials were coded by both coders.  T1 turn modality was identical for 85% of trials.  All but one of the disagreements involved the primary coder coding T1 as multimodal while the secondary coder coded T1 as unimodal.  Prior to the reliability analysis, the secondary coder flagged 7 trials which were difficult to code because of the speed of the interaction and that they were unsure how to code "small noises to emphasize where [the participant is] pointing at".  Had these been coded, then the modality would match between the coders in 92% of trials.
+# T1 turn modality is only possibly contentious for the multimodal signal condition.  The modality of a turn depends on the timing of signals: if an acoustic signal and a visual signal overlap in time, then the turn is coded as multimodal.  98 multimodal-condition trials were coded by both coders.  The raters showed good agreement (Cohen's Kappa = 0.81, 85% of turns coded identically).  All but one of the disagreements involved the primary coder coding T1 as multimodal while the secondary coder coded T1 as unimodal.  Prior to the reliability analysis, the secondary coder flagged 7 trials which were difficult to code because of the speed of the interaction and that they were unsure how to code "small noises to emphasize where [the participant is] pointing at".  Had these been coded according to the coding definitions, then the modality would match between the coders in 90% of trials.
 
