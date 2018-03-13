@@ -25,7 +25,7 @@ Extract the data from the elan files, make csv files.  This python file uses the
 ```
 cd processing
 python3 eaf2csv_multimodal_B.py
-``
+```
 
 Extract measurements and create final data frame.  This loads the data in ../data/csv/*.csv and compiles it into a single file, plus some handy summary variables.
 
