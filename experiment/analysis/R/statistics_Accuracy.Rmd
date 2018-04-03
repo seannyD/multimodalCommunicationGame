@@ -528,7 +528,7 @@ dev.off()
 sjp.glmer(finalModel, 'eff',show.ci=T, facet.grid = F)
 ```
 
-```{r}
+```{r eval=F, echo=F}
 sjp.int(finalModel,'eff', show.ci = T)
 ```
 
