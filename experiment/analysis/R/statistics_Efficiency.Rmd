@@ -110,12 +110,15 @@ ggplot(d, aes(x=trialTotal, y=trialLength,colour=modalityCondition)) +
 ggplot(d, aes(x=trialTotal, y=trialLength,colour=condition)) +
   geom_smooth() + facet_grid(.~modalityCondition)
 
+pd = position_dodge(width=0.5)
 gx1 = ggplot(summary, aes(x=game, y=Efficiency, group=condition, colour=modalityCondition)) + 
-  geom_errorbar(aes(ymin=lower, ymax=upper), width=0.5) +
+  geom_errorbar(aes(ymin=lower, ymax=upper,group=modalityCondition), width=0.5,position=pd) +
   facet_grid(. ~ condition) +
-  stat_summary(fun.y="mean", geom="line", aes(group=modalityCondition)) +
-    geom_point() +
-  scale_colour_discrete(name="Condition") +
+  stat_summary(fun.y="mean", geom="line", aes(group=modalityCondition),position=pd) +
+    geom_point(aes(group=modalityCondition,shape=modalityCondition),position=pd) +
+  scale_colour_brewer(palette="Set2", name="Condition") +
+  scale_shape(name="Condition") +
+  theme(panel.grid.major.x = element_blank()) +
   ggtitle("Efficiency") +
   xlab("Game") +
   ylab("Trial length (ms)")

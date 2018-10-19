@@ -93,17 +93,17 @@ dir = prop.table(table(dx2D$turnModalityType,
                  dx2D$condition),
            margin=2)
 dir = melt(dir)
-dir$Var1 = factor(dir$Var1, levels=c("unimodal acoustic",'multi','unimodal visual'),
-                  labels=c("Vocal only","Multimodal","Gesture only"))
+dir$Var1 = factor(dir$Var1, levels=rev(c("unimodal acoustic",'multi','unimodal visual')),
+                  labels=rev(c("Vocal","Multimodal","Gestural")))
 
 mat = prop.table(table(dx2M$turnModalityType,
                        dx2M$condition),
                  margin=2)
 mat = melt(mat)
-mat$Var1 = factor(mat$Var1, levels=c("unimodal acoustic",'multi','unimodal visual'),
-                  labels=c("Vocal only","Multimodal","Gesture only"))
-mat[5,] = c("Vocal only",'Visual',0)
-mat[6,] = c("Vocal only",'Auditory',0)
+mat$Var1 = factor(mat$Var1, levels=rev(c("unimodal acoustic",'multi','unimodal visual')),
+                  labels=rev(c("Vocal","Multimodal","Gestural")))
+mat[5,] = c("Vocal",'Visual',0)
+mat[6,] = c("Vocal",'Auditory',0)
 mat$value = as.numeric(mat$value)
 
 #mat = as.data.frame(mat)
@@ -115,6 +115,7 @@ dg = ggplot(dir,aes(x=Var2, y=value, fill=Var1))+
   ylab("Proportion of turns") +
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values=rev(c("#8da0cb","#fc8d62","#66c2a5")),name="Modality") +
   ggtitle("Directors")
 
 
@@ -124,7 +125,7 @@ mg = ggplot(mat,aes(x=Var2, y=value, fill=Var1))+
   ylab("Proportion of turns") +
   theme(legend.position = "right",
         plot.title = element_text(hjust = 0.5)) +
-  scale_fill_discrete(name="Modality") +
+  scale_fill_manual(values=rev(c("#8da0cb","#fc8d62","#66c2a5")),name="Modality") +
   ggtitle("Matchers")
 
 pdf("../../results/graphs/PropModality/DirectorAndMatcher_TurnTypes_Stacked.pdf", width=8, height=4)

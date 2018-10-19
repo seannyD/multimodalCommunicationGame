@@ -30,6 +30,8 @@ colx = c(
   rgb(220,117,109,maxColorValue = 255),
   rgb(117,155,252,maxColorValue = 255))
 
+colx = c("#fc8d62","#66c2a5")
+
 aorder = tapply(
   d[d$modality=="Acoustic",]$signalStart.R,
   d[d$modality=="Acoustic",]$trialString,
@@ -57,6 +59,8 @@ colx = c(
   rgb(117,155,252,maxColorValue = 255),
   rgb(220,117,109,maxColorValue = 255))
 
+colx = c("#66c2a5","#8da0cb")
+
 pdf("../../results/graphs/PropModality/TurnOverlap_Director_Multimodal_AcousticStimuli.pdf", width=5,height = 3)
 par(mar=c(3,6,1,1))
 barplot(counts, col=colx[2],border=colx[2], 
@@ -68,8 +72,8 @@ rect(which(cuts==0),250,which(cuts==1),300, col=colx[1], border=NA)
 barplot(counts, col=colx[2],border=colx[2], 
         space = 0,
         ylim=c(0,300), add=T, yaxt='n')
-text(which(cuts==0.5),275,"Gesture", col='white')
-text(which(cuts==0.5),75,"Vocalisation", col='white')
+text(which(cuts==0.5),275,"Gestural", col='white')
+text(which(cuts==0.5),75,"Vocal", col='white')
 arrows(0, y0 = -25 ,x1=length(counts),y1=-25, xpd=T, lwd=2)
 text(length(counts)/2, -40,"Time", xpd=T)
 
@@ -159,6 +163,8 @@ for(ts in unique(d$trialString)){
 colx = c(
   rgb(220,117,109,maxColorValue = 255),
   rgb(117,155,252,maxColorValue = 255))
+
+colx = c("#fc8d62","#66c2a5")
 
 aorder = tapply(d[d$modality=="Acoustic",]$signalStart.R,
                 d[d$modality=="Acoustic",]$trialString,
