@@ -43,6 +43,8 @@ res = 201
 cuts = seq(-0.5,1.5,length.out = res)
 counts = rep(0,length.out = res)
 
+startAndEnd = data.frame()
+
 for(i in 1:length(trials)){
   ts = trials[i]
   v = d[d$trialString==ts & d$modality=='Visual',][1,]
@@ -51,6 +53,10 @@ for(i in 1:length(trials)){
   aL = a$signalLength / v$signalLength
   aStart = (a$signalStart - v$signalStart) / v$signalLength
   aEnd = aStart + aL
+  
+  startAndEnd  = rbind(startAndEnd,
+                       data.frame(start=aStart,end=aEnd))
+  
   sel = cuts>aStart & cuts<=aEnd
   counts[sel] = counts[sel] + 1
 }
@@ -78,6 +84,31 @@ arrows(0, y0 = -25 ,x1=length(counts),y1=-25, xpd=T, lwd=2)
 text(length(counts)/2, -40,"Time", xpd=T)
 
 dev.off()
+
+makeBandGraph = function(startAndEnd){
+  par(mar=c(1,1,1,1))
+  lineColours = c("#a8b6d7","#8da0cb","#506daf")
+  plot(c(-0.5,1.5),c(1,240),type='n',xaxt="n",yaxt='n',xlab="",ylab="",bty='n')
+  rect(0,230,1,250, col=colx[1], border=NA)
+  rect(0,0,1,230, col='#f2f2f2', border=NA)
+  arrows(startAndEnd$start,1:nrow(startAndEnd),startAndEnd$end,1:nrow(startAndEnd),length=0,
+         col = lineColours,lwd = 3,lend=2)
+  text(0.5,240,"Gestural", col='white',cex=2)
+  text(0.5,50,"Vocal", col='white',cex=4)
+}
+
+
+startAndEnd$mid = startAndEnd$start + ((startAndEnd$end-startAndEnd$start)/2)
+startAndEnd$mid2 = (-startAndEnd$start + (startAndEnd$end -1)) / (startAndEnd$end-startAndEnd$start)
+pdf("../../results/graphs/PropModality/TurnOverlap_Director_Multimodal_AcousticStimuli_Bands.pdf")
+#makeBandGraph(startAndEnd[order(startAndEnd$start,startAndEnd$end),])
+makeBandGraph(startAndEnd[order(startAndEnd$end-startAndEnd$start,startAndEnd$start,decreasing = T),])
+dev.off()
+pdf("../../results/graphs/PropModality/TurnOverlap_Director_Multimodal_AcousticStimuli_BandsRand.pdf")
+set.seed(2389)
+makeBandGraph(startAndEnd[sample(1:nrow(startAndEnd)),])
+dev.off()
+
 
 
 ### Relative to Acoustic
