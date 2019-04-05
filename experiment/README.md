@@ -43,6 +43,8 @@ Run analyses (in `analysis/R/`):
 -  `statistics_Accuracy.Rmd`
 -  `statistics_Efficiency.Rmd`
 
+Note that some of the plotting functions rely on the sjPlot library version 2.4.1. The most recent version of sjPlot has removed functions like `sjp.lmer` and `sjp.glmer`.
+
 
 Results are stored in the `results` folder.
 
