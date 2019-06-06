@@ -1,6 +1,8 @@
 ---
-title: "Modality effects in a signalling game"
-output: pdf_document
+title: "Modality effects in a signalling game: Efficiency"
+output: 
+  pdf_document:
+    toc: true
 knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), "../../results/MainResults_Efficiency.pdf")) })
 ---
 
@@ -44,9 +46,16 @@ library(lme4)
 library(sjPlot)
 library(ggplot2)
 library(lattice)
-library(influence.ME)
+#library(influence.ME)
 library(dplyr)
 ```
+
+The sjPlot library was updated during this investigation, removing various functions. They are reinstated here:
+
+```{r}
+sjp.lmer = plot_model
+```
+
 
 ```{r echo=F}
 try(setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment/analysis/R/"))
@@ -209,8 +218,6 @@ d$multimodal[is.na(d$multimodal)] = F
 
 ```
 
-
-
 \newpage
 
 # Mixed models
@@ -224,11 +231,14 @@ It is reasonable to have a random slope for trial by dyad, but this caused unrel
 The final random slopes were for condition and incorrectness by dyad/player, and modality condition by item.
 
 ```{r models, cache=TRUE}
+# lme4 version 1.1-21 introduces different default optimisers
+# Switch back to original:
+ctrl = lmerControl(optimizer = "bobyqa")
 # No fixed effects
 m0 =  lmer(trialLength.log ~ 1 + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 ```
 
@@ -240,14 +250,14 @@ mtchTrn = lmer(trialLength.log ~ 1 +
                 matcherResponds +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 tMtchTr = lmer(trialLength.log ~ 1 +
                 matcherResponds +
                 matcherResponds.cumulative +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 # Add whether the response was incorrect
 incor = lmer(trialLength.log ~ 1 + 
@@ -256,13 +266,11 @@ incor = lmer(trialLength.log ~ 1 +
             incorrect +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 ```
 
 
 ```{r models3, cache=TRUE}
-
-
 # Add multimodal signal
 
 multim = lmer(trialLength.log ~ 1 + 
@@ -272,7 +280,7 @@ multim = lmer(trialLength.log ~ 1 +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 # Add effect of trial
 
@@ -284,7 +292,7 @@ game = lmer(trialLength.log ~ 1 +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 # Add the quadratic effect of trial
 gamQuad = lmer(trialLength.log ~ 1 + 
@@ -295,7 +303,7 @@ gamQuad = lmer(trialLength.log ~ 1 +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 ```
 
 
@@ -309,7 +317,7 @@ modality =  lmer(trialLength.log ~ 1 + modalityCondition +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 # Add stimulus condition
 cond = lmer(trialLength.log ~ 1 + modalityCondition + condition + 
             trialTotal + I(trialTotal^2) +
@@ -319,7 +327,7 @@ cond = lmer(trialLength.log ~ 1 + modalityCondition + condition +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 # Add interaction between modality and stimulus condition
 modXcond = lmer(trialLength.log ~ 1 + modalityCondition*condition +
@@ -330,7 +338,7 @@ modXcond = lmer(trialLength.log ~ 1 + modalityCondition*condition +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 ```
 
 ```{r models6, cache=T}
@@ -344,7 +352,7 @@ conXgame = lmer(trialLength.log ~ 1 + modalityCondition*condition +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 # Add interaction between modality and trial
 modXgame = lmer(trialLength.log ~ 1 + modalityCondition*condition +
              trialTotal + I(trialTotal^2) +
@@ -355,7 +363,7 @@ modXgame = lmer(trialLength.log ~ 1 + modalityCondition*condition +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 # Add 3-way interaction
 moXcoXga =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
@@ -365,7 +373,7 @@ moXcoXga =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 ```
 
 Interactions
@@ -380,7 +388,7 @@ nTurnXmo = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 nTurnXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
              I(trialTotal^2) +
@@ -391,7 +399,7 @@ nTurnXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 # Turn x modality x condtion
 # Note that the acousitc modality had hardly any matcher turns, 
@@ -405,7 +413,7 @@ tuXmoXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 # Add the interaction between modality and incorrectness
 moXincor =   lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
@@ -416,7 +424,7 @@ moXincor =   lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 # Add the interaction between condition and incorrectness
 coXincor =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
              I(trialTotal^2) +
@@ -426,7 +434,7 @@ coXincor =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 # Add the three-way interaction between condition, modality and incorrectness
 coXmoXin = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
              I(trialTotal^2) +
@@ -436,7 +444,7 @@ coXmoXin = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 ```
 
@@ -451,7 +459,7 @@ multiXco = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal + multimodal:condition + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 # Add interaction between quadratic effect of trial and modality
 modXgamQ =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
@@ -462,7 +470,7 @@ modXgamQ =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal + multimodal:condition + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 
 
 
@@ -481,7 +489,7 @@ tMaTxMod = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             multimodal + multimodal:condition + 
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = FALSE)
+          data=d, REML = FALSE,control = ctrl)
 ```
 
 Check block has no effect
@@ -499,7 +507,8 @@ block =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
             firstBlock +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
-          data=d, REML = TRUE)# Last model is REML to get estimates
+          data=d, REML = TRUE, control = ctrl)
+# Last model is REML to get estimates
 
 # Add interaction between block order and modality
 blocXmod = lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
@@ -643,21 +652,15 @@ sig.data$fade = sig.data$sig > 0.05
 Plot the strength of the fixed effects:
 
 ```{r fixEf, warning=F}
-x = sjp.lmer(finalModel, 'fe', 
-         show.intercept = T,
-         sort.est=NULL,
-         axis.labels = feLabels2[2:length(feLabels2)],
-         xlab="Trial time (log ms)",
-         geom.colors = c(1,1),
-         show.p=F,
-         show.values = F,
-         p.kr = FALSE,
-         string.interc="Intercept",
-         prnt.plot = F) 
-
-x$plot.list[[1]]$data$fade = sig.data$fade
-
-x$plot.list[[1]] 
+x = get_model_data(finalModel, 'est')
+x$label = feLabels2[2:length(feLabels2)]
+x$col = c("sig","nonsig")[1+(x$p.value>=0.05)]
+ggplot(x, aes(y=estimate,x=label,colour=col)) +
+  geom_hline(yintercept = 0) +
+  geom_point() +
+  geom_errorbar(aes(ymin=x$conf.low,ymax=x$conf.high)) +
+  coord_flip() +
+  theme(legend.position = 'none')
 ```
 
 \newpage
@@ -669,39 +672,29 @@ convertEst = function(X){
   exp(meanLogTrialLength+X) - exp(meanLogTrialLength)
 }
 
-x$plot.list[[1]]$data$estimate =convertEst(x$plot.list[[1]]$data$estimate)
-x$plot.list[[1]]$data$conf.low = convertEst(x$plot.list[[1]]$data$conf.low)
-x$plot.list[[1]]$data$conf.high =  convertEst(x$plot.list[[1]]$data$conf.high)
+x$estimate = convertEst(x$estimate)
+x$conf.low = convertEst(x$conf.low)
+x$conf.high = convertEst(x$conf.high)
 
-sig.data2 = sig.data
-sig.data2$estimate = x$plot.list[[1]]$data$estimate
-sig.data2$estimate.lower = x$plot.list[[1]]$data$conf.low
-sig.data2$estimate.upper = x$plot.list[[1]]$data$conf.high
-
-x$plot.list[[1]]$data$fade = sig.data2$fade
-
-x$plot.list[[1]] + 
-  scale_y_continuous(name="Difference (ms)") +
-  scale_x_discrete(labels=feLabels2) + 
-  #geom_point(data=sig.data2,aes(y=estimate,x=y,fade=fade), color=sig.data$pointCol) +
-  coord_flip(ylim=c(-5000,10000))
-  
+ggplot(x, aes(y=estimate,x=label,colour=col)) +
+  geom_hline(yintercept = 0) +
+  geom_point() +
+  geom_errorbar(aes(ymin=x$conf.low,ymax=x$conf.high)) +
+  theme(legend.position = 'none') +
+  coord_flip(ylim = c(-5000,5000))
 
 ```
 
 for every 10 trials where a matcher responded, subsequent trials were shorter by:
 
 ```{r}
-
 noInteraction = convertEst(
   fixef(finalModel)["(Intercept)"]
 )
-
 tenResponses = convertEst(
   fixef(finalModel)["(Intercept)"] +
   (10 * fixef(finalModel)["matcherResponds.cumulative"])
 )
-
 noInteraction - tenResponses
 ```
 
@@ -711,34 +704,26 @@ noInteraction - tenResponses
 Table for paper
 
 ```{r}
-outdata = x$plot.list[[1]]$data[,c("estimate","conf.low",'conf.high')]
+outdata = x[,c("term","label","estimate","conf.low",'conf.high')]
 
-outdata$estimate = round(outdata$estimate)
-outdata$conf.low = round(outdata$conf.low)
-outdata$conf.high = round(outdata$conf.high)
-#outdata = outdata[2:nrow(outdata),]
+outdata$estimate = base::round(outdata$estimate)
+outdata$conf.low = base::round(outdata$conf.low)
+outdata$conf.high = base::round(outdata$conf.high)
 
 xd = as.data.frame(summary(finalModel)$coef)
-#xd = xd[2:nrow(xd),]
-outdata$wald.t = xd$`t value`
+outdata$wald.t = xd[match(outdata$term,rownames(xd)),'t value']
 
-sig = modelComparison$`Pr(>Chisq)`
-names(sig) = rownames(modelComparison)
-sigx = sig[feModel]
-#sigx = sigx[2:length(sigx)]
-
-outdata$model.comparison.p = sigx
+outdata = cbind(outdata,
+      modelComparison[feModel[2:length(feModel)],c("logLik","Chisq","Pr(>Chisq)")])
 outdata$estimate = paste(
   c("","+")[1+(outdata$estimate>0)],
   as.character(outdata$estimate),sep='')
 
-outdata$label = feLabels2
-
 outdata = outdata[,c("label","estimate","conf.low",
-                     "conf.high","wald.t",
-                     "model.comparison.p")]
-
-write.csv(outdata[2:nrow(outdata),],file="../../results/tables/Efficiency_FixedEffects.csv")
+                     "conf.high","wald.t","Chisq",
+                     "Pr(>Chisq)")]
+finalRes = outdata
+write.csv(finalRes,file="../../results/tables/Efficiency_FixedEffects.csv")
 ```
 
 
@@ -750,12 +735,6 @@ There is a reasonable amount of variaition in the random effects, suggesting tha
 dotplot(ranef(finalModel))
 ```
 
-qq-plots of random effects
-
-```{r ranEfQQ}
-sjp.lmer(finalModel, type = "re.qq")
-```
-
 
 ## Relevel factors to see other comparisons
 
@@ -764,28 +743,6 @@ d2 = d
 d2$condition = relevel(d2$condition,"Visual")
 fm2 = update(finalModel, data=d2)
 summary(fm2)
-
-feLabelsB = feLabels2
-feLabelsB = gsub("Visual stimuli","Acoustic stimuli",feLabelsB)
-feLabelsB = gsub("VisualStim","AcousticStim",feLabelsB)
-feLabelsB = gsub("Visual stim","AcousticStim",feLabelsB)
-
-x2 = sjp.lmer(fm2, 'fe', 
-         show.intercept = T,
-         sort.est=NULL,
-         axis.labels = feLabelsB[2:length(feLabelsB)],
-         xlab="Trial time (log ms)",
-         geom.colors = c(1,1),
-         show.p=F,
-         show.values = F,
-         p.kr = FALSE,
-         string.interc="Intercept",
-         prnt.plot = F) 
-
-x2$plot.list[[1]]$data$fade = sig.data$fade
-
-x2$plot.list[[1]] 
-
 ```
 
 
@@ -795,48 +752,54 @@ d2 = d
 d2$modalityCondition = relevel(d2$modalityCondition,"visual")
 fm2 = update(finalModel, data=d2)
 summary(fm2)
-
-feLabelsB = feLabels2
-feLabelsB = gsub("Visual modality","Multimodal",feLabelsB)
-
-
-x2 = sjp.lmer(fm2, 'fe', 
-         show.intercept = T,
-         sort.est=NULL,
-         axis.labels = feLabelsB[2:length(feLabelsB)],
-         xlab="Trial time (log ms)",
-         geom.colors = c(1,1),
-         show.p=F,
-         show.values = F,
-         p.kr = FALSE,
-         string.interc="Intercept",
-         prnt.plot = F) 
-
-x2$plot.list[[1]]$data$fade = sig.data$fade
-
-x2$plot.list[[1]] 
-
 ```
 
 
-# More plots
+## Variance explained
 
-```{r eval=F}
-x = sjp.lmer(tMtchTr,'eff', 'matcherResponds.cumulative', show.ci = T, prnt.plot = F)$plot 
+Total variance explained by the model: Calculated by pseudo R squared method from the *MuMIn* package to calculate the variance explained by fixed effects and random effects in a model (Nakagawa & Schielzeth 2013). 
+
+```{r}
+MuMIn::r.squaredGLMM(finalModel)
 ```
 
-```{r eval=F}
-x$data$y = exp(x$data$y + meanLogTrialLength)
-x$data$ci.low = exp(x$data$lower + meanLogTrialLength)
-x$data$ci.high = exp(x$data$upper + meanLogTrialLength)
-x$data$x = x$data$x + matcherResponds.cumulative.mean
+Fixed effects explain `r signif(MuMIn::r.squaredGLMM(finalModel)[1],4)*100`% of the variance. Total varaince explained = `r signif(MuMIn::r.squaredGLMM(finalModel)[2],4)*100`%. (random effects = `r signif(diff(MuMIn::r.squaredGLMM(finalModel)[1:2]),4)*100`).
 
-x$labels$title = NULL
+For each model in the bottom-up procedure, we then calculate the increase in variance explained. This is an estiamte of how much variance a particular variable accounts for.
+
+```{r}
+mList = list("m0"=m0,"mtchTrn"=mtchTrn,"modality"=modality,"cond"=cond,
+"game"=game,"modXcond"=modXcond,"conXgame"=conXgame,"modXgame"=modXgame,
+"moXcoXga"=moXcoXga,"tMtchTr"=tMtchTr,"tMaTxMod"=tMaTxMod,"nTurnXmo"=nTurnXmo,
+"nTurnXco"=nTurnXco,"tuXmoXco"=tuXmoXco,"incor"=incor,
+"moXincor"=moXincor,"coXincor"=coXincor,"coXmoXin"=coXmoXin,
+"multim"=multim,"multiXco"=multiXco,"gamQuad"=gamQuad,
+"modXgamQ"=modXgamQ,"block"=block,"blocXmod"=blocXmod)
+mList = mList[rownames(modelComparison)]
+varExplained = sapply(mList,MuMIn::r.squaredGLMM)
+varExplained.fixed = diff(varExplained[1,])
+t(t(varExplained.fixed[c("game","gamQuad","mtchTrn",
+                     "tMtchTr","incor","modXcond",
+                     "modXgame","modXgamQ")]))
+```
+
+
+Plot for cumulative matcher turn effects:
+
+```{r eval=F}
+# (some error with sjplot prevents this from running in knitr)
+tMtchTr.prediction = get_model_data(tMtchTr,'eff',
+      'matcherResponds.cumulative')$matcherResponds.cumulative
+tMtchTr.prediction$predicted = exp(tMtchTr.prediction$predicted + meanLogTrialLength)
+tMtchTr.prediction$conf.low = exp(tMtchTr.prediction$conf.low + meanLogTrialLength)
+tMtchTr.prediction$conf.high = exp(tMtchTr.prediction$conf.high + meanLogTrialLength)
+tMtchTr.prediction$x = tMtchTr.prediction$x + matcherResponds.cumulative.mean
 
 pdf("../../results/graphs/CumulativeMatcherTurns_Efficiency.pdf",
     width=4,height=4)
-x + #xlim(0,10) + 
-  geom_ribbon(aes(ymin=ci.low,ymax=ci.high),alpha = 0.15) + 
+ggplot(tMtchTr.prediction,aes(y=predicted,x=x)) +
+  geom_ribbon(aes(ymin=conf.low, ymax=conf.high),alpha=0.3) +
+  geom_line() +
   scale_x_continuous(limits=c(0,15)) + 
   scale_y_continuous(breaks = c(0,3000,6000,9000,12000)) +
   #coord_cartesian(xlim = c(5, 10))  +
@@ -849,6 +812,184 @@ dev.off()
 ```
 
 
+\newpage
+
+# Alternative models
+
+## Model for only accurate trials
+
+```{r}
+accTrials =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +(modalityCondition:I(trialTotal^2)) +
+            matcherResponds*modalityCondition*condition +
+            matcherResponds.cumulative + 
+            matcherResponds.cumulative:modalityCondition +
+            modalityCondition*condition +
+            multimodal + multimodal:condition + 
+            matcherResponds +
+            firstBlock +
+            (1 + condition |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d[!d$incorrect,], REML = TRUE)
+
+aTF = summary(accTrials)$coefficients
+fTF = summary(finalModel)$coefficients
+cF = intersect(rownames(aTF),rownames(fTF))
+aTF = aTF[cF,]
+fTF = fTF[cF,]
+plot(aTF[,1],fTF[,1])
+abline(0,1)
+
+# Print large differences in t-value
+diffF = abs(aTF[,'t value'] - fTF[,'t value'])
+diffFV = names(diffF[diffF> (2 * sd(fixef(finalModel)))])
+round(cbind(all=fTF[diffFV,3],correct=aTF[diffFV,3]),3)
+```
+
+There are no large qualitative differences when analysing only correct trials.
+
+\newpage
+
+## Model for only multimodal trials
+
+```{r}
+multTrials =  lmer(trialLength.log ~ 1 + modalityCondition*condition*trialTotal +
+             I(trialTotal^2) +(modalityCondition:I(trialTotal^2)) +
+            matcherResponds*modalityCondition*condition +
+            matcherResponds.cumulative + 
+              matcherResponds.cumulative:modalityCondition +
+            incorrect *modalityCondition*condition +
+            matcherResponds +
+            firstBlock +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d[(d$modalityCondition!="multi") | (d$multimodal),], REML = TRUE)
+aTF = summary(multTrials)$coefficients
+fTF = summary(finalModel)$coefficients
+cF = intersect(rownames(aTF),rownames(fTF))
+aTF = aTF[cF,]
+fTF = fTF[cF,]
+plot(aTF[,1],fTF[,1])
+abline(0,1)
+
+# Print large differences in t-value
+diffF = abs(aTF[,'t value'] - fTF[,'t value'])
+diffFV = names(diffF[diffF> (2 * sd(fixef(finalModel)))])
+round(cbind(all=fTF[diffFV,3],correct=aTF[diffFV,3]),3)
+
+plot_model(multTrials,axis.labels = "")
+plot_model(finalModel,axis.labels = "")
+```
+
+Summary:
+
+We also analysed only correctly guessed trials and found no qualitative differences. Running the analysis while excluding trials with unimodal descriptions from the multimodal condition lead to weaker effects for condition, stimulus type and the interaction between the two. In line with the analysis above, this suggests that the advantage for participants in the multimodal condition is not just due to multimodal signals in themselves, but may be due to the relationship between multimodality and the communicative interaction between the director and matcher (see section 6.1).
+
+\newpage
+
+## Minimal model
+
+Model including only variables that explained a significant amnount of variance according to the model comparison procedure above.
+
+```{r}
+model.min = lmer(trialLength.log ~ 1 +
+            matcherResponds +
+            matcherResponds.cumulative +
+            incorrect +
+            modalityCondition:trialTotal +
+            trialTotal + I(trialTotal^2) +
+            modalityCondition*condition +
+            modalityCondition:I(trialTotal^2) +
+            (1 + condition |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE,control = ctrl)
+```
+
+Compare the estimates:
+
+```{r}
+model.min.fe = fixef(model.min)
+model.full.fe = fixef(finalModel)[names(model.min.fe)]
+plot(model.min.fe,model.full.fe)
+abline(0,1)
+cor(model.min.fe,model.full.fe)
+```
+
+Estimates are correlated with r = `r signif(cor(model.min.fe,model.full.fe),2)`, suggesting that there is little difference.
+
+Compare the t-values. Note that in almost all cases, the restuls for the minimal model are the same or stronger:
+
+```{r}
+getTval = function(X){summary(X)$coef[,"t value"]}
+model.min.t = getTval(model.min)
+model.full.t = getTval(finalModel)
+model.full.t = model.full.t[names(model.min.t)]
+plot(abs(model.min.t),abs(model.full.t))
+abline(0,1)
+```
+
+The exception is for the cumulative number of matcher responses, which is weaker in the minimal model. Below we perform a model comparison between the minimal model and the minimal model without the cumulative number of matcher responses:
+
+```{r}
+model.min.no.tMtchRes = 
+  lmer(trialLength.log ~ 1 +
+            matcherResponds +
+            incorrect +
+            modalityCondition:trialTotal +
+            trialTotal + I(trialTotal^2) +
+            modalityCondition*condition +
+            modalityCondition:I(trialTotal^2) +
+            (1 + condition |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE,control = ctrl)
+anova(model.min.no.tMtchRes,model.min)
+```
+
+Cumulative number of trials does not explain a significant amount of variance against a null model which includes the number of trials. This may be because the total number of trials is an upper bound on the total number of matcher responses and so they are highly correlated.
+
+## Alternative distribution
+
+Below we run the final model from the procedure above, but fitting the raw trial length in milliseconds with a poisson distribution, rather than the log-transformed trial Length.
+
+```{r cache=T}
+block.poisson =  glmer(trialLength ~ 1 +
+            modalityCondition*condition*trialTotal +
+            I(trialTotal^2) +(modalityCondition:I(trialTotal^2)) +
+            matcherResponds*modalityCondition*condition +
+            matcherResponds.cumulative + 
+            matcherResponds.cumulative:modalityCondition +
+            incorrect * modalityCondition*condition +
+            multimodal + multimodal:condition + 
+            matcherResponds +
+            firstBlock +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = TRUE,
+          family = poisson())
+
+summary(block.poisson)
+```
+
+Compare estimates for the two distribution functions (the intercepts will obviously be different, so we ignore those):
+
+```{r}
+gaussian.fixef = fixef(block)
+gaussian.fixef = gaussian.fixef[names(gaussian.fixef)!="(Intercept)"]
+poisson.fixef = fixef(block.poisson)
+poisson.fixef = poisson.fixef[names(poisson.fixef)!="(Intercept)"]
+
+plot(gaussian.fixef,poisson.fixef)
+abline(0,1)
+cor(gaussian.fixef,poisson.fixef)
+```
+
+The estimates are highly correlated, suggesting that the choice to log-transform the trial length isn't particularly important.
 
 
+# Summary results
 
+```{r}
+rownames(finalRes) = NULL
+cbind(finalRes[,c("label","estimate","conf.low",'conf.high')],
+      signif(finalRes[,c("wald.t","Chisq","Pr(>Chisq)")],2))
+```

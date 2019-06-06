@@ -76,6 +76,7 @@ r = r[r$trialString %in% d$trialString,]
 trials = unique(r$trialString)
 
 res = data.frame(stringsAsFactors = F)
+resSignals = data.frame(stringsAsFactors = F)
 
 for(t in trials){
   dx = d[d$trialString ==t,]
@@ -112,6 +113,18 @@ for(t in trials){
   
   res = rbind(res,resx)
   
+  if(nrow(dx)==nrow(rx)){
+    resxS = data.frame(
+      dStart = dx$turnStart-dx$signalStart,
+      dEnd = dx$turnStart-dx$signalEnd,
+      rStart = dx$turnStart-rx$signalStart,
+      rEnd = dx$turnStart-rx$signalEnd,
+      dModality = dx$modality,
+      rModality = rx$modality,
+      modalityCondition = dx$modalityCondition[1]
+    )
+    resSignals = rbind(resSignals,resxS)
+  }
 }
 
 # Turn length
@@ -143,6 +156,42 @@ cor(res[res$numTurnDiff==0,]$dLength, res[res$numTurnDiff==0,]$rLength)
 # No significant differences between conditions
 summary(lm(res$turn1LengthDiff~res$condition*res$modalityCondition))
 
+#####
+# Signal timing
+resSignals = resSignals[resSignals$dModality==resSignals$rModality,]
+
+resSignals$StartDiff = resSignals$dStart - resSignals$rStart
+resSignals$EndDiff = resSignals$dEnd - resSignals$rEnd
+
+hist(resSignals$StartDiff)
+trueDiff.start = mean(abs(resSignals$StartDiff))
+quantile(abs(resSignals$StartDiff),c(0.25,0.75))
+
+hist(resSignals$EndDiff)
+trueDiff.end = mean(abs(resSignals$EndDiff))
+quantile(abs(resSignals$EndDiff),c(0.25,0.75))
+
+mean(d$signalLength)
+sd(d$signalLength)
+
+summary(lm(abs(StartDiff)~dModality+modalityCondition,data=resSignals))
+t.test(abs(StartDiff)~dModality,data=resSignals)
+
+mean(abs(resSignals[resSignals$dModality=="Acoustic",]$StartDiff))
+mean(abs(resSignals[resSignals$dModality=="Visual",]$StartDiff))
+
+set.seed(2389)
+permDiff.Start = replicate(1001,perm(resSignals$dStart, resSignals$rStart))
+z2 = (trueDiff.start - mean(permDiff.Start)) / sd(permDiff.Start)
+z2
+
+sum(permDiff.Start<trueDiff.start)
+
+permDiff.End = replicate(1001,perm(resSignals$dEnd, resSignals$rEnd))
+z3 = (trueDiff.end - mean(permDiff.End)) / sd(permDiff.End)
+z3
+
+sum(permDiff.End<trueDiff.end)
 
 ##########
 # Modality coding

@@ -242,7 +242,7 @@ doAnalysis = function(basedir, writefile){
       }
     }
     
-    
+    # Work out amount of time in each modality
     
     # Fix turn counts
     #tapply(d$trialString,)

@@ -2,6 +2,7 @@
 title: "Modality effects in a signalling game: Accuracy"
 output:
     pdf_document:
+        toc: true
         includes:
             in_header: header.tex 
 knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), "../../results/MainResults_Accuracy.pdf")) })
@@ -227,23 +228,23 @@ The final models do not converge within standard tolerances, but the convergence
 gc = glmerControl(optimizer = "bobyqa" ,optCtrl = list(maxfun=50000))
 
 m0 =  glmer(correct ~ 1 +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
 game = glmer(correct ~ 1 + 
             trialTotal +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
 trialL = glmer(correct ~ 1 +
             trialTotal +
             trialLength.log+
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -251,8 +252,8 @@ t1L = glmer(correct ~ 1 +
             trialTotal +
             trialLength.log +
             T1Length.log +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -261,8 +262,8 @@ multi = glmer(correct ~ 1 +
             trialLength.log +
             T1Length.log +
             multimodal+
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -273,8 +274,8 @@ mtchTrn = glmer(correct ~ 1 +
             T1Length.log +
             multimodal+
             matcherResponds +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -285,8 +286,8 @@ tMtchTr = glmer(correct ~ 1 +
             multimodal+
             matcherResponds +
             matcherResponds.cumulative +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -297,8 +298,8 @@ con = glmer(correct ~ 1 + condition +
             multimodal+
             matcherResponds +
             matcherResponds.cumulative +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -309,8 +310,8 @@ mod = glmer(correct ~ 1 + modalityCondition + condition +
             multimodal+
             matcherResponds +
             matcherResponds.cumulative +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -321,8 +322,8 @@ modXcon = glmer(correct ~ 1 + modalityCondition * condition +
             multimodal+
             matcherResponds +
             matcherResponds.cumulative +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -333,8 +334,8 @@ trialLXmo = glmer(correct ~ 1 + modalityCondition * condition +
             multimodal+
             matcherResponds +
             matcherResponds.cumulative +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -345,8 +346,8 @@ t1LXmo = glmer(correct ~ 1 + modalityCondition * condition +
             multimodal+
             matcherResponds +
             matcherResponds.cumulative +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -358,8 +359,8 @@ tMaTXmo = glmer(correct ~ 1 + modalityCondition * condition +
             matcherResponds +
             matcherResponds.cumulative +
               matcherResponds.cumulative:modalityCondition +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -374,8 +375,8 @@ block = glmer(correct ~ 1 + modalityCondition * condition +
               matcherResponds.cumulative:modalityCondition +
             matcherResponds +
             firstBlock +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 
@@ -396,7 +397,7 @@ x = capture.output(modelComparison)
 x[!grepl(": ",x)]
 ```
 
-Pick final model for estimates with only significant variables:
+Final model with only significant variables:
 
 ```{r}
 finalModel = glmer(correct ~ 1 + 
@@ -404,8 +405,8 @@ finalModel = glmer(correct ~ 1 +
             trialTotal +
             trialLength.log +
             matcherResponds.cumulative +
-            (1 |dyadNumber) +
-            (1 |itemId) ,
+            (1 + condition | dyadNumber/playerId) +
+            (1 + modalityCondition |itemId) ,
           data=d, family=binomial,
           control = gc)
 ```
@@ -416,6 +417,46 @@ Model estimates:
 summary(finalModel)
 # number of correctly categorised trials
 sum((predict(finalModel)>0) == d$correct)/nrow(d)
+```
+
+Surprisingly, the interaction between modality and stimulus condition is not significant. In comparison, in a model without random slopes, the interaction is significant:
+
+```{r}
+finalModel.simple = glmer(correct ~ 1 + 
+            modalityCondition * condition +
+            trialTotal +
+            trialLength.log +
+            matcherResponds.cumulative +
+            (1  |dyadNumber/playerId) +
+            (1  |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+summary(finalModel.simple)
+```
+
+By model comparison, we should prefer the model with random slopes:
+
+```{r}
+anova(finalModel.simple,finalModel)
+```
+
+This suggests that, while accuracy is lower for visual stimuli in the vocal condition, the difference is not greater than might be expected by random (slope) variation between dyads and items.
+
+We also show that a model with more random slopes is essentially identical to the simpler random slopes model:
+
+```{r cache=T}
+finalModel.full = glmer(correct ~ 1 + 
+            modalityCondition * condition +
+            trialTotal +
+            trialLength.log +
+            matcherResponds.cumulative +
+            (1 + condition + trialTotal + trialLength.log + 
+               matcherResponds.cumulative |dyadNumber/playerId) +
+            (1 + modalityCondition + trialTotal + trialLength.log + 
+               matcherResponds.cumulative |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+cor(fixef(finalModel.full),fixef(finalModel))
 ```
 
 
@@ -465,21 +506,16 @@ Plot the strength of the fixed effects:
 
 
 ```{r}
-x = sjp.glmer(finalModel, 'fe', 
+plot_model(finalModel, 'est', 
          show.intercept = T,
          sort.est=NULL,
          axis.labels = feLabels2[2:length(feLabels2)],
          axis.title="Odds of correct selection",
-         geom.colors = c(1,1),
+         colors = c(1,1),
          show.values = F,
-         show.p = F,
-         fade.ns = T,
+         show.p = T,
          string.interc="Intercept",
          prnt.plot = F) 
-
-x$plot.list[[1]]$data$fade = sig.data$fade
-
-x$plot.list[[1]] 
 ```
 
 Table of results
@@ -487,7 +523,8 @@ Table of results
 ```{r}
 x = as.data.frame(summary(finalModel)$coef)
 mc = as.data.frame(modelComparison)
-write.csv(cbind(x,mc[feModel,]), "../../results/tables/Accuracy_FixedEffects.csv")
+finalRes= cbind(x,mc[feModel,])
+write.csv(finalRes, "../../results/tables/Accuracy_FixedEffects.csv")
 ```
 
 
@@ -496,30 +533,22 @@ write.csv(cbind(x,mc[feModel,]), "../../results/tables/Accuracy_FixedEffects.csv
 ## Random effects
 
 ```{r}
-sjp.glmer(finalModel,'re', sort.est ="sort.all", 
-          facet.grid = F,
-          geom.colors= c(1,1))
+plot_model(finalModel,'re', sort.est ="(Intercept)", 
+          colors= c(1,1))
 ```
-
-qq-plots of random effects
-
-```{r}
-sjp.glmer(finalModel, type = "re.qq")
-```
-
 
 \newpage
 
 ## Plots
 
 ```{r eval=F}
-gx = sjp.glmer(finalModel, 'eff', vars=c("matcherResponds.cumulative"), 
+gx = plot_model(finalModel, 'eff', vars=c("matcherResponds.cumulative"), 
                title = '', prnt.plot = F,
                show.ci=T, facet.grid = F)
 
 pdf("../../results/graphs/CumulativeMatcherTurns.pdf",
     width=4,height=4)
-gx$plot + 
+gx$matcherResponds.cumulative + 
   xlab("Number of previous trials where\nmatcher responded") + 
   ylab("Probability of correct choice") + 
   #scale_x_continuous(breaks = c(0,5,10,15)) + 
@@ -528,15 +557,61 @@ dev.off()
 ```
 
 ```{r eval=F, echo=F}
-sjp.glmer(finalModel, 'eff',show.ci=T, facet.grid = F)
+plot_model(finalModel, 'eff',show.ci=T, facet.grid = F)
 ```
 
-```{r eval=F, echo=F}
-sjp.int(finalModel,'eff', show.ci = T)
+## Variance explained
+
+Total variance explained by the model: Calculated by pseudo R squared method from the *MuMIn* package to calculate the variance explained by fixed effects and random effects in a model (Nakagawa & Schielzeth 2013). 
+
+```{r message=F,warning=F}
+r.squaredGLMM.binom = function(object){
+fam <- family(object)
+  fitted <- (model.matrix(object) %*% MuMIn:::.numfixef(object))[,1L]
+  varFE <- var(fitted)
+  mmRE <- MuMIn:::.remodmat(object)
+  vc <- MuMIn:::.varcorr(object)
+  varRE <- MuMIn:::.varRESum(vc, mmRE)
+  familyName <- fam$family
+  null <- MuMIn:::.nullFitRE(object)
+  fixefnull <- unname(MuMIn:::.numfixef(null))
+  vt <- MuMIn:::.varRESum(MuMIn:::.varcorr(null), mmRE)
+  pmean <- fam$linkinv(fixefnull - 0.5 * vt * tanh(fixefnull * 
+                                    (1 + 2 * exp(-0.5 * vt))/6))
+  MuMIn:::r2glmm(fam, varFE, varRE, pmean = pmean)
+}
 ```
 
 
+```{r message=F,warning=F}
+r.squaredGLMM.binom(finalModel)
+fee = r.squaredGLMM.binom(finalModel)[1,1]
+tee = r.squaredGLMM.binom(finalModel)[1,2]
+ree = tee-fee
+```
+
+Fixed effects explain `r signif(fee,4)*100`% of the variance. Total varaince explained = `r signif(tee,4)*100`%. (random effects = `r signif(ree,4)*100`).
+
+For each model in the bottom-up procedure, we then calculate the increase in variance explained. This is an estiamte of how much variance a particular variable accounts for.
+
+```{r message=F,warning=F}
+mList = list("m0"=m0,"con"=con,"mod"=mod,"modXcon"=modXcon,
+  "game"=game,"trialL"=trialL,"trialLXmo"=trialLXmo,
+  "t1L"=t1L,"t1LXmo"=t1LXmo,"mtchTrn"=mtchTrn,"tMtchTr"=tMtchTr,
+  "tMaTXmo"=tMaTXmo,"multi"=multi,"block"=block)
+mList = mList[rownames(modelComparison)]
+varExplained = sapply(mList,r.squaredGLMM.binom)
+varExplained.fixed = diff(varExplained[1,])
+
+t(t(varExplained.fixed[c("mod","con","modXcon",
+                     "game","trialL","mtchTrn")]))
+```
 
 
+## Summary results
 
+```{r}
+signif(finalRes[,c("Estimate","Std. Error","z value",
+                   "Pr(>|z|)",'Chisq',"Pr(>Chisq)")],2)
+```
 
