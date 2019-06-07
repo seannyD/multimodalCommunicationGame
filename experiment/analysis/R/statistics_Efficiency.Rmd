@@ -245,14 +245,32 @@ m0 =  lmer(trialLength.log ~ 1 +
 Now we add a series of possible confounding factors such as whether the matcher responds.  We add the main experimental factors at the end to ensure that they're really contributing to the model over and above the confounds.
 
 ```{r models2, cache=FALSE}
+
+# Add effect of trial
+
+game = lmer(trialLength.log ~ 1 + 
+            trialTotal + 
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE,control = ctrl)
+
+# Add the quadratic effect of trial
+gamQuad = lmer(trialLength.log ~ 1 + 
+            trialTotal + I(trialTotal^2) +
+            (1 + condition + incorrect |dyadNumber/playerId) + 
+            (1 + modalityCondition|itemId),
+          data=d, REML = FALSE,control = ctrl)
+
 # Add number of matcher turns
 mtchTrn = lmer(trialLength.log ~ 1 +
+                trialTotal + I(trialTotal^2) +
                 matcherResponds +
             (1 + condition + incorrect |dyadNumber/playerId) + 
             (1 + modalityCondition|itemId),
           data=d, REML = FALSE,control = ctrl)
 
 tMtchTr = lmer(trialLength.log ~ 1 +
+                trialTotal + I(trialTotal^2) +
                 matcherResponds +
                 matcherResponds.cumulative +
             (1 + condition + incorrect |dyadNumber/playerId) + 
@@ -261,6 +279,7 @@ tMtchTr = lmer(trialLength.log ~ 1 +
 
 # Add whether the response was incorrect
 incor = lmer(trialLength.log ~ 1 + 
+            trialTotal + I(trialTotal^2) +
             matcherResponds + 
             matcherResponds.cumulative +  
             incorrect +
@@ -274,30 +293,8 @@ incor = lmer(trialLength.log ~ 1 +
 # Add multimodal signal
 
 multim = lmer(trialLength.log ~ 1 + 
-            matcherResponds +
-            matcherResponds.cumulative + 
-            incorrect + 
-            multimodal +
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE,control = ctrl)
-
-# Add effect of trial
-
-game = lmer(trialLength.log ~ 1 + 
-            trialTotal + 
-            matcherResponds + 
-            matcherResponds.cumulative + 
-            incorrect + 
-            multimodal +
-            (1 + condition + incorrect |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE,control = ctrl)
-
-# Add the quadratic effect of trial
-gamQuad = lmer(trialLength.log ~ 1 + 
             trialTotal + I(trialTotal^2) +
-            matcherResponds + 
+            matcherResponds +
             matcherResponds.cumulative + 
             incorrect + 
             multimodal +
@@ -745,8 +742,6 @@ fm2 = update(finalModel, data=d2)
 summary(fm2)
 ```
 
-
-
 ```{r}
 d2 = d
 d2$modalityCondition = relevel(d2$modalityCondition,"visual")
@@ -784,31 +779,14 @@ t(t(varExplained.fixed[c("game","gamQuad","mtchTrn",
 ```
 
 
-Plot for cumulative matcher turn effects:
+Plot for cumulative matcher turn effects (ignore vocal condition who hardly respond).
+Note that we found that the cumulative number of trials is a significant predictor, except when the number of trials is included in the model. This may be because the total number of trials is an upper bound on the total number of matcher responses and so the model uses cumulative matcher turns as a proxy for number of trials. In the raw data, there appears to be no relationship between cumulative matcher responses and trial length:
 
 ```{r eval=F}
-# (some error with sjplot prevents this from running in knitr)
-tMtchTr.prediction = get_model_data(tMtchTr,'eff',
-      'matcherResponds.cumulative')$matcherResponds.cumulative
-tMtchTr.prediction$predicted = exp(tMtchTr.prediction$predicted + meanLogTrialLength)
-tMtchTr.prediction$conf.low = exp(tMtchTr.prediction$conf.low + meanLogTrialLength)
-tMtchTr.prediction$conf.high = exp(tMtchTr.prediction$conf.high + meanLogTrialLength)
-tMtchTr.prediction$x = tMtchTr.prediction$x + matcherResponds.cumulative.mean
-
-pdf("../../results/graphs/CumulativeMatcherTurns_Efficiency.pdf",
-    width=4,height=4)
-ggplot(tMtchTr.prediction,aes(y=predicted,x=x)) +
-  geom_ribbon(aes(ymin=conf.low, ymax=conf.high),alpha=0.3) +
-  geom_line() +
-  scale_x_continuous(limits=c(0,15)) + 
-  scale_y_continuous(breaks = c(0,3000,6000,9000,12000)) +
-  #coord_cartesian(xlim = c(5, 10))  +
-  xlab("Number of previous trials where\nmatcher responded") + 
-  ylab("Trial time (ms)") + 
-  theme(strip.background = element_blank(),
-       strip.text.x = element_text(colour = 'white'))
-dev.off()
-
+ggplot(d[d$modalityCondition!="vocal",],
+       aes(x=matcherResponds.cumulative,
+           y=trialLength.log)) +
+  stat_smooth() + geom_point()
 ```
 
 
@@ -894,7 +872,6 @@ Model including only variables that explained a significant amnount of variance 
 ```{r}
 model.min = lmer(trialLength.log ~ 1 +
             matcherResponds +
-            matcherResponds.cumulative +
             incorrect +
             modalityCondition:trialTotal +
             trialTotal + I(trialTotal^2) +
@@ -927,25 +904,6 @@ model.full.t = model.full.t[names(model.min.t)]
 plot(abs(model.min.t),abs(model.full.t))
 abline(0,1)
 ```
-
-The exception is for the cumulative number of matcher responses, which is weaker in the minimal model. Below we perform a model comparison between the minimal model and the minimal model without the cumulative number of matcher responses:
-
-```{r}
-model.min.no.tMtchRes = 
-  lmer(trialLength.log ~ 1 +
-            matcherResponds +
-            incorrect +
-            modalityCondition:trialTotal +
-            trialTotal + I(trialTotal^2) +
-            modalityCondition*condition +
-            modalityCondition:I(trialTotal^2) +
-            (1 + condition |dyadNumber/playerId) + 
-            (1 + modalityCondition|itemId),
-          data=d, REML = FALSE,control = ctrl)
-anova(model.min.no.tMtchRes,model.min)
-```
-
-Cumulative number of trials does not explain a significant amount of variance against a null model which includes the number of trials. This may be because the total number of trials is an upper bound on the total number of matcher responses and so they are highly correlated.
 
 ## Alternative distribution
 

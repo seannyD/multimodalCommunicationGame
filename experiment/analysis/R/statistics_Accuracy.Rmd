@@ -218,9 +218,7 @@ plot(cx, terminal_panel=node_barplot(cx))
 
 # Mixed models
 
-There are celing effects in the data, which reduces variance and makes model convergence difficult.  Experimentation revealed that random effects other than random intercepts for dyad and item lead to non-convergence.
-
-The final models do not converge within standard tolerances, but the convergence is acceptable.
+There are celing effects in the data, which reduces variance and makes model convergence difficult. Still, the following models converge relatively well.
 
 ```{r models, cache=TRUE}
 # No fixed effects
@@ -542,23 +540,63 @@ plot_model(finalModel,'re', sort.est ="(Intercept)",
 ## Plots
 
 ```{r eval=F}
-gx = plot_model(finalModel, 'eff', vars=c("matcherResponds.cumulative"), 
+gx = get_model_data(finalModel, 'eff', vars=c("matcherResponds.cumulative"), 
                title = '', prnt.plot = F,
                show.ci=T, facet.grid = F)
-
-pdf("../../results/graphs/CumulativeMatcherTurns.pdf",
-    width=4,height=4)
-gx$matcherResponds.cumulative + 
+gxx = ggplot(gx$matcherResponds.cumulative,aes(x=x,y=predicted)) +
+  geom_line(size=1.5) +
+  geom_ribbon(aes(ymin=conf.low,ymax=conf.high),alpha=0.3) +
   xlab("Number of previous trials where\nmatcher responded") + 
   ylab("Probability of correct choice") + 
   #scale_x_continuous(breaks = c(0,5,10,15)) + 
   coord_cartesian(xlim=c(0,15)) 
+pdf("../../results/graphs/CumulativeMatcherTurns.pdf",
+    width=4,height=4)
+gxx
+dev.off()
+gxx
+```
+
+Similar plot, showing raw data and how number of trials and cumulative number of matcher responses relate for correct and incorrect guesses. It shows that correct guesses tend to be preceded by more matcher responses, especially late in the experiment.
+
+```{r eval=F, echo=F,message=F,error=F}
+ggplot(d,
+       aes(x=trialTotal,
+           y=matcherResponds.cumulative,
+           colour=correct)) +
+  stat_smooth()
+```
+
+In the plot below, we plot the model predictions (line and ribbon) against the real probability of being correct (points with error bars representing 95% confidence intervals according to the binomial test). The effect size for the model predictions is less extreme, since some of the variance is captured by number of trials.
+
+```{r eval=F}
+cuts = c(0,1,5,9,13,17)
+d$matcherResponds.cumulative.cat = cut(d$matcherResponds.cumulative,cuts,include.lowest = T)
+midpoints = c(0,cuts[2:length(cuts)]+(diff(cuts[2:length(cuts)])[1])/2)
+cumClust = data.frame()
+for(i in 1:length(levels(d$matcherResponds.cumulative.cat))){
+  mp = midpoints[i]
+  cat = levels(d$matcherResponds.cumulative.cat)[i]
+  tx = c(sum(d[d$matcherResponds.cumulative.cat==cat,]$correct),
+         sum(!d[d$matcherResponds.cumulative.cat==cat,]$correct))
+  bt = binom.test(tx)
+  cumClust = rbind(cumClust,
+          c(mp,bt$estimate,bt$conf.int))
+}
+names(cumClust) = c("x",'predicted','low','high')
+pdf("../../results/graphs/CumulativeMatcherTurns_withRawData.pdf")
+ggplot(gx$matcherResponds.cumulative,aes(x=x,y=predicted)) +
+  geom_line(size=1.5) +
+  geom_ribbon(aes(ymin=conf.low,ymax=conf.high),alpha=0.3) +
+  geom_point(data=cumClust,mapping=aes(x=x,y=predicted),size=3) +
+  geom_errorbar(data=cumClust,mapping=aes(x=x,ymin=low,ymax=high)) +
+  xlab("Number of previous trials where\nmatcher responded") + 
+  ylab("Probability of correct choice")
 dev.off()
 ```
 
-```{r eval=F, echo=F}
-plot_model(finalModel, 'eff',show.ci=T, facet.grid = F)
-```
+![](../../results/graphs/CumulativeMatcherTurns_withRawData.pdf)
+
 
 ## Variance explained
 

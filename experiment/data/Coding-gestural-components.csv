@@ -1,0 +1,30 @@
+,,hands/ arms,,body,,eyes/ eyebrows/ gaze,
+,,yes,no,yes,no,yes,no
+Aud D15 0 0,,X,,,X,,X
+Aud D15 1 7,,X,,,X,?,X
+Aud D15 2 15,,X,,,X,,X
+Aud D15 2 2,,X,,,X,,X
+Aud D15 2 3,,,X,X,,,X
+Aud D15 2 7,,X,,,X,X,
+Aud D15 3 3,,X,,,X,?,X
+,,,,,,,
+Aud D18 1 13,,X,,,,X,
+Aud D18 2 14,,X,,,X,,X
+Aud D18 2 4,,X,,,X,X,
+Vis D18 1 9,,X,,,X,X,
+Vis D18 2 5,,X,,,X,,X
+Vis D18 2 9,,X,,,X,X,
+,,,,,,,
+Aud D9 0 15,,X,,X,,X,
+Aud D9 1 1,,X,,X,,X,
+Aud D9 2 13,,X,,,X,X,
+Aud D9 2 14,,X,,,X,X,
+Aud D9 2 9,,X,,X,,X,
+Aud D9 3 5,,X,,X,,,
+,,,,,,,
+Aud D19 0 5,,X,,,X,X,
+Aud D19 1 3,,X,,,X,X,
+Aud D19 3 13,,X,,,X,,X
+Aud D19 3 6,,X,,,X,,X
+Vis D19 1 9,,X,,,X,X,
+Vis D19 0 3,,X,,,X,X,
