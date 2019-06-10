@@ -218,7 +218,36 @@ plot(cx, terminal_panel=node_barplot(cx))
 
 # Mixed models
 
-There are celing effects in the data, which reduces variance and makes model convergence difficult. Still, the following models converge relatively well.
+There are celing effects in the data, which reduces variance and could make model convergence difficult. We have a good a-priori idea of the random effects structure (as for the efficiency analysis), but here we test whether the random slopes are justified in the model:
+
+```{r}
+gc = glmerControl(optimizer = "bobyqa" ,optCtrl = list(maxfun=50000))
+
+m0.int =  glmer(correct ~ 1 +
+            (1 |dyadNumber/playerId) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+m0.Rcond =  glmer(correct ~ 1 +
+            (1 + condition |dyadNumber/playerId) +
+            (1 |itemId) ,
+          data=d, family=binomial,
+          control = gc)
+anova(m0.int,m0.Rcond)
+```
+
+Random slopes for condition improves model. Now test random slopes for modality condition:
+
+```{r}
+m0.Rmod =  glmer(correct ~ 1 +
+            (1 + condition |dyadNumber/playerId) +
+            (1 +modalityCondition|itemId) ,
+          data=d, family=binomial,
+          control = gc)
+anova(m0.Rcond,m0.Rmod)
+```
+
+Random slopes for modality condition also improves model.  The main null model is below, and we add fixed effects one by one:
 
 ```{r models, cache=TRUE}
 # No fixed effects
