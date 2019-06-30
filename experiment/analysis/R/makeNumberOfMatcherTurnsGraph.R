@@ -2,6 +2,29 @@ setwd("~/Documents/MPI/ViniciusMultimodal/multimodalCommunicationGame/experiment
 d = read.csv("../../data/Final_Turn_data.csv", stringsAsFactors = F)
 
 
+directorResponds = tapply(d$turnType, d$trialString, function(X){
+  any(X %in% c("T3","T5","T7",'T9',"T11"))
+})
+prop.table(table(directorResponds))
+multiTrials = unique(d[d$modalityCondition=="multi",]$trialString)
+prop.table(table(directorResponds[multiTrials]))
+
+dirResp = d[d$trialString %in% names(which(directorResponds[multiTrials])),]
+prop.table(table(dirResp[dirResp$turnType %in% c("T1"),]$turnModalityType))
+prop.table(table(dirResp[dirResp$turnType %in% c("T3"),]$turnModalityType))
+
+dirFirstSigType = tapply(dirResp[dirResp$turnType %in% c("T1"),]$turnModalityType,
+      dirResp[dirResp$turnType %in% c("T1"),]$trialString,
+      function(X){X[1]})
+dirSecondSigType = tapply(dirResp[dirResp$turnType %in% c("T3"),]$turnModalityType,
+                         dirResp[dirResp$turnType %in% c("T3"),]$trialString,
+                         function(X){X[1]})
+
+
+table(dirFirstSigType,dirSecondSigType)
+
+####
+
 matcherResponds = tapply(d$turnType, d$trialString, function(X){
   any(X %in% c("T2","T4","T6","T8",'T10'))
 })
