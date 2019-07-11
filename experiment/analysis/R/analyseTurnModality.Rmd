@@ -217,6 +217,18 @@ ggplot(sigLenByGame, aes(x=game, y=Efficiency, group=turnModalityType, colour=tu
   ggtitle("Trial length for participants in the multimodal condition (by stimulus type)") +
   xlab("Game") +
   ylab("Trial length (seconds)")
+
+ggplot(sigLenByGame, aes(x=game, y=Efficiency, group=turnModalityType, colour=turnModalityType)) +
+  geom_errorbar(aes(ymin=lower, ymax=upper,group=turnModalityType), width=0.5,position=pd) +
+  stat_summary(fun.y="mean", geom="line", aes(group=turnModalityType),position=pd) +
+  geom_point(aes(group=turnModalityType,shape=turnModalityType),position=pd) +
+  facet_grid(.~condition) +
+  scale_colour_brewer(palette="Set2", name="Modality of director's first turn") +
+  scale_shape(name="Modality of director's first turn") +
+  theme(panel.grid.major.x = element_blank()) +
+  ggtitle("Trial length for participants in the multimodal condition (by stimulus type)") +
+  xlab("Game") +
+  ylab("Trial length (seconds)")
 ```
 
 ## Trial length for unimodal turns by game (all conditions)
@@ -254,12 +266,65 @@ ggplot(sigLenByGame, aes(x=game, y=Efficiency, group=turnModalityType, colour=tu
   xlab("Game") +
   ylab("Trial length (seconds)")
 
+```
+
+Same data, split by stimulus type:
+
+```{r echo=F}
+dx = d
+dx = dx[!(dx$turnModalityType=="unimodal visual" & dx$modalityCondition=="vocal"),]
+dx = dx[!(dx$turnModalityType=="unimodal acoustic" & dx$modalityCondition=="visual"),]
+dx = dx[dx$turnModalityType!="multi",]
+sigLenByGame = dx %>% group_by(game,turnModalityType,modalityCondition,condition) %>% 
+  summarise(Efficiency = mean(trialLength),
+            sd=sd(trialLength),
+            ci.w = qnorm(0.95)*sd/sqrt(length(trialLength)),
+            upper=Efficiency+ci.w,
+            lower = Efficiency-ci.w)
+
+sigLenByGame$turnModalityType = factor(sigLenByGame$turnModalityType,levels=c("unimodal visual","multi","unimodal acoustic"))
+sigLenByGame$game = sigLenByGame$game+1
+
+sigLenByGame$Efficiency = sigLenByGame$Efficiency/1000
+sigLenByGame$upper = sigLenByGame$upper/1000
+sigLenByGame$lower = sigLenByGame$lower/1000
+
+pd = position_dodge(width=0.1)
+ggplot(sigLenByGame, aes(x=game, y=Efficiency, group=turnModalityType, colour=turnModalityType)) +
+  geom_errorbar(aes(ymin=lower, ymax=upper,group=turnModalityType), width=0.5,position=pd) +
+  facet_grid(cols=vars(modalityCondition),rows = vars(condition)) +
+  stat_summary(fun.y="mean", geom="line", aes(group=turnModalityType),position=pd) +
+  geom_point(aes(group=turnModalityType,shape=turnModalityType),position=pd) +
+  scale_colour_brewer(palette="Set2", name="Modality of director's first turn") +
+  scale_shape(name="Modality of director's first turn") +
+  theme(panel.grid.major.x = element_blank()) +
+  ggtitle("Trial length for trials starting with unimodal director turn (by condition)") +
+  xlab("Game") +
+  ylab("Trial length (seconds)")
 
 ```
 
-Same data as above, but just showing the final game:
+
+Same data as above, but just showing the first game:
 
 ```{r echo=F}
+dx = d
+dx = dx[!(dx$turnModalityType=="unimodal visual" & dx$modalityCondition=="vocal"),]
+dx = dx[!(dx$turnModalityType=="unimodal acoustic" & dx$modalityCondition=="visual"),]
+dx = dx[dx$turnModalityType!="multi",]
+sigLenByGame = dx %>% group_by(game,turnModalityType,modalityCondition) %>% 
+  summarise(Efficiency = mean(trialLength),
+            sd=sd(trialLength),
+            ci.w = qnorm(0.95)*sd/sqrt(length(trialLength)),
+            upper=Efficiency+ci.w,
+            lower = Efficiency-ci.w)
+
+sigLenByGame$turnModalityType = factor(sigLenByGame$turnModalityType,levels=c("unimodal visual","multi","unimodal acoustic"))
+sigLenByGame$game = sigLenByGame$game+1
+
+sigLenByGame$Efficiency = sigLenByGame$Efficiency/1000
+sigLenByGame$upper = sigLenByGame$upper/1000
+sigLenByGame$lower = sigLenByGame$lower/1000
 sigLenByGame$modalityCondition = factor(sigLenByGame$modalityCondition,levels = c("visual","multi","vocal"))
 
 # ggplot(sigLenByGame[sigLenByGame$game==4,], aes(x=modalityCondition, y=Efficiency, group=turnModalityType, colour=turnModalityType)) +
@@ -274,6 +339,23 @@ sigLenByGame$modalityCondition = factor(sigLenByGame$modalityCondition,levels = 
 #   xlab("Modality condition")
 
 pd2 = position_dodge(0.5)
+ggplot(sigLenByGame[sigLenByGame$game==1,], aes(x=turnModalityType, y=Efficiency, group=modalityCondition, colour=modalityCondition)) +
+  geom_errorbar(aes(ymin=lower, ymax=upper,group=modalityCondition), width=0.5,position=pd2) +
+ # stat_summary(fun.y="mean", geom="line", aes(group=turnModalityType),position=pd) +
+  geom_point(aes(group=modalityCondition,shape=modalityCondition),position=pd2) +
+  scale_colour_brewer(palette="Set2", name="Modality condition") +
+  scale_shape(name="Modality condition") +
+  theme(panel.grid.major.x = element_blank()) +
+  ggtitle("Trial length for first game (unimodal director turns)") +
+  ylab("Trial length (seconds)") +
+  xlab("Modality of director's first turn")
+```
+
+Same data as above, but just showing the first game:
+
+```{r echo=F}
+
+pd2 = position_dodge(0.5)
 ggplot(sigLenByGame[sigLenByGame$game==4,], aes(x=turnModalityType, y=Efficiency, group=modalityCondition, colour=modalityCondition)) +
   geom_errorbar(aes(ymin=lower, ymax=upper,group=modalityCondition), width=0.5,position=pd2) +
  # stat_summary(fun.y="mean", geom="line", aes(group=turnModalityType),position=pd) +
@@ -286,6 +368,84 @@ ggplot(sigLenByGame[sigLenByGame$game==4,], aes(x=turnModalityType, y=Efficiency
   xlab("Modality of director's first turn")
 
 ```
+
+All turn types:
+
+```{r echo=F}
+dx = d
+dx = dx[!(dx$turnModalityType=="unimodal visual" & dx$modalityCondition=="vocal"),]
+dx = dx[!(dx$turnModalityType=="unimodal acoustic" & dx$modalityCondition=="visual"),]
+sigLenByGame = dx %>% group_by(game,turnModalityType,modalityCondition) %>% 
+  summarise(Efficiency = mean(trialLength),
+            sd=sd(trialLength),
+            ci.w = qnorm(0.95)*sd/sqrt(length(trialLength)),
+            upper=Efficiency+ci.w,
+            lower = Efficiency-ci.w)
+
+sigLenByGame$turnModalityType = factor(sigLenByGame$turnModalityType,levels=c("unimodal visual","multi","unimodal acoustic"))
+sigLenByGame$game = sigLenByGame$game+1
+
+sigLenByGame$Efficiency = sigLenByGame$Efficiency/1000
+sigLenByGame$upper = sigLenByGame$upper/1000
+sigLenByGame$lower = sigLenByGame$lower/1000
+
+pd = position_dodge(width=0.1)
+ggplot(sigLenByGame, aes(x=game, y=Efficiency, group=turnModalityType, colour=turnModalityType)) +
+  geom_errorbar(aes(ymin=lower, ymax=upper,group=turnModalityType), width=0.5,position=pd) +
+  facet_grid(cols=vars(modalityCondition)) +
+  stat_summary(fun.y="mean", geom="line", aes(group=turnModalityType),position=pd) +
+  geom_point(aes(group=turnModalityType,shape=turnModalityType),position=pd) +
+  scale_colour_brewer(palette="Set2", name="Modality of director's first turn") +
+  scale_shape(name="Modality of director's first turn") +
+  theme(panel.grid.major.x = element_blank()) +
+  ggtitle("Trial length for trials starting with unimodal director turn (by condition)") +
+  xlab("Game") +
+  ylab("Trial length (seconds)")
+
+```
+
+```{r echo=F}
+dx = d
+dx = dx[!(dx$turnModalityType=="unimodal visual" & dx$modalityCondition=="vocal"),]
+dx = dx[!(dx$turnModalityType=="unimodal acoustic" & dx$modalityCondition=="visual"),]
+sigLenByGame = dx %>% group_by(game,turnModalityType,modalityCondition,condition) %>% 
+  summarise(Efficiency = mean(trialLength),
+            sd=sd(trialLength),
+            ci.w = qnorm(0.95)*sd/sqrt(length(trialLength)),
+            upper=Efficiency+ci.w,
+            lower = Efficiency-ci.w)
+
+sigLenByGame$turnModalityType = factor(sigLenByGame$turnModalityType,levels=c("unimodal visual","multi","unimodal acoustic"))
+sigLenByGame$game = sigLenByGame$game+1
+
+sigLenByGame$Efficiency = sigLenByGame$Efficiency/1000
+sigLenByGame$upper = sigLenByGame$upper/1000
+sigLenByGame$lower = sigLenByGame$lower/1000
+
+sigLenByGame$modalityCondition = factor(sigLenByGame$modalityCondition, levels = c("visual","multi","vocal"), labels=c("Gestural","Multimodal","Vocal"))
+
+sigLenByGame$condition = factor(sigLenByGame$condition, levels=c("Auditory","Visual"), labels = c("Auditory Stimuli","Visual Stimuli"))
+
+sigLenByGame$turnModalityType = factor(sigLenByGame$turnModalityType, levels=c("unimodal visual",'multi','unimodal acoustic'), labels = c("Unimoda visual","Multimodal","Unimodal acoustic"))
+
+px = ggplot(sigLenByGame, aes(x=game, y=Efficiency, group=turnModalityType, colour=turnModalityType)) +
+  geom_errorbar(aes(ymin=lower, ymax=upper,group=turnModalityType), width=0.5,position=pd) +
+  facet_grid(cols=vars(modalityCondition),rows = vars(condition)) +
+  stat_summary(fun.y="mean", geom="line", aes(group=turnModalityType),position=pd) +
+  geom_point(aes(group=turnModalityType,shape=turnModalityType),position=pd) +
+  scale_colour_brewer(palette="Set2", name="Modality of director's first turn") +
+  scale_shape(name="Modality of director's first turn") +
+  theme(panel.grid.major.x = element_blank()) +
+  ggtitle("Condition") +
+  xlab("Game") +
+  ylab("Trial length (seconds)")
+px
+
+pdf("../../results/graphs/Efficiency_by_turnModalityType.pdf", width=6,height=4)
+px
+dev.off()
+```
+
 
 
 \clearpage
@@ -494,6 +654,98 @@ ggplot(sigLenByGame[sigLenByGame$game==4,], aes(x=turnModalityType, y=Efficiency
   xlab("Modality of director's first turn")
 ```
 
+
+```{r echo=F}
+dx = d
+dx = dx[!(dx$turnModalityType=="unimodal visual" & dx$modalityCondition=="vocal"),]
+dx = dx[!(dx$turnModalityType=="unimodal acoustic" & dx$modalityCondition=="visual"),]
+sigLenByGame = dx %>% group_by(game,turnModalityType,modalityCondition,condition) %>% 
+  summarise(Efficiency = mean(turnLength),
+            sd=sd(turnLength),
+            ci.w = qnorm(0.95)*sd/sqrt(length(turnLength)),
+            upper=Efficiency+ci.w,
+            lower = Efficiency-ci.w)
+
+sigLenByGame$turnModalityType = factor(sigLenByGame$turnModalityType,levels=c("unimodal visual","multi","unimodal acoustic"))
+sigLenByGame$game = sigLenByGame$game+1
+
+sigLenByGame$Efficiency = sigLenByGame$Efficiency/1000
+sigLenByGame$upper = sigLenByGame$upper/1000
+sigLenByGame$lower = sigLenByGame$lower/1000
+
+sigLenByGame$modalityCondition = factor(sigLenByGame$modalityCondition,levels = c("visual","multi","vocal"))
+
+pd2 = position_dodge(0.5)
+ggplot(sigLenByGame, aes(x=game, y=Efficiency, group=turnModalityType, colour=turnModalityType)) +
+  geom_errorbar(aes(ymin=lower, ymax=upper,group=turnModalityType), width=0.5,position=pd2) +
+  stat_summary(fun.y="mean", geom="line", aes(group=turnModalityType),position=pd2) +
+  facet_grid(cols=vars(modalityCondition),rows = vars(condition)) +
+  geom_point(aes(group=turnModalityType,shape=turnModalityType),position=pd2) +
+  scale_colour_brewer(palette="Set2", name="Modality condition") +
+  scale_shape(name="Modality condition") +
+  theme(panel.grid.major.x = element_blank()) +
+  ggtitle("Turn length for final game (unimodal director turns)") +
+  ylab("Turn length (seconds)") +
+  xlab("Modality of director's first turn")
+```
+
+\clearpage
+\newpage
+
+## Comparing director turn and trial length
+
+
+```{r echo=F}
+
+dx = d
+dx = dx[!(dx$turnModalityType=="unimodal visual" & dx$modalityCondition=="vocal"),]
+dx = dx[!(dx$turnModalityType=="unimodal acoustic" & dx$modalityCondition=="visual"),]
+turnLenByGame = dx %>% group_by(game,turnModalityType,modalityCondition,condition) %>% 
+  summarise(Efficiency = mean(turnLength),
+            measure="directorTurnLength")
+
+decisionTimeByGame = dx %>% 
+  group_by(game,turnModalityType,modalityCondition,condition) %>% 
+  summarise(Efficiency = mean(trialLength - turnLength),
+            measure="decisionTime")
+
+dc = rbind(turnLenByGame,decisionTimeByGame)
+dc$Efficiency = dc$Efficiency/1000
+dc$measure = factor(dc$measure)
+
+
+dc$pos = dc$game + 1
+dc[dc$modalityCondition=="visual",]$pos = dc[dc$modalityCondition=="visual",]$pos - barwidth
+dc[dc$modalityCondition=="vocal",]$pos = dc[dc$modalityCondition=="vocal",]$pos + barwidth
+
+dc$turnModalityType = factor(dc$turnModalityType,
+                             levels=c("unimodal visual","multi","unimodal acoustic"),
+                             labels = c("Unimodal visual",'Mulitmodal','Unimodal acoustic'))
+
+dc$condition = factor(dc$condition,levels=c("Auditory","Visual"),
+                      lables = c("Auditory stimuli",'Visual stimuli'))
+
+dc$modalityConditionPart = as.character(factor(dc$modalityCondition,levels=c("multi","visual",'vocal'),labels=c("Multimodal",'Gestural','Vocal')))
+dc$modalityConditionPart[dc$measure=="directorTurnLength"] = paste(dc$modalityConditionPart[dc$measure=="directorTurnLength"],"(turn length)")
+dc$modalityConditionPart[dc$measure=="decisionTime"] = paste(dc$modalityConditionPart[dc$measure=="decisionTime"],"(trial length)")
+
+trialVTurn = ggplot(dc, 
+       aes(x=pos,y=Efficiency, fill=modalityConditionPart,group=measure)) +
+  geom_bar(stat="identity", position="stack", width=0.2) +
+  facet_grid(cols=vars(turnModalityType),rows = vars(condition)) +
+  scale_fill_manual(values=c("#66C2A5","#1B9E77","#FC8D62","#D95F02","#8DA0CB","#7570B3"),
+                    name="Condition") +
+  xlab("Game") +
+  ylab("Time (seconds)") +
+  ggtitle("Modality of director's first turn")
+
+
+pdf("../../results/graphs/Trial_v_turn_length.pdf",
+    width=6.3,height=4)
+trialVTurn
+dev.off()
+
+```
 
 
 \clearpage
