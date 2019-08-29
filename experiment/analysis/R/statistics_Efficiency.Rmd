@@ -6,7 +6,7 @@ output:
 knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, encoding = encoding, output_file = file.path(dirname(inputFile), "../../results/MainResults_Efficiency.pdf")) })
 ---
 
-# Intro 
+# Introduction
 
 The main data used in this analysis comes from `../../data/FinalSignalData.csv` (compiled by  `analyseData.R`).  Each row represents one signal, but this script only keeps one signal per trial, and the rest of the analysis is on the trial-by-trial level.  The variables in the data are as follows (some are calculated in the script below):
 
@@ -905,6 +905,25 @@ plot(abs(model.min.t),abs(model.full.t))
 abline(0,1)
 ```
 
+Model with only modality condition and stimulus type, with random slopes for both fixed effects:
+
+```{r}
+model.min2 = lmer(trialLength.log ~ 1 + 
+            modalityCondition + condition +
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition  |itemId) ,
+          data=d, REML=FALSE, control=ctrl)
+summary(model.min2)
+model.min2B = lmer(trialLength.log ~ 1 + 
+            modalityCondition * condition +
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition  |itemId) ,
+          data=d, REML=FALSE, control=ctrl)
+summary(model.min2B)
+anova(model.min2,model.min2B)
+```
+
+
 ## Alternative distribution
 
 Below we run the final model from the procedure above, but fitting the raw trial length in milliseconds with a poisson distribution, rather than the log-transformed trial Length.
@@ -942,6 +961,157 @@ cor(gaussian.fixef,poisson.fixef)
 ```
 
 The estimates are highly correlated, suggesting that the choice to log-transform the trial length isn't particularly important.
+
+\newpage
+
+# Turn length versus comprehension time
+
+This section compares two values:
+
+-  Director's turn length: Time from the start of the director's first turn to the end of the director's first turn.
+-  Comprehension time: Time from the start of the director's first turn to the point at which the matcher makes a choice.  Note that this can in principle be negative if the matcher makes a choice while the director is still producing their first turn.
+
+
+The main analysis finds that multimodal participants end up being more efficient than the gestural condition. Fig. 4 shows the mean total trial times and the amount of time that the director spent producing the first turn in the trial. The difference between the total trial time and the length of the director’s turn include the time spent by the matcher making their choice and any negotiation, so we’ll call this the comprehension time (lighter parts of the bars). The data are split by the modality of the director’s first turn and by stimulus type, and show that there are different advantages for different combinations of stimuli and modality.
+
+The code for calculating the numbers is available in the Rmd file.
+
+```{r echo=F}
+#Variable for whether T1 was a multimodal signal.
+turnD = read.csv("../../data/Final_Turn_data.csv")
+turnD = turnD[turnD$turnType=="T1",]
+turnD = turnD[turnD$role == "Director",]
+d$multimodal = turnD[match(d$trialString, turnD$trialString),]$turnModalityType == "multi"
+d$multimodal[is.na(d$multimodal)] = F
+
+d$turnModalityType = turnD[match(d$trialString, turnD$trialString),]$turnModalityType
+
+
+dx = d
+dx = dx[!(dx$turnModalityType=="unimodal visual" & dx$modalityCondition=="vocal"),]
+dx = dx[!(dx$turnModalityType=="unimodal acoustic" & dx$modalityCondition=="visual"),]
+
+turnLenByGame = dx %>% group_by(game,turnModalityType,modalityCondition,condition) %>% 
+  summarise(Efficiency = mean(turnLength),
+            measure="directorTurnLength")
+
+decisionTimeByGame = dx %>% 
+  group_by(game,turnModalityType,modalityCondition,condition) %>% 
+  summarise(Efficiency = mean(trialLength - turnLength),
+            measure="decisionTime")
+
+dc = rbind(turnLenByGame,decisionTimeByGame)
+dc$Efficiency = dc$Efficiency/1000
+dc$measure = factor(dc$measure)
+
+
+dc$pos = dc$game + 1
+barwidth = 0.2
+dc[dc$modalityCondition=="visual",]$pos = dc[dc$modalityCondition=="visual",]$pos - barwidth
+dc[dc$modalityCondition=="vocal",]$pos = dc[dc$modalityCondition=="vocal",]$pos + barwidth
+
+dc$turnModalityType = factor(dc$turnModalityType,
+                             levels=c("unimodal visual","multi","unimodal acoustic"),
+                             labels = c("Unimodal visual",'Mulitmodal','Unimodal acoustic'))
+
+dc$condition = factor(dc$condition,levels=c("Auditory","Visual"),
+                      labels = c("Auditory stimuli",'Visual stimuli'))
+
+dc$modalityConditionPart = as.character(factor(dc$modalityCondition,levels=c("multi","visual",'vocal'),labels=c("Multimodal",'Gestural','Vocal')))
+dc$modalityConditionPart[dc$measure=="directorTurnLength"] = paste(dc$modalityConditionPart[dc$measure=="directorTurnLength"],"(turn length)")
+dc$modalityConditionPart[dc$measure=="decisionTime"] = paste(dc$modalityConditionPart[dc$measure=="decisionTime"],"(trial length)")
+```
+
+Figure 4 is below. Mean efficiency in seconds split by the length of the director’s first turn (darker bars), and total trial length (lighter bars). Bars are coloured by experimental condition (gestural vs. mulitmodal vs. vocal). The panels divide the data by stimulus type (rows) and the modality of the director’s first turn (columns). Directors in the gestural and vocal conditions only produced unimodal turns, while directors in the multimodal condition were free to produce unimodal visual, unimodal acoustic or multimodal turns. There were too few cases of unimodal acoustic turns in the multimodal condition to plot.
+
+```{r echo=F}
+trialVTurn = ggplot(dc, 
+       aes(x=pos,y=Efficiency, fill=modalityConditionPart,group=measure)) +
+  geom_bar(stat="identity", position="stack", width=0.2) +
+  facet_grid(cols=vars(turnModalityType),rows = vars(condition)) +
+  scale_fill_manual(values=c("#66C2A5","#1B9E77","#FC8D62","#D95F02","#8DA0CB","#7570B3"),
+                    name="Condition") +
+  xlab("Game") +
+  ylab("Time (seconds)") +
+  ggtitle("Modality of director's first turn")
+
+trialVTurn
+# Print to file
+pdf("../../results/graphs/Trial_v_turn_length.pdf",
+    width=6.3,height=4)
+trialVTurn
+dev.off()
+```
+
+
+```{r warning=F,message=F}
+dx$comprehensionTime = dx$trialLength - dx$turnLength
+dx$turnLength.norm = scale(log(dx$turnLength))
+dx$comprehensionTime.norm = scale(log(dx$comprehensionTime))
+```
+
+
+The purpose of this figure was to visualise the data to try to understand where the multimodal advantage comes from. We would like to quantify some of the post-hoc observations about this visualisation. However, a regression becomes complicated because of the number of interactions and lack of data for some comparisons. Instead, we just run a set of t-tests comparing key values in the six boxes above. We perform 5 tests for comprehension time, so we adjust the p-values for multiple comparisons accordingly. We do the same for the 4 tests for turn length.
+
+If we compare trials where the director used unimodal visual turns to describe visual stimuli (bottom left panel), we see that the gestural and multimodal conditions look similar in game 1, but by game 4 the  participants in the multimodal condition have shorter comprehension times.
+
+```{r}
+dxx = dx[dx$turnModalityType=="unimodal visual" & dx$condition=="Visual",]
+comp.t1 = t.test(dxx[dxx$game==0,]$comprehensionTime~ dxx[dxx$game==0,]$modalityCondition)
+comp.t1$p.value = p.adjust(comp.t1$p.value,n=5)
+comp.t1
+
+comp.t1b = t.test(dxx[dxx$game==3,]$comprehensionTime~ dxx[dxx$game==3,]$modalityCondition)
+comp.t1b$p.value = p.adjust(comp.t1b$p.value,n=5)
+comp.t1b
+```
+
+
+In contrast, if we compare trials where the director used unimodal acoustic turns to describe auditory stimuli (top right panel), by game 4 the advantage in the multimodal condition is mainly in the length of the director’s turn.
+
+```{r}
+dxx = dx[dx$turnModalityType=="unimodal acoustic" & dx$condition=="Auditory",]
+comp.t2 = t.test(dxx[dxx$game==3,]$comprehensionTime~ dxx[dxx$game==3,]$modalityCondition)
+comp.t2$p.value = p.adjust(comp.t2$p.value,n=5)
+comp.t2
+
+tlen.t2 = t.test(dxx[dxx$game==3,]$turnLength~ dxx[dxx$game==3,]$modalityCondition)
+tlen.t2$p.value = p.adjust(tlen.t2$p.value,n=4)
+tlen.t2
+```
+
+Further, comparing trials where the director used unimodal visual turns to describe auditory stimuli (top left panel), by game 4 we see an advantage for  participants in the multimodal condition for both the director’s turn and comprehension time.
+
+```{r}
+dxx = dx[dx$turnModalityType=="unimodal visual" & dx$condition=="Auditory",]
+comp.t3 = t.test(dxx[dxx$game==3,]$comprehensionTime~ dxx[dxx$game==3,]$modalityCondition)
+comp.t3$p.value = p.adjust(comp.t3$p.value,n=5)
+comp.t3
+
+tlen.t3 = t.test(dxx[dxx$game==3,]$turnLength~ dxx[dxx$game==3,]$modalityCondition)
+tlen.t3$p.value = p.adjust(tlen.t3$p.value,n=4)
+tlen.t3
+```
+
+
+Finally, comparing game 4 for the multimodal turns in the multimodal condition (central column) to the unimodal turns in the gesture-only and vocal-only conditions, we see that participants in the multimodal condition have shorter comprehension times for auditory stimuli and equal or shorter turn lengths for visual stimuli.
+
+```{r}
+dxx = dx[dx$condition=="Auditory",]
+comp.t4 = t.test(dxx[dxx$game==3,]$comprehensionTime~ dxx[dxx$game==3,]$modalityCondition=="multi")
+comp.t4$p.value = p.adjust(comp.t4$p.value,n=5)
+comp.t4
+
+dxx = dx[dx$condition=="Visual",]
+tlen.t4 = t.test(dxx[dxx$game==3,]$turnLength~ dxx[dxx$game==3,]$modalityCondition=="multi")
+tlen.t4$p.value = p.adjust(tlen.t4$p.value,n=4)
+tlen.t4
+```
+
+
+
+
+\newpage
 
 
 # Summary results

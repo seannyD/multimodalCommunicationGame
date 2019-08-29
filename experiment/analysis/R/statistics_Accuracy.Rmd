@@ -682,3 +682,18 @@ signif(finalRes[,c("Estimate","Std. Error","z value",
                    "Pr(>|z|)",'Chisq',"Pr(>Chisq)")],2)
 ```
 
+## Minimal model
+
+Model with only modality condition and stimulus type, with random slopes for both fixed effects:
+
+```{r}
+finalModel.minimal = glmer(correct ~ 1 + 
+            modalityCondition + condition +
+            (1 + condition |dyadNumber/playerId) +
+            (1 + modalityCondition  |itemId) ,
+          data=d, family=binomial,control=gc)
+summary(finalModel.minimal)
+```
+
+
+
