@@ -668,7 +668,7 @@ Attempt plot with axes in milliseconds.
 convertEst = function(X){
   exp(meanLogTrialLength+X) - exp(meanLogTrialLength)
 }
-
+x$beta = x$estimate
 x$estimate = convertEst(x$estimate)
 x$conf.low = convertEst(x$conf.low)
 x$conf.high = convertEst(x$conf.high)
@@ -701,7 +701,7 @@ noInteraction - tenResponses
 Table for paper
 
 ```{r}
-outdata = x[,c("term","label","estimate","conf.low",'conf.high')]
+outdata = x[,c("term","label","beta","estimate","conf.low",'conf.high')]
 
 outdata$estimate = base::round(outdata$estimate)
 outdata$conf.low = base::round(outdata$conf.low)
@@ -716,7 +716,7 @@ outdata$estimate = paste(
   c("","+")[1+(outdata$estimate>0)],
   as.character(outdata$estimate),sep='')
 
-outdata = outdata[,c("label","estimate","conf.low",
+outdata = outdata[,c("label","beta","estimate","conf.low",
                      "conf.high","wald.t","Chisq",
                      "Pr(>Chisq)")]
 finalRes = outdata
@@ -1051,7 +1051,7 @@ dx$comprehensionTime.norm = scale(log(dx$comprehensionTime))
 ```
 
 
-The purpose of this figure was to visualise the data to try to understand where the multimodal advantage comes from. We would like to quantify some of the post-hoc observations about this visualisation. However, a regression becomes complicated because of the number of interactions and lack of data for some comparisons. Instead, we just run a set of t-tests comparing key values in the six boxes above. We perform 5 tests for comprehension time, so we adjust the p-values for multiple comparisons accordingly. We do the same for the 4 tests for turn length.
+The purpose of this figure was to visualise the data to try to understand where the multimodal advantage comes from. We would like to quantify some of the post-hoc observations about this visualisation. However, a regression becomes complicated because of the number of interactions and lack of data for some comparisons. Instead, we just run a set of t-tests comparing key values in the six boxes above. We perform 5 tests for comprehension time, so we adjust the p-values for multiple comparisons using Bonferroni correction (multiplying p-value by 5). We do the same for the 4 tests for turn length.
 
 If we compare trials where the director used unimodal visual turns to describe visual stimuli (bottom left panel), we see that the gestural and multimodal conditions look similar in game 1, but by game 4 the  participants in the multimodal condition have shorter comprehension times.
 
